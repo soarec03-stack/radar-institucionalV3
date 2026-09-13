@@ -1,0 +1,996 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://radar-institucional.local/schema_v3.json",
+  "title": "Radar Institucional V3",
+  "description": "Schema estrutural do Radar Institucional V3. Mantém o V2.1 independente e adiciona score, confidence, provenance, decision, triggers, invalidation, risk, scenarios e changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "radar_run",
+    "market_regime",
+    "decision_center",
+    "assets",
+    "portfolio",
+    "scenarios",
+    "changes",
+    "sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "3.0"
+    },
+    "radar_run": {
+      "$ref": "#/$defs/radarRun"
+    },
+    "market_regime": {
+      "$ref": "#/$defs/marketRegime"
+    },
+    "decision_center": {
+      "$ref": "#/$defs/decisionCenter"
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      },
+      "default": []
+    },
+    "portfolio": {
+      "$ref": "#/$defs/portfolio"
+    },
+    "scenarios": {
+      "$ref": "#/$defs/scenarios"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/change"
+      },
+      "default": []
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/alert"
+      },
+      "default": []
+    },
+    "conclusion": {
+      "$ref": "#/$defs/conclusion"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "default": []
+    }
+  },
+  "$defs": {
+    "radarRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "generated_at",
+        "market_date",
+        "status"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "market_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "VALIDATED",
+            "PUBLISHED"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score",
+        "status"
+      ],
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "PARTIAL",
+            "LOW",
+            "UNAVAILABLE"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_source",
+        "retrieved_at",
+        "status"
+      ],
+      "properties": {
+        "primary_source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secondary_source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "market_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "retrieved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "PARTIAL",
+            "UNAVAILABLE"
+          ]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sources_attempted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "dataPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "confidence",
+        "provenance"
+      ],
+      "properties": {
+        "value": {},
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "radarScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "fundamental",
+        "technical",
+        "momentum",
+        "institutional_flow",
+        "catalysts",
+        "macro",
+        "risk"
+      ],
+      "properties": {
+        "total": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "fundamental": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "technical": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "momentum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "institutional_flow": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "catalysts": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "macro": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "risk": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "STRONG_BUY",
+            "BUY",
+            "WATCH_ACCUMULATE",
+            "HOLD",
+            "CAUTION",
+            "AVOID"
+          ]
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "thesis",
+        "positives",
+        "negatives",
+        "triggers",
+        "invalidation"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "STRONG_BUY",
+            "BUY",
+            "ACCUMULATE",
+            "WATCH",
+            "HOLD",
+            "REDUCE",
+            "SELL",
+            "AVOID"
+          ]
+        },
+        "thesis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "positives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "negatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trigger"
+          }
+        },
+        "invalidation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invalidation"
+          }
+        }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "condition",
+        "action"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "PRICE",
+            "VOLUME",
+            "TECHNICAL",
+            "FUNDAMENTAL",
+            "MACRO",
+            "EVENT",
+            "FLOW"
+          ]
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        }
+      }
+    },
+    "invalidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition",
+        "effect"
+      ],
+      "properties": {
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect": {
+          "type": "string",
+          "minLength": 1
+        },
+        "level": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score",
+        "level",
+        "drivers"
+      ],
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MODERATE",
+            "HIGH",
+            "VERY_HIGH",
+            "CRITICAL"
+          ]
+        },
+        "drivers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticker",
+        "name",
+        "asset_class",
+        "price",
+        "score",
+        "confidence",
+        "decision",
+        "risk"
+      ],
+      "properties": {
+        "ticker": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset_class": {
+          "type": "string",
+          "enum": [
+            "EQUITY",
+            "ETF",
+            "INDEX",
+            "FUTURE",
+            "FX",
+            "RATE",
+            "COMMODITY",
+            "CRYPTO",
+            "OTHER"
+          ]
+        },
+        "sector": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "theme": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "price": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "change_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "score": {
+          "$ref": "#/$defs/radarScore"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "decision": {
+          "$ref": "#/$defs/decision"
+        },
+        "risk": {
+          "$ref": "#/$defs/risk"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "catalysts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "marketRegime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "regime",
+        "risk_level",
+        "summary"
+      ],
+      "properties": {
+        "regime": {
+          "type": "string",
+          "enum": [
+            "RISK_ON",
+            "NEUTRAL",
+            "CAUTION",
+            "RISK_OFF",
+            "STRESS"
+          ]
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MODERATE",
+            "HIGH",
+            "VERY_HIGH",
+            "CRITICAL"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "drivers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      }
+    },
+    "decisionCenter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_of_day",
+        "top_opportunities",
+        "top_risks",
+        "recommended_actions"
+      ],
+      "properties": {
+        "action_of_day": {
+          "type": "string",
+          "minLength": 1
+        },
+        "top_opportunities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "top_risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommended_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "portfolioPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticker",
+        "status",
+        "entry_price",
+        "current_price",
+        "decision",
+        "risk"
+      ],
+      "properties": {
+        "ticker": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "WATCH",
+            "CLOSED"
+          ]
+        },
+        "quantity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "entry_price": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "current_price": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "target_price": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "stop_price": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pnl_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "decision": {
+          "$ref": "#/$defs/decision"
+        },
+        "risk": {
+          "$ref": "#/$defs/risk"
+        }
+      }
+    },
+    "portfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "positions",
+        "risk"
+      ],
+      "properties": {
+        "positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/portfolioPosition"
+          },
+          "default": []
+        },
+        "risk": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "score",
+            "level"
+          ],
+          "properties": {
+            "score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "level": {
+              "type": "string",
+              "enum": [
+                "LOW",
+                "MODERATE",
+                "HIGH",
+                "VERY_HIGH",
+                "CRITICAL"
+              ]
+            },
+            "concentration": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "beta": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "drawdown_pct": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "var_95_pct": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "drivers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "probability",
+        "conditions",
+        "strategy"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "BULL",
+            "BASE",
+            "BEAR"
+          ]
+        },
+        "probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "strategy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "asset_impacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ticker",
+              "impact"
+            ],
+            "properties": {
+              "ticker": {
+                "type": "string"
+              },
+              "impact": {
+                "type": "string",
+                "enum": [
+                  "VERY_POSITIVE",
+                  "POSITIVE",
+                  "NEUTRAL",
+                  "NEGATIVE",
+                  "VERY_NEGATIVE"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "scenarios": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bull",
+        "base",
+        "bear"
+      ],
+      "properties": {
+        "bull": {
+          "$ref": "#/$defs/scenario"
+        },
+        "base": {
+          "$ref": "#/$defs/scenario"
+        },
+        "bear": {
+          "$ref": "#/$defs/scenario"
+        }
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity",
+        "field",
+        "previous",
+        "current",
+        "impact"
+      ],
+      "properties": {
+        "entity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "previous": {},
+        "current": {},
+        "impact": {
+          "type": "string",
+          "enum": [
+            "POSITIVE",
+            "NEUTRAL",
+            "NEGATIVE",
+            "CRITICAL"
+          ]
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "severity",
+        "category",
+        "message"
+      ],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": [
+            "INFO",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "MARKET",
+            "MACRO",
+            "TECHNICAL",
+            "FUNDAMENTAL",
+            "PORTFOLIO",
+            "DATA_QUALITY",
+            "EVENT"
+          ]
+        },
+        "ticker": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "conclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "stance",
+        "next_actions"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stance": {
+          "type": "string",
+          "enum": [
+            "AGGRESSIVE",
+            "SELECTIVE",
+            "DEFENSIVE",
+            "WAIT"
+          ]
+        },
+        "next_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "category",
+        "status"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "MARKET",
+            "MACRO",
+            "NEWS",
+            "INSTITUTIONAL",
+            "COMPANY",
+            "TECHNICAL",
+            "OTHER"
+          ]
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OK",
+            "PARTIAL",
+            "FAILED"
+          ]
+        }
+      }
+    }
+  }
+}
