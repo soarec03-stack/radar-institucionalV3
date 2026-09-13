@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Local test outputs
+radar_v3_confidence_test.json
+radar_v3_datapoints_test.json
+
+# Runtime history / generated backups
+data/history/raw-json/*.json
+!data/history/raw-json/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

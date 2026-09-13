@@ -171,7 +171,10 @@
           "format": "date"
         },
         "retrieved_at": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "status": {
@@ -520,6 +523,34 @@
           "items": {
             "type": "string"
           }
+        },
+        "data_points": {
+          "type": "object",
+          "description": "Valor, confidence e provenance por ponto de dado.",
+          "properties": {
+            "price": {
+              "$ref": "#/$defs/dataPoint"
+            },
+            "volume": {
+              "$ref": "#/$defs/dataPoint"
+            },
+            "technical": {
+              "$ref": "#/$defs/dataPoint"
+            },
+            "fundamentals": {
+              "$ref": "#/$defs/dataPoint"
+            },
+            "catalysts": {
+              "$ref": "#/$defs/dataPoint"
+            },
+            "institutional_flow": {
+              "$ref": "#/$defs/dataPoint"
+            },
+            "macro": {
+              "$ref": "#/$defs/dataPoint"
+            }
+          },
+          "additionalProperties": false
         }
       }
     },
