@@ -12,10 +12,12 @@ DEFAULT_INPUT = BASE_DIR / "input" / "radar_input_v3.txt"
 DEFAULT_SCHEMA = BASE_DIR / "automation" / "schema_v3.json"
 DEFAULT_OUTPUT = BASE_DIR / "radar_v3.json"
 DEFAULT_POLICY = BASE_DIR / "automation" / "data_quality_policy_v3.json"
+DEFAULT_REGISTRY = BASE_DIR / "automation" / "source_registry_v3.json"
 DEFAULT_HISTORY_DIR = BASE_DIR / "data" / "history" / "raw-json"
 
 VALIDATOR_PATH = BASE_DIR / "automation" / "validate_radar_v3.py"
 DATA_QUALITY_PATH = BASE_DIR / "automation" / "data_quality_v3.py"
+CONFIDENCE_ENGINE_PATH = BASE_DIR / "automation" / "confidence_engine_v3.py"
 
 
 def load_module(module_name, path):
@@ -29,6 +31,7 @@ def load_module(module_name, path):
 
 validator = load_module("validate_radar_v3", VALIDATOR_PATH)
 data_quality = load_module("data_quality_v3", DATA_QUALITY_PATH)
+confidence_engine = load_module("confidence_engine_v3", CONFIDENCE_ENGINE_PATH)
 
 
 def load_json(path):
@@ -37,35 +40,70 @@ def load_json(path):
 
 
 def extract_json_from_text(text):
-    text = text.strip()
+    """
+    Extrai um objeto JSON de forma tolerante a:
+    - UTF-8 BOM;
+    - JSON puro;
+    - bloco Markdown ```json ... ```;
+    - bloco Markdown ``` ... ```;
+    - texto antes/depois do objeto JSON.
+    """
+    text = text.lstrip("\ufeff").strip()
 
-    # JSON puro
+    if not text:
+        raise ValueError("O arquivo de entrada esta vazio.")
+
+    errors = []
+
+    # 1. JSON puro
     try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
+        data = json.loads(text)
+        if isinstance(data, dict):
+            return data
+        errors.append("JSON puro encontrado, mas a raiz nao e um objeto.")
+    except json.JSONDecodeError as exc:
+        errors.append(f"JSON puro: {exc}")
 
-    # bloco ```json ... ```
-    lower = text.lower()
-    start = lower.find("```json")
-    if start != -1:
-        start += len("```json")
-        end = text.find("```", start)
-        if end != -1:
-            candidate = text[start:end].strip()
-            return json.loads(candidate)
+    # 2. Todos os blocos Markdown fenced
+    import re
 
-    # bloco ``` ... ```
-    start = text.find("```")
-    if start != -1:
-        start += 3
-        end = text.find("```", start)
-        if end != -1:
-            candidate = text[start:end].strip()
-            return json.loads(candidate)
+    fenced_blocks = re.findall(
+        r"```(?:json)?\s*(.*?)```",
+        text,
+        flags=re.IGNORECASE | re.DOTALL
+    )
 
+    for index, candidate in enumerate(fenced_blocks, start=1):
+        candidate = candidate.lstrip("\ufeff").strip()
+        if not candidate:
+            continue
+        try:
+            data = json.loads(candidate)
+            if isinstance(data, dict):
+                return data
+            errors.append(
+                f"Bloco Markdown {index}: JSON valido, mas raiz nao e objeto."
+            )
+        except json.JSONDecodeError as exc:
+            errors.append(f"Bloco Markdown {index}: {exc}")
+
+    # 3. Procura um objeto JSON dentro de texto livre
+    decoder = json.JSONDecoder()
+    positions = [i for i, char in enumerate(text) if char == "{"]
+
+    for pos in positions:
+        candidate = text[pos:].lstrip()
+        try:
+            data, _ = decoder.raw_decode(candidate)
+            if isinstance(data, dict):
+                return data
+        except json.JSONDecodeError:
+            continue
+
+    detail = " | ".join(errors[:5])
     raise ValueError(
-        "Nao foi encontrado JSON puro nem bloco ```json``` valido no arquivo de entrada."
+        "Nao foi possivel localizar um objeto JSON V3 valido no arquivo de entrada."
+        + (f" Detalhes: {detail}" if detail else "")
     )
 
 
@@ -190,6 +228,11 @@ def main():
         help="Politica Data Quality V3"
     )
     parser.add_argument(
+        "--registry",
+        default=str(DEFAULT_REGISTRY),
+        help="Registro oficial de fontes do Radar V3"
+    )
+    parser.add_argument(
         "--history-dir",
         default=str(DEFAULT_HISTORY_DIR),
         help="Diretorio de backup historico"
@@ -214,6 +257,7 @@ def main():
     schema_path = Path(args.schema)
     output_path = Path(args.output)
     policy_path = Path(args.policy)
+    registry_path = Path(args.registry)
     history_dir = Path(args.history_dir)
 
     print("=" * 72)
@@ -222,6 +266,7 @@ def main():
     print(f"Entrada : {input_path}")
     print(f"Schema  : {schema_path}")
     print(f"Policy  : {policy_path}")
+    print(f"Registry: {registry_path}")
     print(f"Saida   : {output_path}")
 
     if not input_path.exists():
@@ -234,6 +279,10 @@ def main():
 
     if not policy_path.exists():
         print(f"\nERRO: politica de qualidade nao encontrada: {policy_path}")
+        return 2
+
+    if not registry_path.exists():
+        print(f"\nERRO: registro de fontes nao encontrado: {registry_path}")
         return 2
 
     try:
@@ -257,6 +306,12 @@ def main():
         print(f"\nERRO: policy JSON invalida: {exc}")
         return 2
 
+    try:
+        registry = load_json(registry_path)
+    except json.JSONDecodeError as exc:
+        print(f"\nERRO: registry JSON invalido: {exc}")
+        return 2
+
     schema_errors = validator.validate_schema(data, schema)
     business_errors, warnings = validator.validate_business_rules(data)
 
@@ -271,6 +326,36 @@ def main():
             "\nRESULTADO: BLOQUEADO POR AVISOS — "
             "use --allow-warnings se quiser gerar conscientemente."
         )
+        return 1
+
+    print("\n[CONFIDENCE ENGINE]")
+    data, confidence_changes = confidence_engine.apply_confidence_engine(
+        data,
+        registry,
+        policy.get("freshness_hours", {})
+    )
+    for item in confidence_changes:
+        current = item["current"]
+        comps = item["components"]
+        print(
+            f"  {item['ticker']}: {current['score']:.4f} / {current['status']} "
+            f"(SQ={comps['source_quality']:.2f}, "
+            f"SA={comps['source_agreement']:.2f}, "
+            f"FR={comps['freshness']:.2f}, "
+            f"CO={comps['completeness']:.2f}, "
+            f"VE={comps['verification']:.2f})"
+        )
+
+    # Revalida regras de negocio após o cálculo automático de confidence.
+    post_schema_errors = validator.validate_schema(data, schema)
+    post_business_errors, post_warnings = validator.validate_business_rules(data)
+
+    if post_schema_errors or post_business_errors:
+        print("\nRESULTADO: REPROVADO APOS CONFIDENCE ENGINE.")
+        for err in post_schema_errors:
+            print(f"  X Schema: {err}")
+        for err in post_business_errors:
+            print(f"  X Regra de negocio: {err}")
         return 1
 
     issues, metrics, publish_allowed, blockers = data_quality.evaluate(data, policy)

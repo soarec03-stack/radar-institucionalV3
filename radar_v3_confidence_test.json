@@ -1,0 +1,85 @@
+{
+  "schema_version": "3.0",
+  "radar_run": {
+    "run_id": "SUBSTITUIR_PELO_RUN_ID",
+    "generated_at": "2026-09-13T08:00:00-03:00",
+    "market_date": "2026-09-12",
+    "status": "DRAFT",
+    "notes": "Substituir este bloco pela saída completa do comando Radar Institucional V3."
+  },
+  "market_regime": {
+    "regime": "CAUTION",
+    "risk_level": "HIGH",
+    "summary": "MODELO DE ENTRADA — substituir pela análise real.",
+    "drivers": [],
+    "confidence": {
+      "score": 0.0,
+      "status": "LOW",
+      "reason": "Template ainda não preenchido."
+    }
+  },
+  "decision_center": {
+    "action_of_day": "PREENCHER",
+    "top_opportunities": [],
+    "top_risks": [],
+    "recommended_actions": []
+  },
+  "assets": [],
+  "portfolio": {
+    "positions": [],
+    "risk": {
+      "score": 0,
+      "level": "LOW",
+      "concentration": null,
+      "beta": null,
+      "drawdown_pct": null,
+      "var_95_pct": null,
+      "drivers": []
+    }
+  },
+  "scenarios": {
+    "bull": {
+      "name": "BULL",
+      "probability": 0,
+      "conditions": [],
+      "strategy": [],
+      "asset_impacts": []
+    },
+    "base": {
+      "name": "BASE",
+      "probability": 100,
+      "conditions": [
+        "Template ainda não preenchido"
+      ],
+      "strategy": [
+        "Substituir pela análise real"
+      ],
+      "asset_impacts": []
+    },
+    "bear": {
+      "name": "BEAR",
+      "probability": 0,
+      "conditions": [],
+      "strategy": [],
+      "asset_impacts": []
+    }
+  },
+  "changes": [],
+  "alerts": [
+    {
+      "severity": "INFO",
+      "category": "DATA_QUALITY",
+      "ticker": null,
+      "message": "Arquivo template de entrada ainda não foi substituído pela análise real.",
+      "action": "Executar o comando Radar Institucional V3 e substituir este conteúdo."
+    }
+  ],
+  "conclusion": {
+    "summary": "Template de entrada do pipeline V3.",
+    "stance": "WAIT",
+    "next_actions": [
+      "Substituir pelo JSON real do Radar Institucional V3"
+    ]
+  },
+  "sources": []
+}
