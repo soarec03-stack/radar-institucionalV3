@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Radar Institucional V2.1 - Global Markets Intelligence">
+
+    <title>Radar Institucional</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+</head>
+
+<body class="app-shell">
+
+    <!-- =========================================================
+         SIDEBAR
+         Etapa 1: estrutura preparada para navegação entre páginas.
+         A lógica de troca de páginas será adicionada ao radar.js
+         somente na Etapa 3.
+         ========================================================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="logo-icon">
+                RI
+            </div>
+
+            <div class="sidebar-brand-text">
+                <h1>RADAR INSTITUCIONAL</h1>
+                <span>Global Markets Intelligence</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navegação principal">
+                <a href="#overview" class="sidebar-link is-active" data-page-target="overview">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/><path d="M8 12h8"/></svg></span>
+                    <span class="sidebar-label">Overview</span>
+                </a>
+                <a href="#macro" class="sidebar-link" data-page-target="macro">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 15l2.2-4 2.1 2 3.7-5"/><path d="M6 18h12"/></svg></span>
+                    <span class="sidebar-label">Macro</span>
+                </a>
+                <a href="#brazil" class="sidebar-link" data-page-target="brazil">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 21 12 12 21 3 12z"/><path d="M9 12h6"/><circle cx="12" cy="12" r="2.2"/></svg></span>
+                    <span class="sidebar-label">Brasil</span>
+                </a>
+                <a href="#winwdo" class="sidebar-link" data-page-target="winwdo">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M3 15l5-5 4 3 7-8"/><path d="M16 5h3v3"/></svg></span>
+                    <span class="sidebar-label">WIN / WDO / DI</span>
+                </a>
+                <a href="#sectors" class="sidebar-link" data-page-target="sectors">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10"/><path d="M10 20V4h4v16"/><path d="M16 20v-7h4v7"/></svg></span>
+                    <span class="sidebar-label">Setores</span>
+                </a>
+                <a href="#power" class="sidebar-link" data-page-target="power">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V8l4-3v15"/><path d="M10 20V4h5v16"/><path d="M16 20V9l3-2v13"/><path d="M12 7h1"/><path d="M12 11h1"/><path d="M12 15h1"/></svg></span>
+                    <span class="sidebar-label">Power / Data Center</span>
+                </a>
+                <a href="#nuclear" class="sidebar-link" data-page-target="nuclear">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2"/><path d="M12 4c2.5 0 4.6 1 6 2.8-1.6.5-3.1 1.4-4.2 2.8"/><path d="M5.4 8.2A8 8 0 0 0 6 15.2c1.1-1.2 2.4-2.1 4-2.5"/><path d="M18.6 8.2A8 8 0 0 1 18 15.2c-1.1-1.2-2.4-2.1-4-2.5"/></svg></span>
+                    <span class="sidebar-label">Nuclear</span>
+                </a>
+                <a href="#swing" class="sidebar-link" data-page-target="swing">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10"/><path d="M9 16c0-3 2-5 5-7"/><path d="M14 9h4V5"/><path d="M7 13c2-4 5-6 10-7"/><path d="M6 6h4v4"/></svg></span>
+                    <span class="sidebar-label">Swing Trades</span>
+                </a>
+                <a href="#portfolio" class="sidebar-link" data-page-target="portfolio">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M8 6V4h8v2"/><path d="M3 11h18"/><path d="M10 11v2h4v-2"/></svg></span>
+                    <span class="sidebar-label">Carteira</span>
+                </a>
+                <a href="#penny" class="sidebar-link" data-page-target="penny">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M14.8 8.8c-.7-.5-1.6-.8-2.5-.8-1.8 0-3 .8-3 2 0 1.3 1.1 1.8 2.9 2.1 1.9.4 2.8.8 2.8 2.1 0 1.4-1.3 2.3-3.2 2.3-1.2 0-2.4-.4-3.3-1.1"/><path d="M12 6v12"/></svg></span>
+                    <span class="sidebar-label">Penny Stocks</span>
+                </a>
+                <a href="#ranking" class="sidebar-link" data-page-target="ranking">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-6h4v6"/><path d="M10 20V9h4v11"/><path d="M15 20V4h4v16"/><path d="M4 7l3-3 3 3 3-3 3 3"/></svg></span>
+                    <span class="sidebar-label">Ranking</span>
+                </a>
+                <a href="#analysis" class="sidebar-link" data-page-target="analysis">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M5 17l4-5 4 3 6-8"/><path d="M16 7h3v3"/></svg></span>
+                    <span class="sidebar-label">Análises</span>
+                </a>
+                <a href="#catalysts" class="sidebar-link" data-page-target="catalysts">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v4"/><path d="M18 3v4"/><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 10h16"/><path d="m9 15 2 2 4-4"/></svg></span>
+                    <span class="sidebar-label">Catalisadores</span>
+                </a>
+                <a href="#alerts" class="sidebar-link" data-page-target="alerts">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a5 5 0 0 0-5 5v3l-2 3h14l-2-3V9a5 5 0 0 0-5-5z"/><path d="M10 18h4"/></svg></span>
+                    <span class="sidebar-label">Alertas</span>
+                </a>
+                <a href="#conclusion" class="sidebar-link" data-page-target="conclusion">
+                    <span class="sidebar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span>
+                    <span class="sidebar-label">Conclusão</span>
+                </a>
+        </nav>
+
+        <div class="sidebar-meta">
+            <span>Schema V2.1</span>
+            <span>© 2026 Radar Institucional</span>
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         CONTEÚDO PRINCIPAL
+         ========================================================= -->
+
+    <div class="app-content">
+
+        <!-- =====================================================
+             TOP BAR
+             IDs mantidos para compatibilidade com js/radar.js
+             ===================================================== -->
+
+        <header class="header">
+
+            <div class="page-context">
+
+                <span class="page-context-label">
+                    Dashboard
+                </span>
+
+                <strong class="page-context-title">
+                    Global Markets Intelligence
+                </strong>
+
+            </div>
+
+            <div class="header-info">
+
+                <div>
+                    <span class="label">
+                        Atualização
+                    </span>
+
+                    <strong id="dataAtualizacao">
+                        --
+                    </strong>
+                </div>
+
+                <div class="market-status">
+
+                    <span id="marketStatusDot" class="status-dot"></span>
+
+                    Mercado
+
+                    <strong id="marketStatus">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <main class="container">
+
+            <!-- =================================================
+                 RESUMO EXECUTIVO PERSISTENTE
+                 Não faz parte das 15 páginas de navegação.
+                 IDs originais preservados.
+                 ================================================= -->
+
+<section id="radar-summary">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-number">
+                        RI
+                    </span>
+
+                    <h2>
+                        Radar Institucional
+                    </h2>
+
+                </div>
+
+                <span id="riskBadge" class="badge">
+                    --
+                </span>
+
+            </div>
+
+            <div class="alert-box radar-summary-box">
+
+                <div class="alert-icon">
+                    ◉
+                </div>
+
+                <div>
+
+                    <h3 id="marketRegime">
+                        --
+                    </h3>
+
+                    <p id="radarSummary">
+                        --
+                    </p>
+
+                    <p>
+                        <strong>Sentimento:</strong>
+                        <span id="institutionalSentiment">--</span>
+                        &nbsp; | &nbsp;
+
+                        <strong>Viés diário:</strong>
+                        <span id="dailyBias">--</span>
+                        &nbsp; | &nbsp;
+
+                        <strong>Risco:</strong>
+                        <span id="riskLevel">--</span>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+            <!-- =================================================
+                 15 PÁGINAS INTERNAS
+                 Apenas a organização visual muda.
+                 Todos os IDs internos continuam iguais.
+                 ================================================= -->
+
+            <div class="radar-pages">
+
+<section id="overview" class="radar-page is-active" data-page="overview">
+
+            <div class="section-header overview-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">01</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Market Overview</h2>
+                        <p>Leitura rápida dos principais mercados globais, juros, dólar e volatilidade.</p>
+                    </div>
+                </div>
+
+                <span id="overviewBadge" class="badge">
+                    --
+                </span>
+
+            </div>
+
+            <div class="overview-groups">
+
+                <div class="overview-group">
+
+                    <div class="overview-group-title">
+                        <span>Brasil</span>
+                        <small>Mercado doméstico</small>
+                    </div>
+
+                    <div class="overview-grid overview-grid-2">
+
+                        <div class="metric-card metric-card-featured">
+                            <span>IBOVESPA</span>
+                            <strong id="ibovespa">--</strong>
+                            <small id="ibovespaMeta">--</small>
+                        </div>
+
+                        <div class="metric-card metric-card-featured">
+                            <span>DÓLAR</span>
+                            <strong id="dolar">--</strong>
+                            <small id="dolarMeta">USD / BRL</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="overview-group">
+
+                    <div class="overview-group-title">
+                        <span>Estados Unidos</span>
+                        <small>Índices acionários</small>
+                    </div>
+
+                    <div class="overview-grid overview-grid-4">
+
+                        <div class="metric-card">
+                            <span>S&amp;P 500</span>
+                            <strong id="sp500">--</strong>
+                            <small id="sp500Meta">--</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <span>NASDAQ</span>
+                            <strong id="nasdaq">--</strong>
+                            <small id="nasdaqMeta">--</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <span>DOW</span>
+                            <strong id="dow">--</strong>
+                            <small id="dowMeta">--</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <span>RUSSELL 2000</span>
+                            <strong id="russell2000">--</strong>
+                            <small id="russell2000Meta">--</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="overview-group">
+
+                    <div class="overview-group-title">
+                        <span>Juros &amp; Dólar</span>
+                        <small>Curva americana e força da moeda</small>
+                    </div>
+
+                    <div class="overview-grid overview-grid-3">
+
+                        <div class="metric-card">
+                            <span>TREASURY 2Y</span>
+                            <strong id="treasury2y">--</strong>
+                            <small id="treasury2yMeta">Yield</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <span>TREASURY 10Y</span>
+                            <strong id="treasury10y">--</strong>
+                            <small id="treasury10yMeta">Yield</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <span>DOLLAR INDEX</span>
+                            <strong id="dollarIndex">--</strong>
+                            <small id="dollarIndexMeta">DXY</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="overview-group">
+
+                    <div class="overview-group-title">
+                        <span>Energia &amp; Risco</span>
+                        <small>Petróleo e volatilidade</small>
+                    </div>
+
+                    <div class="overview-grid overview-grid-3">
+
+                        <div class="metric-card">
+                            <span>BRENT</span>
+                            <strong id="brent">--</strong>
+                            <small id="brentMeta">USD</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <span>WTI</span>
+                            <strong id="wti">--</strong>
+                            <small id="wtiMeta">USD</small>
+                        </div>
+
+                        <div class="metric-card metric-card-risk">
+                            <span>VIX</span>
+                            <strong id="vix">--</strong>
+                            <small id="vixMeta">Volatilidade</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+<section id="macro" class="radar-page" data-page="macro">
+
+            <div class="section-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">02</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+                    <h2>Radar Macro</h2>
+                </div>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Evento</th>
+                            <th>Data / Hora</th>
+                            <th>Resultado</th>
+                            <th>Expectativa</th>
+                            <th>Impacto</th>
+                            <th>WIN</th>
+                            <th>WDO</th>
+                            <th>Comentário</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="macroTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+<section id="brazil" class="radar-page" data-page="brazil">
+
+            <div class="section-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">03</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+                    <h2>Brasil</h2>
+                </div>
+
+                <span id="brazilBias" class="badge">
+                    --
+                </span>
+
+            </div>
+
+            <div class="cards-grid">
+
+                <div class="metric-card">
+                    <span>IBOVESPA</span>
+                    <strong id="brazilIbovespa">--</strong>
+                    <small id="brazilIbovespaMeta">--</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>IBOVESPA FUTURO</span>
+                    <strong id="ibovespaFutures">--</strong>
+                    <small id="ibovespaFuturesMeta">--</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>DÓLAR BRL</span>
+                    <strong id="brazilDollar">--</strong>
+                    <small id="brazilDollarMeta">--</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>SELIC</span>
+                    <strong id="selic">--</strong>
+                    <small>Taxa básica</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>IPCA</span>
+                    <strong id="ipca">--</strong>
+                    <small>Inflação</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>PIB</span>
+                    <strong id="gdp">--</strong>
+                    <small>Crescimento</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>RISCO FISCAL</span>
+                    <strong id="fiscalRisk">--</strong>
+                    <small>Brasil</small>
+                </div>
+
+                <div class="metric-card">
+                    <span>RISCO POLÍTICO</span>
+                    <strong id="politicalRisk">--</strong>
+                    <small>Brasil</small>
+                </div>
+
+            </div>
+
+            <div class="alert-box">
+
+                <div class="alert-icon">
+                    BR
+                </div>
+
+                <div>
+                    <h3>Comentário Brasil</h3>
+                    <p id="brazilComment">--</p>
+                </div>
+
+            </div>
+
+            <div class="two-columns">
+
+                <div class="signal-card">
+
+                    <div class="signal-header">
+                        <span>Fluxo Estrangeiro</span>
+                        <strong id="foreignFlowStatus">--</strong>
+                    </div>
+
+                    <ul>
+                        <li>Diário: <strong id="foreignFlowDaily">--</strong></li>
+                        <li>Mensal: <strong id="foreignFlowMonthly">--</strong></li>
+                        <li>Ano: <strong id="foreignFlowYtd">--</strong></li>
+                        <li>Tendência: <strong id="foreignFlowTrend">--</strong></li>
+                    </ul>
+
+                    <div class="confidence">
+                        Dados <strong id="foreignFlowDelay">--</strong>
+                    </div>
+
+                </div>
+
+                <div class="signal-card">
+
+                    <div class="signal-header">
+                        <span>Leitura do Fluxo</span>
+                        <strong id="foreignFlowTrendBadge">--</strong>
+                    </div>
+
+                    <p id="foreignFlowComment">--</p>
+
+                </div>
+
+            </div>
+
+        </section>
+<section id="winwdo" class="radar-page" data-page="winwdo">
+
+            <div class="section-header operational-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">04</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>WIN / WDO / DI — Operacional</h2>
+                        <p>Viés institucional, condições de confirmação e leitura tática do pregão.</p>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="futures-dashboard">
+
+                <article class="futures-panel futures-panel-win">
+
+                    <div class="futures-panel-top">
+
+                        <div class="futures-symbol">
+                            <span class="futures-symbol-icon">W</span>
+
+                            <div>
+                                <small>Índice futuro</small>
+                                <h3 id="winScenarioLabel">WIN</h3>
+                            </div>
+                        </div>
+
+                        <span class="futures-bias-label">
+                            <small>Viés</small>
+                            <strong id="winBias">--</strong>
+                        </span>
+
+                    </div>
+
+                    <div class="futures-conditions">
+                        <span class="futures-label">Condições do cenário</span>
+                        <ul id="winConditionsList"></ul>
+                    </div>
+
+                    <div class="confidence-grid">
+
+                        <div class="confidence-box">
+                            <span>Confiança compra</span>
+                            <strong id="winBuyConfidence">--</strong>
+                        </div>
+
+                        <div class="confidence-box">
+                            <span>Confiança venda</span>
+                            <strong id="winSellConfidence">--</strong>
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="futures-panel futures-panel-wdo">
+
+                    <div class="futures-panel-top">
+
+                        <div class="futures-symbol">
+                            <span class="futures-symbol-icon">$</span>
+
+                            <div>
+                                <small>Dólar futuro</small>
+                                <h3>WDO</h3>
+                            </div>
+                        </div>
+
+                        <span class="futures-bias-label">
+                            <small>Viés</small>
+                            <strong id="wdoBias">--</strong>
+                        </span>
+
+                    </div>
+
+                    <div class="futures-conditions">
+                        <span class="futures-label">Condições WDO / DI</span>
+                        <ul id="wdoDiConditionsList"></ul>
+                    </div>
+
+                </article>
+
+
+                <article class="futures-panel futures-panel-di">
+
+                    <div class="futures-panel-top">
+
+                        <div class="futures-symbol">
+                            <span class="futures-symbol-icon">%</span>
+
+                            <div>
+                                <small>Curva de juros</small>
+                                <h3>DI</h3>
+                            </div>
+                        </div>
+
+                        <span class="futures-bias-label">
+                            <small>Viés</small>
+                            <strong id="diBias">--</strong>
+                        </span>
+
+                    </div>
+
+                    <div class="futures-di-note">
+                        <span class="futures-label">Leitura</span>
+                        <p>
+                            Use a leitura de DI em conjunto com WDO e WIN para confirmar
+                            direção, força e sensibilidade do mercado a juros.
+                        </p>
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <div class="conditions-section">
+
+                <div class="conditions-section-header">
+
+                    <div>
+                        <span class="conditions-kicker">CHECKLIST</span>
+                        <h3>Condições operacionais</h3>
+                    </div>
+
+                    <span class="conditions-help">
+                        Confirmações usadas pelo Radar
+                    </span>
+
+                </div>
+
+                <div class="table-container futures-table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Condição</th>
+                                <th>WIN</th>
+                                <th>WDO</th>
+                                <th>DI</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="futuresConditionsTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+<section id="sectors" class="radar-page" data-page="sectors">
+
+            <div class="section-header thematic-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">05</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Setores</h2>
+                        <p>Ranking temático por força relativa, tendência e viés institucional.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="theme-intro-bar">
+                <div>
+                    <span class="theme-intro-kicker">MAPA SETORIAL</span>
+                    <strong>Onde está a força do mercado</strong>
+                </div>
+
+                <span class="theme-intro-note">
+                    Ranking dinâmico do Radar
+                </span>
+            </div>
+
+            <div class="ranking-grid thematic-grid" id="sectorsGrid"></div>
+
+        </section>
+<section id="power" class="radar-page" data-page="power">
+
+            <div class="section-header thematic-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">06</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Power / Data Center Infrastructure</h2>
+                        <p>Empresas ligadas à expansão de energia, infraestrutura elétrica e data centers.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="theme-intro-bar theme-intro-power">
+                <div>
+                    <span class="theme-intro-kicker">TEMA ESTRUTURAL</span>
+                    <strong>Infraestrutura para AI e expansão de capacidade</strong>
+                </div>
+
+                <span class="theme-intro-note">
+                    Monitoramento institucional
+                </span>
+            </div>
+
+            <div class="ranking-grid thematic-grid" id="powerGrid"></div>
+
+        </section>
+<section id="nuclear" class="radar-page" data-page="nuclear">
+
+            <div class="section-header thematic-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">07</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Nuclear</h2>
+                        <p>Exposição ao ciclo nuclear, demanda energética e catalisadores do setor.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="theme-intro-bar theme-intro-nuclear">
+                <div>
+                    <span class="theme-intro-kicker">ENERGIA ESTRATÉGICA</span>
+                    <strong>Capacidade firme para o novo ciclo de demanda</strong>
+                </div>
+
+                <span class="theme-intro-note">
+                    Catalisadores e risco
+                </span>
+            </div>
+
+            <div class="ranking-grid thematic-grid" id="nuclearGrid"></div>
+
+        </section>
+<section id="swing" class="radar-page" data-page="swing">
+
+            <div class="section-header decision-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">08</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Swing Trades</h2>
+                        <p>Setup, risco/retorno, viés técnico e tese operacional dos ativos monitorados.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="decision-intro-bar">
+                <div>
+                    <span class="decision-intro-kicker">OPORTUNIDADES TÁTICAS</span>
+                    <strong>Priorize setups com melhor combinação entre tese, risco e confirmação técnica</strong>
+                </div>
+
+                <span class="decision-intro-note">
+                    Execução disciplinada
+                </span>
+            </div>
+
+            <div class="table-container decision-table">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Ativo</th>
+                            <th>Preço</th>
+                            <th>Entrada</th>
+                            <th>Stop</th>
+                            <th>Target</th>
+                            <th>R/R</th>
+                            <th>Viés</th>
+                            <th>Recomendação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="swingTable"></tbody>
+
+                </table>
+
+            </div>
+
+            <div class="decision-detail-header">
+                <div>
+                    <span class="decision-detail-kicker">TESE &amp; CATALISADORES</span>
+                    <h3>Leitura detalhada dos setups</h3>
+                </div>
+            </div>
+
+            <div id="swingDetails" class="ranking-grid decision-cards-grid"></div>
+
+        </section>
+<section id="portfolio" class="radar-page" data-page="portfolio">
+
+            <div class="section-header decision-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">09</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Minha Carteira</h2>
+                        <p>Posições atuais, variação, risco e recomendação institucional por ativo.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="decision-intro-bar decision-intro-portfolio">
+                <div>
+                    <span class="decision-intro-kicker">GESTÃO DE POSIÇÃO</span>
+                    <strong>Monitore risco, viés e catalisadores antes de aumentar ou reduzir exposição</strong>
+                </div>
+
+                <span class="decision-intro-note">
+                    Controle de carteira
+                </span>
+            </div>
+
+            <div class="table-container decision-table">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Ativo</th>
+                            <th>Preço</th>
+                            <th>Variação</th>
+                            <th>Viés</th>
+                            <th>Risco</th>
+                            <th>Recomendação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="portfolioTable"></tbody>
+
+                </table>
+
+            </div>
+
+            <div class="decision-detail-header">
+                <div>
+                    <span class="decision-detail-kicker">POSIÇÃO &amp; TESE</span>
+                    <h3>Detalhes da carteira</h3>
+                </div>
+            </div>
+
+            <div id="portfolioDetails" class="ranking-grid decision-cards-grid"></div>
+
+        </section>
+<section id="penny" class="radar-page" data-page="penny">
+
+            <div class="section-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">10</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+                    <h2>Penny Stocks</h2>
+                </div>
+
+            </div>
+
+            <div class="ranking-grid" id="pennyGrid"></div>
+
+        </section>
+<section id="ranking" class="radar-page" data-page="ranking">
+
+            <div class="section-header decision-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">11</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Ranking Institucional</h2>
+                        <p>Prioridade relativa dos ativos combinando score, recomendação, risco e justificativa.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="decision-intro-bar decision-intro-ranking">
+                <div>
+                    <span class="decision-intro-kicker">PRIORIDADE INSTITUCIONAL</span>
+                    <strong>Os ativos melhor posicionados aparecem no topo do ranking</strong>
+                </div>
+
+                <span class="decision-intro-note">
+                    Score 1–10
+                </span>
+            </div>
+
+            <div class="table-container decision-table ranking-decision-table">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Ticker</th>
+                            <th>Empresa</th>
+                            <th>Score</th>
+                            <th>Recomendação</th>
+                            <th>Risco</th>
+                            <th>Motivo</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="rankingTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+<section id="analysis" class="radar-page" data-page="analysis">
+
+            <div class="section-header intelligence-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">12</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Análises</h2>
+                        <p>Leitura fundamentalista e técnica consolidada por ativo e tese.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="intelligence-intro-bar intelligence-intro-analysis">
+                <div>
+                    <span class="intelligence-intro-kicker">DUPLA VALIDAÇÃO</span>
+                    <strong>Fundamentos sustentam a tese; técnica define timing e risco de execução</strong>
+                </div>
+
+                <span class="intelligence-intro-note">
+                    Fundamental + Técnica
+                </span>
+            </div>
+
+            <div class="analysis-stack">
+
+                <div class="analysis-block">
+
+                    <div class="analysis-block-header">
+                        <div>
+                            <span class="analysis-block-kicker">FUNDAMENTOS</span>
+                            <h3>Análise Fundamentalista</h3>
+                        </div>
+
+                        <span class="analysis-block-note">
+                            Qualidade da tese
+                        </span>
+                    </div>
+
+                    <div class="table-container intelligence-table">
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th>Valuation</th>
+                                    <th>Crescimento</th>
+                                    <th>Margens</th>
+                                    <th>Balanço</th>
+                                    <th>Conclusão</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="fundamentalTable"></tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <div class="analysis-block">
+
+                    <div class="analysis-block-header">
+                        <div>
+                            <span class="analysis-block-kicker">TÉCNICA</span>
+                            <h3>Análise Técnica</h3>
+                        </div>
+
+                        <span class="analysis-block-note">
+                            Timing e estrutura
+                        </span>
+                    </div>
+
+                    <div class="table-container intelligence-table">
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th>Tendência</th>
+                                    <th>Momentum</th>
+                                    <th>Suporte</th>
+                                    <th>Resistência</th>
+                                    <th>Conclusão</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="technicalTable"></tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+<section id="catalysts" class="radar-page" data-page="catalysts">
+
+            <div class="section-header intelligence-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">13</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Catalisadores</h2>
+                        <p>Eventos que podem alterar preço, percepção de risco ou prioridade do Radar.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="intelligence-intro-bar intelligence-intro-catalysts">
+                <div>
+                    <span class="intelligence-intro-kicker">EVENTOS DE IMPACTO</span>
+                    <strong>Monitore o que pode acelerar, invalidar ou reprecificar a tese</strong>
+                </div>
+
+                <span class="intelligence-intro-note">
+                    Timing de evento
+                </span>
+            </div>
+
+            <div class="table-container intelligence-table catalysts-table">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Ativo / Tema</th>
+                            <th>Evento</th>
+                            <th>Impacto</th>
+                            <th>Leitura</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="catalystsTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+<section id="alerts" class="radar-page" data-page="alerts">
+
+            <div class="section-header intelligence-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">14</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Alertas</h2>
+                        <p>Pontos de atenção, riscos de cenário e condições que exigem monitoramento.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="intelligence-intro-bar intelligence-intro-alerts">
+                <div>
+                    <span class="intelligence-intro-kicker">RISCO &amp; MONITORAMENTO</span>
+                    <strong>Priorize alertas que possam mudar direção, risco ou convicção</strong>
+                </div>
+
+                <span class="intelligence-intro-note">
+                    Atenção operacional
+                </span>
+            </div>
+
+            <div id="alertsList" class="alerts-grid intelligence-alerts-grid"></div>
+
+        </section>
+<section id="conclusion" class="radar-page" data-page="conclusion">
+
+            <div class="section-header intelligence-page-header">
+
+                <div class="section-title-row">
+                    <span class="section-number">15</span>
+
+                    <span class="section-page-icon" aria-hidden="true"></span>
+
+                    <div class="section-title-copy">
+                        <h2>Conclusão</h2>
+                        <p>Síntese final do cenário, prioridades e postura recomendada pelo Radar.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="intelligence-intro-bar intelligence-intro-conclusion">
+                <div>
+                    <span class="intelligence-intro-kicker">SÍNTESE EXECUTIVA</span>
+                    <strong>Transforme o conjunto de sinais em uma postura clara de risco e execução</strong>
+                </div>
+
+                <span class="intelligence-intro-note">
+                    Visão consolidada
+                </span>
+            </div>
+
+            <div class="conclusion-panel">
+
+                <div class="conclusion-panel-header">
+                    <span>LEITURA FINAL</span>
+                    <small>Radar Institucional</small>
+                </div>
+
+                <div id="conclusionText" class="conclusion-text"></div>
+
+            </div>
+
+        </section>
+
+            </div>
+
+
+            <!-- =================================================
+                 FONTES
+                 Mantida fora das 15 páginas e com os IDs originais.
+                 ================================================= -->
+
+<section id="sources">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-number">SRC</span>
+                    <h2>Fontes</h2>
+                </div>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Fonte</th>
+                            <th>Dados suportados</th>
+                            <th>Coleta</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="sourcesTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        </main>
+
+
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
+
+        <footer>
+
+            <div>
+
+                <strong>
+                    RADAR INSTITUCIONAL
+                </strong>
+
+                <p>
+                    Global Markets Intelligence
+                </p>
+
+            </div>
+
+            <div>
+
+                <p>
+                    Dados para fins informativos.
+                </p>
+
+                <p>
+                    Schema V2.1 · © 2026 Radar Institucional
+                </p>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+
+    <!--
+        Etapa 1:
+        O radar.js permanece o mesmo.
+        A navegação entre páginas será implementada na Etapa 3.
+    -->
+    <script src="js/radar.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+name: Validar Radar Institucional
+
+on:
+  push:
+    paths:
+      - "radar.json"
+      - "automation/**"
+      - "input/**"
+      - ".github/workflows/validate-radar.yml"
+  pull_request:
+    paths:
+      - "radar.json"
+      - "automation/**"
+      - "input/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validar radar.json
+        run: |
+          python automation/validate_radar.py radar.json --output /tmp/radar-validado.json
+
+      - name: Confirmar arquivo
+        run: |
+          test -s /tmp/radar-validado.json
+          echo "Radar V2.1 validado com sucesso."

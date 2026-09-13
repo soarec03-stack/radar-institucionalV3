@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Radar Institucional V2.1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "radar",
+    "global_market",
+    "macro",
+    "brazil",
+    "foreign_flow",
+    "futures",
+    "sectors",
+    "power_data_center",
+    "nuclear",
+    "swing_trades",
+    "penny_stocks",
+    "portfolio",
+    "broker_recommendations",
+    "fundamental_analysis",
+    "technical_analysis",
+    "catalysts",
+    "alerts",
+    "ranking",
+    "operational_conclusion",
+    "sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.1"
+    },
+    "radar": {
+      "type": "object",
+      "required": [
+        "date",
+        "generated_at",
+        "timezone",
+        "status",
+        "market_regime",
+        "institutional_sentiment",
+        "daily_bias",
+        "risk_level",
+        "summary"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "market_regime": {
+          "type": "string"
+        },
+        "institutional_sentiment": {
+          "type": "string"
+        },
+        "daily_bias": {
+          "type": "string"
+        },
+        "risk_level": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "macro": {
+      "type": "array"
+    },
+    "sectors": {
+      "type": "array"
+    },
+    "power_data_center": {
+      "type": "array"
+    },
+    "nuclear": {
+      "type": "array"
+    },
+    "swing_trades": {
+      "type": "array"
+    },
+    "penny_stocks": {
+      "type": "array"
+    },
+    "portfolio": {
+      "type": "array"
+    },
+    "fundamental_analysis": {
+      "type": "array"
+    },
+    "technical_analysis": {
+      "type": "array"
+    },
+    "catalysts": {
+      "type": "array"
+    },
+    "alerts": {
+      "type": "array"
+    },
+    "ranking": {
+      "type": "array"
+    },
+    "sources": {
+      "type": "array"
+    },
+    "global_market": {
+      "type": "object"
+    },
+    "brazil": {
+      "type": "object"
+    },
+    "foreign_flow": {
+      "type": "object"
+    },
+    "futures": {
+      "type": "object"
+    },
+    "broker_recommendations": {
+      "type": "object"
+    },
+    "operational_conclusion": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

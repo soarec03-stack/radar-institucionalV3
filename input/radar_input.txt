@@ -1,0 +1,829 @@
+{
+  "schema_version": "2.1",
+  "radar": {
+    "date": "2026-09-12",
+    "generated_at": "2026-09-12T22:30:00-03:00",
+    "timezone": "America/Sao_Paulo",
+    "status": "PARTIAL",
+    "market_regime": "CAUTION",
+    "institutional_sentiment": "CAUTION",
+    "daily_bias": "SELETIVO",
+    "risk_level": "ALTO",
+    "summary": "Wall Street recuperou em 11/09, mas inflação americana, Treasury 10Y próximo de 5%, Fed e petróleo acima de US$100 mantêm o regime CAUTION. Power/Data Center continua sendo o tema preferido."
+  },
+  "global_market": {
+    "dow": {
+      "value": 52573.29,
+      "change_pct": 0.98,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "sp500": {
+      "value": 7656.98,
+      "change_pct": 0.86,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "nasdaq": {
+      "value": 26333.04,
+      "change_pct": 0.96,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "russell2000": {
+      "value": 2903.94,
+      "change_pct": 0.45,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "vix": {
+      "value": 15.88,
+      "change_pct": null,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "treasury_2y": {
+      "value": 4.64,
+      "change_pct": null,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "treasury_10y": {
+      "value": 4.97,
+      "change_pct": null,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "dollar_index": {
+      "value": 99.1,
+      "change_pct": null,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "brent": {
+      "value": 104.61,
+      "change_pct": -2.81,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "wti": {
+      "value": 100.05,
+      "change_pct": -2.37,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    }
+  },
+  "macro": [
+    {
+      "event": "US Consumer Price Index August",
+      "start_date": "2026-09-11",
+      "end_date": null,
+      "time": null,
+      "timezone": "America/New_York",
+      "result": 0.4,
+      "expectation": 0.4,
+      "previous": 0.1,
+      "impact": "NEGATIVO",
+      "magnitude": "FORTE",
+      "win_impact": "NEGATIVO",
+      "wdo_impact": "POSITIVO",
+      "comment": "CPI avançou 0.4% M/M e 3.4% A/A, aumentando as apostas em aperto monetário pelo Fed."
+    },
+    {
+      "event": "Federal Reserve FOMC Meeting",
+      "start_date": "2026-09-15",
+      "end_date": "2026-09-16",
+      "time": null,
+      "timezone": "America/New_York",
+      "result": null,
+      "expectation": null,
+      "previous": null,
+      "impact": "NÃO DISPONÍVEL",
+      "magnitude": "CRITICA",
+      "win_impact": "ALTA VOLATILIDADE",
+      "wdo_impact": "ALTA VOLATILIDADE",
+      "comment": "Principal catalisador macro da próxima semana."
+    }
+  ],
+  "brazil": {
+    "ibovespa": {
+      "value": 186967,
+      "change_pct": -0.69,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "ibovespa_futures": {
+      "value": 188987,
+      "change_pct": -0.75,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "dollar_brl": {
+      "value": 5.125,
+      "change_pct": 0.43,
+      "market_date": "2026-09-11",
+      "market_status": "CLOSED"
+    },
+    "selic": 14.0,
+    "ipca": -0.32,
+    "gdp": 2.0,
+    "fiscal_risk": "MODERADO",
+    "political_risk": "MODERADO",
+    "market_bias": "CAUTION",
+    "comment": "PIB do 2T26 cresceu 0.5% T/T; inflação doméstica favorece expectativa de cortes de juros, mas o ambiente externo permanece adverso."
+  },
+  "foreign_flow": {
+    "latest_date": "2026-09-09",
+    "daily_flow_brl": 0.20738,
+    "monthly_flow_brl": 5.38113,
+    "year_to_date_flow_brl": 23.67,
+    "trend": "MELHORANDO",
+    "status": "ENTRADA",
+    "data_delay": "D+2 / fonte secundária",
+    "comment": "Fluxo estrangeiro segue comprador. Última sessão recuperada: entrada de R$207,38 milhões em 09/09; setembro acumula aproximadamente R$5,38 bilhões."
+  },
+  "futures": {
+    "win": {
+      "value": 188987,
+      "change_pct": -0.75,
+      "bias": "CAUTION",
+      "buy_confidence": null,
+      "sell_confidence": null
+    },
+    "wdo": {
+      "value": null,
+      "change_pct": null,
+      "bias": "CAUTION",
+      "risk_indicator": null
+    },
+    "di": {
+      "value": null,
+      "change_pct": null,
+      "bias": "NÃO DISPONÍVEL"
+    },
+    "conditions": {
+      "win_above_vwap": null,
+      "wdo_below_vwap": null,
+      "di_losing_strength": null,
+      "buy_volume": null
+    }
+  },
+  "sectors": [
+    {
+      "sector": "Power/Data Center",
+      "performance_pct": null,
+      "trend": "MELHORANDO",
+      "bias": "BULLISH_SELETIVO",
+      "comment": "Principal tema estrutural do Radar."
+    },
+    {
+      "sector": "Semiconductors/AI",
+      "performance_pct": null,
+      "trend": "MELHORANDO",
+      "bias": "BULLISH_SELETIVO",
+      "comment": "MRVL mantém momentum favorável e exposição a AI infrastructure."
+    },
+    {
+      "sector": "Nuclear",
+      "performance_pct": null,
+      "trend": "PIORANDO",
+      "bias": "BULLISH_VOLATIL",
+      "comment": "Tese estrutural positiva, porém LEU apresenta deterioração técnica."
+    },
+    {
+      "sector": "Healthcare",
+      "performance_pct": null,
+      "trend": "ESTAVEL",
+      "bias": "NEUTRAL",
+      "comment": "Seleção individual permanece necessária."
+    },
+    {
+      "sector": "Cybersecurity",
+      "performance_pct": null,
+      "trend": "ESTAVEL",
+      "bias": "BULLISH",
+      "comment": "Tema estrutural positivo."
+    },
+    {
+      "sector": "Cloud",
+      "performance_pct": null,
+      "trend": "ESTAVEL",
+      "bias": "BULLISH",
+      "comment": "Demanda estrutural ligada a AI e data centers."
+    }
+  ],
+  "power_data_center": [
+    {
+      "ticker": "VRT",
+      "company": "Vertiv Holdings",
+      "price": 246.96,
+      "change_pct": -6.02,
+      "trend": "PIORANDO",
+      "institutional_bias": "CAUTION",
+      "recommendation": "HOLD",
+      "comment": "Entrada 253.00 e alvo 265.65. Tese estrutural permanece positiva, mas técnico deteriorou."
+    },
+    {
+      "ticker": "POWL",
+      "company": "Powell Industries",
+      "price": 182.50,
+      "change_pct": 3.17,
+      "trend": "MELHORANDO",
+      "institutional_bias": "POSITIVO",
+      "recommendation": "HOLD",
+      "comment": "Entrada 182.46 e alvo 200.71. Backlog e demanda de infraestrutura elétrica sustentam a tese."
+    },
+    {
+      "ticker": "BE",
+      "company": "Bloom Energy",
+      "price": 270.40,
+      "change_pct": 4.61,
+      "trend": "MELHORANDO",
+      "institutional_bias": "CAUTION",
+      "recommendation": "WATCH",
+      "comment": "Snapshot intraday recuperado para 11/09; posição do usuário permanece encerrada e BE integra apenas o universo temático."
+    },
+    {
+      "ticker": "GEV",
+      "company": "GE Vernova",
+      "price": 957.27,
+      "change_pct": 3.61,
+      "trend": "MELHORANDO",
+      "institutional_bias": "POSITIVO",
+      "recommendation": "WATCH",
+      "comment": "Exposição estrutural à expansão da infraestrutura elétrica."
+    }
+  ],
+  "nuclear": [
+    {
+      "ticker": "LEU",
+      "company": "Centrus Energy",
+      "price": 152.31,
+      "change_pct": -8.18,
+      "trend": "PIORANDO",
+      "catalyst": "DOE HALEU, Radiant e expansão doméstica de enriquecimento",
+      "recommendation": "WATCH",
+      "comment": "Tese nuclear permanece positiva estruturalmente, mas a forte correção exige confirmação técnica."
+    }
+  ],
+  "swing_trades": [
+    {
+      "ticker": "POWL",
+      "company": "Powell Industries",
+      "price": 182.50,
+      "entry": 182.46,
+      "stop": null,
+      "target": 200.71,
+      "risk_reward": null,
+      "technical_bias": "POSITIVO",
+      "recommendation": "HOLD",
+      "thesis": "Fundamentos fortes e preço praticamente na entrada.",
+      "catalysts": ["Record backlog", "Data center demand", "Electrical infrastructure"]
+    },
+    {
+      "ticker": "MRVL",
+      "company": "Marvell Technology",
+      "price": 236.10,
+      "entry": 197.07,
+      "stop": null,
+      "target": 267.65,
+      "risk_reward": null,
+      "technical_bias": "POSITIVO",
+      "recommendation": "HOLD",
+      "thesis": "AI/custom silicon e momentum positivo.",
+      "catalysts": ["AI Infra Summit", "AI connectivity", "Custom silicon"]
+    },
+    {
+      "ticker": "LEU",
+      "company": "Centrus Energy",
+      "price": 152.31,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "risk_reward": null,
+      "technical_bias": "CAUTION",
+      "recommendation": "WATCH",
+      "thesis": "HALEU continua estruturalmente atraente, mas momentum deteriorou.",
+      "catalysts": ["DOE HALEU", "Radiant"]
+    },
+    {
+      "ticker": "VRT",
+      "company": "Vertiv Holdings",
+      "price": 246.96,
+      "entry": 253.0,
+      "stop": null,
+      "target": 265.65,
+      "risk_reward": null,
+      "technical_bias": "CAUTION",
+      "recommendation": "HOLD",
+      "thesis": "Infraestrutura AI forte, mas técnico de curto prazo deteriorado.",
+      "catalysts": ["AI data centers", "Power infrastructure"]
+    },
+    {
+      "ticker": "CRSP",
+      "company": "CRISPR Therapeutics",
+      "price": 51.72,
+      "entry": 54.41,
+      "stop": null,
+      "target": null,
+      "risk_reward": null,
+      "technical_bias": "CAUTION",
+      "recommendation": "WATCH",
+      "thesis": "Assimetria biotech elevada e preço abaixo da entrada.",
+      "catalysts": ["Clinical pipeline", "Gene editing commercialization"]
+    }
+  ],
+  "penny_stocks": [
+    {
+      "ticker": "NEPH",
+      "company": "Nephros",
+      "price": 4.47,
+      "change_pct": -1.11,
+      "volume": 41790,
+      "risk_level": "ALTO",
+      "catalyst": "Healthcare filtration",
+      "recommendation": "WATCH",
+      "comment": "Liquidez continua sendo filtro obrigatório."
+    },
+    {
+      "ticker": "CERS",
+      "company": "Cerus Corporation",
+      "price": 2.49,
+      "change_pct": 1.22,
+      "volume": null,
+      "risk_level": "ALTO",
+      "catalyst": "INTERCEPT Blood System",
+      "recommendation": "WATCH",
+      "comment": "Preço recuperado; volume da sessão não foi confirmado com segurança."
+    },
+    {
+      "ticker": "LUNG",
+      "company": "Pulmonx",
+      "price": 1.85,
+      "change_pct": 0.0,
+      "volume": 204850,
+      "risk_level": "ALTO",
+      "catalyst": "Medical technology",
+      "recommendation": "WATCH",
+      "comment": "Risco elevado e necessidade de controle de liquidez."
+    }
+  ],
+  "portfolio": [
+    {
+      "ticker": "MRVL",
+      "company": "Marvell Technology",
+      "price": 236.10,
+      "change_pct": 4.03,
+      "position_bias": "POSITIVO",
+      "recommendation": "HOLD",
+      "thesis": "Entrada 197.07; alvo 267.65.",
+      "risk_level": "ALTO",
+      "catalysts": ["AI infrastructure", "Custom silicon"]
+    },
+    {
+      "ticker": "VRT",
+      "company": "Vertiv Holdings",
+      "price": 246.96,
+      "change_pct": -6.02,
+      "position_bias": "CAUTION",
+      "recommendation": "HOLD",
+      "thesis": "Entrada 253.00; alvo 265.65.",
+      "risk_level": "ALTO",
+      "catalysts": ["AI data centers"]
+    },
+    {
+      "ticker": "CRSP",
+      "company": "CRISPR Therapeutics",
+      "price": 51.72,
+      "change_pct": -1.03,
+      "position_bias": "CAUTION",
+      "recommendation": "WATCH",
+      "thesis": "Entrada 54.41.",
+      "risk_level": "ALTO",
+      "catalysts": ["Clinical pipeline"]
+    },
+    {
+      "ticker": "ETON",
+      "company": "Eton Pharmaceuticals",
+      "price": 57.08,
+      "change_pct": -1.38,
+      "position_bias": "CAUTION",
+      "recommendation": "HOLD",
+      "thesis": "Entrada 62.52; alvo +5%, equivalente a aproximadamente 65.65.",
+      "risk_level": "ALTO",
+      "catalysts": ["Rare disease portfolio"]
+    },
+    {
+      "ticker": "VMD",
+      "company": "Viemed Healthcare",
+      "price": 8.79,
+      "change_pct": 0.46,
+      "position_bias": "NEUTRAL",
+      "recommendation": "HOLD",
+      "thesis": "Entrada 9.08; alvo +8%, equivalente a aproximadamente 9.81.",
+      "risk_level": "MODERADO",
+      "catalysts": []
+    },
+    {
+      "ticker": "ALHC",
+      "company": "Alignment Healthcare",
+      "price": 12.61,
+      "change_pct": -1.18,
+      "position_bias": "CAUTION",
+      "recommendation": "WATCH",
+      "thesis": "Entrada não cadastrada.",
+      "risk_level": "ALTO",
+      "catalysts": ["Baird Healthcare Conference", "Morgan Stanley Healthcare Conference"]
+    },
+    {
+      "ticker": "POWL",
+      "company": "Powell Industries",
+      "price": 182.50,
+      "change_pct": 3.17,
+      "position_bias": "POSITIVO",
+      "recommendation": "HOLD",
+      "thesis": "Entrada 182.46; alvo +10%, equivalente a 200.71.",
+      "risk_level": "MODERADO",
+      "catalysts": ["Record backlog", "Data center demand", "Electrical infrastructure"]
+    },
+    {
+      "ticker": "BOVA11",
+      "company": "iShares Ibovespa Fundo de Indice",
+      "price": 183.85,
+      "change_pct": -0.73,
+      "position_bias": "POSITIVO",
+      "recommendation": "HOLD",
+      "thesis": "Exposição ao Ibovespa.",
+      "risk_level": "MODERADO",
+      "catalysts": ["Foreign flow", "Brazil rates"]
+    },
+    {
+      "ticker": "MXRF11",
+      "company": "Maxi Renda",
+      "price": 9.14,
+      "change_pct": -0.22,
+      "position_bias": "NEUTRAL",
+      "recommendation": "HOLD",
+      "thesis": "Sensibilidade à trajetória dos juros brasileiros.",
+      "risk_level": "MODERADO",
+      "catalysts": ["Brazil rates"]
+    },
+    {
+      "ticker": "SNAG11",
+      "company": "Suno Agro",
+      "price": 9.85,
+      "change_pct": 0.0,
+      "position_bias": "NEUTRAL",
+      "recommendation": "HOLD",
+      "thesis": "Exposição a crédito e agronegócio.",
+      "risk_level": "MODERADO",
+      "catalysts": ["Agribusiness", "Brazil rates"]
+    }
+  ],
+  "broker_recommendations": {
+    "stocks": [],
+    "top10_bullish_count": null,
+    "comment": "Não houve confirmação suficiente nesta execução para atribuir recomendações individuais às dez casas monitoradas."
+  },
+  "fundamental_analysis": [
+    {
+      "ticker": "POWL",
+      "company": "Powell Industries",
+      "valuation": "MODERADA/ALTA",
+      "revenue_growth": 9.0,
+      "earnings_growth": 8.0,
+      "profitability": "FORTE",
+      "balance_sheet": "FORTE",
+      "fundamental_bias": "POSITIVO",
+      "comment": "Backlog, pedidos e exposição à infraestrutura elétrica sustentam a tese."
+    },
+    {
+      "ticker": "MRVL",
+      "company": "Marvell Technology",
+      "valuation": "ALTA",
+      "revenue_growth": null,
+      "earnings_growth": null,
+      "profitability": "FORTE",
+      "balance_sheet": "ESTAVEL",
+      "fundamental_bias": "POSITIVO",
+      "comment": "AI/custom silicon e conectividade de data centers."
+    },
+    {
+      "ticker": "VRT",
+      "company": "Vertiv Holdings",
+      "valuation": "ALTA",
+      "revenue_growth": null,
+      "earnings_growth": null,
+      "profitability": "FORTE",
+      "balance_sheet": "ESTAVEL",
+      "fundamental_bias": "POSITIVO",
+      "comment": "Tese estrutural de AI/Data Center permanece forte."
+    },
+    {
+      "ticker": "LEU",
+      "company": "Centrus Energy",
+      "valuation": "ALTA",
+      "revenue_growth": null,
+      "earnings_growth": null,
+      "profitability": "POSITIVA",
+      "balance_sheet": "ESTAVEL",
+      "fundamental_bias": "POSITIVO",
+      "comment": "HALEU e capacidade doméstica de enriquecimento sustentam a tese."
+    },
+    {
+      "ticker": "CRSP",
+      "company": "CRISPR Therapeutics",
+      "valuation": "ESPECULATIVA",
+      "revenue_growth": null,
+      "earnings_growth": null,
+      "profitability": "NEGATIVA",
+      "balance_sheet": "MODERADO",
+      "fundamental_bias": "CAUTION",
+      "comment": "Elevada assimetria típica de biotech."
+    }
+  ],
+  "technical_analysis": [
+    {
+      "ticker": "POWL",
+      "company": "Powell Industries",
+      "trend": "MELHORANDO",
+      "support": null,
+      "resistance": null,
+      "rsi": null,
+      "moving_average_20": null,
+      "moving_average_50": null,
+      "moving_average_200": null,
+      "technical_bias": "POSITIVO",
+      "comment": "Sessão de +3.17% e preço praticamente na entrada da posição."
+    },
+    {
+      "ticker": "MRVL",
+      "company": "Marvell Technology",
+      "trend": "MELHORANDO",
+      "support": null,
+      "resistance": null,
+      "rsi": null,
+      "moving_average_20": null,
+      "moving_average_50": null,
+      "moving_average_200": null,
+      "technical_bias": "POSITIVO",
+      "comment": "Fechamento em 236.10 com alta de 4.03%."
+    },
+    {
+      "ticker": "VRT",
+      "company": "Vertiv Holdings",
+      "trend": "PIORANDO",
+      "support": null,
+      "resistance": null,
+      "rsi": null,
+      "moving_average_20": null,
+      "moving_average_50": null,
+      "moving_average_200": null,
+      "technical_bias": "CAUTION",
+      "comment": "Queda forte mantém cautela."
+    },
+    {
+      "ticker": "LEU",
+      "company": "Centrus Energy",
+      "trend": "PIORANDO",
+      "support": null,
+      "resistance": null,
+      "rsi": null,
+      "moving_average_20": null,
+      "moving_average_50": null,
+      "moving_average_200": null,
+      "technical_bias": "CAUTION",
+      "comment": "Queda superior a 8% em 11/09 deteriorou o momentum."
+    },
+    {
+      "ticker": "CRSP",
+      "company": "CRISPR Therapeutics",
+      "trend": "PIORANDO",
+      "support": null,
+      "resistance": null,
+      "rsi": null,
+      "moving_average_20": null,
+      "moving_average_50": null,
+      "moving_average_200": null,
+      "technical_bias": "CAUTION",
+      "comment": "Preço abaixo da entrada de 54.41."
+    }
+  ],
+  "catalysts": [
+    {
+      "date": "2026-09-15",
+      "ticker": null,
+      "event": "FOMC meeting begins",
+      "importance": "CRITICA",
+      "expected_impact": "ALTA VOLATILIDADE",
+      "comment": "Principal catalisador macro."
+    },
+    {
+      "date": "2026-09-16",
+      "ticker": null,
+      "event": "Federal Reserve policy decision",
+      "importance": "CRITICA",
+      "expected_impact": "ALTA VOLATILIDADE",
+      "comment": "Mercado precifica elevada probabilidade de aperto monetário."
+    },
+    {
+      "date": "2026-09-15",
+      "ticker": "MRVL",
+      "event": "AI Infra Summit",
+      "importance": "FORTE",
+      "expected_impact": "POSITIVO",
+      "comment": "Marvell apresentará portfólio de conectividade para AI Data Centers."
+    },
+    {
+      "date": "2026-09-15",
+      "ticker": "ALHC",
+      "event": "Baird Global Healthcare Conference",
+      "importance": "MEDIA",
+      "expected_impact": "NEUTRAL",
+      "comment": "Apresentação corporativa."
+    },
+    {
+      "date": "2026-09-16",
+      "ticker": "ALHC",
+      "event": "Morgan Stanley Global Healthcare Conference",
+      "importance": "MEDIA",
+      "expected_impact": "NEUTRAL",
+      "comment": "Evento institucional."
+    }
+  ],
+  "alerts": [
+    {
+      "type": "MACRO",
+      "severity": "HIGH",
+      "ticker": null,
+      "message": "Treasury 10Y permanece próximo de 5%.",
+      "action": "Manter seletividade."
+    },
+    {
+      "type": "MONETARY_POLICY",
+      "severity": "HIGH",
+      "ticker": null,
+      "message": "Mercado elevou fortemente a probabilidade de aperto do Fed.",
+      "action": "Monitorar FOMC."
+    },
+    {
+      "type": "GEOPOLITICS",
+      "severity": "HIGH",
+      "ticker": null,
+      "message": "Petróleo permanece acima de US$100.",
+      "action": "Monitorar inflação e juros."
+    },
+    {
+      "type": "TECHNICAL",
+      "severity": "HIGH",
+      "ticker": "LEU",
+      "message": "Queda superior a 8% deteriorou o momentum.",
+      "action": "WATCH."
+    },
+    {
+      "type": "TECHNICAL",
+      "severity": "HIGH",
+      "ticker": "VRT",
+      "message": "Deterioração técnica permanece.",
+      "action": "HOLD sem aumento automático de exposição."
+    }
+  ],
+  "ranking": [
+    {
+      "rank": 1,
+      "ticker": "POWL",
+      "company": "Powell Industries",
+      "score": 9.0,
+      "recommendation": "HOLD",
+      "risk_level": "MODERADO",
+      "reason": "Fundamentos, backlog, data centers e preço próximo da entrada."
+    },
+    {
+      "rank": 2,
+      "ticker": "MRVL",
+      "company": "Marvell Technology",
+      "score": 8.8,
+      "recommendation": "HOLD",
+      "risk_level": "ALTO",
+      "reason": "AI, custom silicon e momentum positivo."
+    },
+    {
+      "rank": 3,
+      "ticker": "VRT",
+      "company": "Vertiv Holdings",
+      "score": 8.1,
+      "recommendation": "HOLD",
+      "risk_level": "ALTO",
+      "reason": "Tese estrutural forte, porém técnico fraco."
+    },
+    {
+      "rank": 4,
+      "ticker": "LEU",
+      "company": "Centrus Energy",
+      "score": 7.9,
+      "recommendation": "WATCH",
+      "risk_level": "ALTO",
+      "reason": "Catalisadores nucleares fortes com deterioração técnica."
+    },
+    {
+      "rank": 5,
+      "ticker": "ETON",
+      "company": "Eton Pharmaceuticals",
+      "score": 7.8,
+      "recommendation": "HOLD",
+      "risk_level": "ALTO",
+      "reason": "Crescimento com cautela técnica."
+    },
+    {
+      "rank": 6,
+      "ticker": "CRSP",
+      "company": "CRISPR Therapeutics",
+      "score": 7.4,
+      "recommendation": "WATCH",
+      "risk_level": "ALTO",
+      "reason": "Assimetria biotech elevada."
+    },
+    {
+      "rank": 7,
+      "ticker": "VMD",
+      "company": "Viemed Healthcare",
+      "score": 7.3,
+      "recommendation": "HOLD",
+      "risk_level": "MODERADO",
+      "reason": "Healthcare defensivo."
+    },
+    {
+      "rank": 8,
+      "ticker": "NEPH",
+      "company": "Nephros",
+      "score": 7.2,
+      "recommendation": "WATCH",
+      "risk_level": "ALTO",
+      "reason": "Penny stock seletiva com preço e volume confirmados."
+    },
+    {
+      "rank": 9,
+      "ticker": "CERS",
+      "company": "Cerus Corporation",
+      "score": 7.0,
+      "recommendation": "WATCH",
+      "risk_level": "ALTO",
+      "reason": "Catalisador comercial, mas risco elevado."
+    },
+    {
+      "rank": 10,
+      "ticker": "ALHC",
+      "company": "Alignment Healthcare",
+      "score": 6.8,
+      "recommendation": "WATCH",
+      "risk_level": "ALTO",
+      "reason": "Técnico fraco com catalisadores institucionais próximos."
+    }
+  ],
+  "operational_conclusion": {
+    "win": {
+      "bias": "CAUTION",
+      "confidence": null,
+      "comment": "Aguardar confirmação intraday por VWAP, WDO, DI e volume comprador."
+    },
+    "wdo": {
+      "bias": "CAUTION",
+      "confidence": null,
+      "comment": "Treasury elevado e risco de aperto do Fed mantêm pressão potencial sobre o real."
+    },
+    "stocks": {
+      "bias": "SELETIVO",
+      "comment": "POWL e MRVL apresentam a melhor combinação atual; VRT permanece HOLD; LEU e CRSP permanecem WATCH."
+    },
+    "preferred_theme": "Power/Data Center Infrastructure",
+    "main_risk": "Fed, Treasury 10Y próximo de 5% e petróleo acima de US$100",
+    "main_catalyst": "FOMC de 15-16 de setembro",
+    "action": "Manter seletividade; HOLD POWL, MRVL, VRT e ETON; WATCH LEU, CRSP e ALHC; aguardar confirmação intraday antes de operar WIN."
+  },
+  "sources": [
+    {
+      "name": "Reuters",
+      "url": null,
+      "retrieved_at": "2026-09-12T22:30:00-03:00",
+      "supports": "Mercados globais, CPI, Fed, Treasury e petróleo."
+    },
+    {
+      "name": "Investing.com",
+      "url": null,
+      "retrieved_at": "2026-09-12T22:30:00-03:00",
+      "supports": "Ibovespa Futuro e recuperação de preços de ativos."
+    },
+    {
+      "name": "B3 / Dados de Mercado",
+      "url": null,
+      "retrieved_at": "2026-09-12T22:30:00-03:00",
+      "supports": "Fluxo estrangeiro."
+    },
+    {
+      "name": "Investor Relations / fontes de mercado",
+      "url": null,
+      "retrieved_at": "2026-09-12T22:30:00-03:00",
+      "supports": "Fundamentos, eventos e recuperação de preços."
+    }
+  ]
+}
