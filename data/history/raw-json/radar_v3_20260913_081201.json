@@ -1,0 +1,151 @@
+{
+  "schema_version": "3.0",
+  "radar_run": {
+    "run_id": "radar-v3-initial-2026-09-13",
+    "generated_at": "2026-09-13T07:40:00-03:00",
+    "market_date": "2026-09-12",
+    "status": "DRAFT",
+    "notes": "Primeiro arquivo estrutural do Radar Institucional V3. Dados de mercado não verificados permanecem nulos ou marcados como indisponíveis."
+  },
+  "market_regime": {
+    "regime": "CAUTION",
+    "risk_level": "HIGH",
+    "summary": "Regime inicial provisório do V3. A classificação definitiva dependerá da coleta e validação das fontes de mercado, macro e fluxo.",
+    "drivers": [
+      "Estrutura V3 em fase inicial",
+      "Dados de mercado ainda não validados nesta execução",
+      "Necessidade de confirmação de macro, fluxo e preços antes da publicação"
+    ],
+    "confidence": {
+      "score": 0.35,
+      "status": "LOW",
+      "reason": "Classificação provisória enquanto os coletores e a validação de fontes do V3 não estão integrados."
+    }
+  },
+  "decision_center": {
+    "action_of_day": "AGUARDAR VALIDACAO DOS DADOS ANTES DE NOVAS DECISOES",
+    "top_opportunities": ["VRT", "CRSP", "ETON"],
+    "top_risks": [
+      "Dados de mercado ainda não verificados no pipeline V3",
+      "Ausência de histórico consolidado para comparação",
+      "Score inicial ainda sem calibração quantitativa"
+    ],
+    "recommended_actions": [
+      "Validar preços e indicadores antes de publicar o Radar V3",
+      "Preservar o Radar V2.1 sem alterações",
+      "Usar este arquivo como contrato inicial de integração e validação"
+    ]
+  },
+  "assets": [
+    {
+      "ticker": "VRT",
+      "name": "Vertiv Holdings",
+      "asset_class": "EQUITY",
+      "sector": "Industrials / Data Center Infrastructure",
+      "theme": ["AI", "Data Center", "Power Infrastructure"],
+      "price": null,
+      "change_pct": null,
+      "score": {
+        "total": 70,
+        "fundamental": 15,
+        "technical": 12,
+        "momentum": 10,
+        "institutional_flow": 10,
+        "catalysts": 11,
+        "macro": 7,
+        "risk": 5,
+        "label": "WATCH_ACCUMULATE"
+      },
+      "confidence": {"score": 0.45, "status": "PARTIAL", "reason": "Tese estrutural registrada, mas preço e indicadores atuais ainda não foram verificados no pipeline V3."},
+      "decision": {
+        "action": "HOLD",
+        "thesis": "Posição existente. A tese será reavaliada com dados de preço, momentum, fluxo e macro validados no V3.",
+        "positives": ["Exposição estrutural a infraestrutura de data centers", "Tema ligado à expansão de infraestrutura para AI"],
+        "negatives": ["Preço atual ainda não validado no V3", "Score ainda não calibrado com histórico"],
+        "triggers": [{"type": "PRICE", "condition": "Confirmar preço atual e comparar com a entrada de 253.00", "action": "Recalcular alvo, risco e decisão", "priority": "HIGH"}],
+        "invalidation": [{"condition": "Deterioração material da tese ou rompimento de nível de risco definido após validação", "effect": "Reavaliar manutenção da posição", "level": null}]
+      },
+      "risk": {"score": 65, "level": "HIGH", "drivers": ["Volatilidade de equity growth", "Sensibilidade a juros", "Exposição temática a AI e data centers"]},
+      "provenance": {"primary_source": "USER_PORTFOLIO", "secondary_source": null, "source_url": null, "market_date": "2026-09-13", "retrieved_at": "2026-09-13T07:40:00-03:00", "status": "PARTIAL", "attempts": 1, "sources_attempted": ["USER_PORTFOLIO"]},
+      "catalysts": ["Expansão de data centers", "Investimentos em infraestrutura elétrica e térmica"]
+    },
+    {
+      "ticker": "CRSP",
+      "name": "CRISPR Therapeutics",
+      "asset_class": "EQUITY",
+      "sector": "Healthcare / Biotechnology",
+      "theme": ["Biotechnology", "Gene Editing"],
+      "price": null,
+      "change_pct": null,
+      "score": {"total": 62, "fundamental": 13, "technical": 10, "momentum": 9, "institutional_flow": 8, "catalysts": 11, "macro": 7, "risk": 4, "label": "HOLD"},
+      "confidence": {"score": 0.40, "status": "PARTIAL", "reason": "Entrada de carteira conhecida, mas dados atuais de mercado e fundamentais ainda não foram validados nesta execução."},
+      "decision": {
+        "action": "HOLD",
+        "thesis": "Posição existente com entrada registrada em 54.41. A decisão final depende da atualização dos dados clínicos, fundamentais e técnicos.",
+        "positives": ["Exposição a terapia genética", "Potencial de catalisadores clínicos"],
+        "negatives": ["Risco elevado típico de biotecnologia", "Dependência de eventos clínicos e regulatórios"],
+        "triggers": [{"type": "EVENT", "condition": "Novo evento clínico, regulatório ou corporativo material", "action": "Recalcular score e tese", "priority": "HIGH"}],
+        "invalidation": [{"condition": "Evento clínico ou regulatório que comprometa a tese", "effect": "Reavaliar ou encerrar a posição", "level": null}]
+      },
+      "risk": {"score": 78, "level": "VERY_HIGH", "drivers": ["Volatilidade elevada", "Risco clínico", "Risco regulatório"]},
+      "provenance": {"primary_source": "USER_PORTFOLIO", "secondary_source": null, "source_url": null, "market_date": "2026-09-13", "retrieved_at": "2026-09-13T07:40:00-03:00", "status": "PARTIAL", "attempts": 1, "sources_attempted": ["USER_PORTFOLIO"]},
+      "catalysts": ["Atualizações clínicas", "Eventos regulatórios", "Parcerias estratégicas"]
+    },
+    {
+      "ticker": "ETON",
+      "name": "Eton Pharmaceuticals",
+      "asset_class": "EQUITY",
+      "sector": "Healthcare / Pharmaceuticals",
+      "theme": ["Pharmaceuticals"],
+      "price": null,
+      "change_pct": null,
+      "score": {"total": 58, "fundamental": 12, "technical": 9, "momentum": 8, "institutional_flow": 8, "catalysts": 10, "macro": 7, "risk": 4, "label": "HOLD"},
+      "confidence": {"score": 0.30, "status": "LOW", "reason": "Ativo incluído para preservar o universo acompanhado, mas sem atualização de dados validada nesta execução."},
+      "decision": {
+        "action": "WATCH",
+        "thesis": "Ativo acompanhado pelo Radar. A análise V3 será consolidada após atualização de dados técnicos, fundamentais e catalisadores.",
+        "positives": [],
+        "negatives": ["Dados atuais não validados no pipeline V3"],
+        "triggers": [{"type": "FUNDAMENTAL", "condition": "Atualização de dados fundamentais e catalisadores", "action": "Recalcular score e decisão", "priority": "MEDIUM"}],
+        "invalidation": [{"condition": "Evidência fundamental incompatível com a tese futura", "effect": "Remover da lista de oportunidades", "level": null}]
+      },
+      "risk": {"score": 70, "level": "HIGH", "drivers": ["Small cap", "Liquidez e volatilidade", "Dependência de catalisadores corporativos"]},
+      "provenance": {"primary_source": "RADAR_UNIVERSE", "secondary_source": null, "source_url": null, "market_date": "2026-09-13", "retrieved_at": "2026-09-13T07:40:00-03:00", "status": "PARTIAL", "attempts": 1, "sources_attempted": ["RADAR_UNIVERSE"]},
+      "catalysts": []
+    }
+  ],
+  "portfolio": {
+    "positions": [
+      {
+        "ticker": "VRT", "status": "OPEN", "quantity": null, "entry_price": 253.0, "current_price": null, "target_price": 265.65, "stop_price": null, "pnl_pct": null,
+        "decision": {"action": "HOLD", "thesis": "Posição aberta com entrada em 253.00 e alvo inicial de 5%. Atualizar decisão após validação do preço corrente.", "positives": ["Alvo inicial definido"], "negatives": ["Preço corrente ainda não validado no V3"], "triggers": [{"type": "PRICE", "condition": "Preço atingir 265.65", "action": "Reavaliar realização do alvo de 5%", "priority": "HIGH"}], "invalidation": [{"condition": "Mudança material da tese antes do alvo", "effect": "Reavaliar permanência", "level": null}]},
+        "risk": {"score": 65, "level": "HIGH", "drivers": ["Volatilidade", "Sensibilidade a juros"]}
+      },
+      {
+        "ticker": "CRSP", "status": "OPEN", "quantity": null, "entry_price": 54.41, "current_price": null, "target_price": null, "stop_price": null, "pnl_pct": null,
+        "decision": {"action": "HOLD", "thesis": "Posição aberta com entrada em 54.41. A próxima atualização deverá definir alvo, stop e score com base em dados atuais.", "positives": ["Entrada registrada"], "negatives": ["Alvo e stop ainda não definidos no V3"], "triggers": [{"type": "EVENT", "condition": "Novo catalisador clínico ou regulatório", "action": "Reavaliar posição", "priority": "HIGH"}], "invalidation": [{"condition": "Evento adverso que comprometa a tese", "effect": "Reavaliar posição imediatamente", "level": null}]},
+        "risk": {"score": 78, "level": "VERY_HIGH", "drivers": ["Biotecnologia", "Risco clínico", "Risco regulatório"]}
+      }
+    ],
+    "risk": {"score": 72, "level": "HIGH", "concentration": null, "beta": null, "drawdown_pct": null, "var_95_pct": null, "drivers": ["Carteira parcial no V3", "Risco elevado em biotecnologia", "Exposição a growth e temas de alta volatilidade"]}
+  },
+  "scenarios": {
+    "bull": {"name": "BULL", "probability": 25, "conditions": ["Queda de juros longos", "Melhora do apetite por risco", "Fluxo favorável para growth"], "strategy": ["Priorizar ativos com score alto e confirmação técnica", "Aumentar exposição apenas com dados validados"], "asset_impacts": [{"ticker": "VRT", "impact": "VERY_POSITIVE"}, {"ticker": "CRSP", "impact": "POSITIVE"}, {"ticker": "ETON", "impact": "POSITIVE"}]},
+    "base": {"name": "BASE", "probability": 50, "conditions": ["Mercado seletivo", "Juros ainda pressionando ativos de maior duration", "Fluxo misto"], "strategy": ["Manter seletividade", "Aguardar confirmações antes de novas entradas"], "asset_impacts": [{"ticker": "VRT", "impact": "NEUTRAL"}, {"ticker": "CRSP", "impact": "NEUTRAL"}, {"ticker": "ETON", "impact": "NEUTRAL"}]},
+    "bear": {"name": "BEAR", "probability": 25, "conditions": ["Alta adicional dos juros longos", "Deterioração do apetite por risco", "Pressão sobre growth e small caps"], "strategy": ["Reduzir exposição de maior beta", "Reforçar stops e critérios de invalidação"], "asset_impacts": [{"ticker": "VRT", "impact": "NEGATIVE"}, {"ticker": "CRSP", "impact": "VERY_NEGATIVE"}, {"ticker": "ETON", "impact": "NEGATIVE"}]}
+  },
+  "changes": [
+    {"entity": "RADAR", "field": "schema_version", "previous": "2.1", "current": "3.0", "impact": "POSITIVE", "summary": "Novo contrato V3 criado com score, confidence, provenance, decision, risk, scenarios e change detection."},
+    {"entity": "VRT", "field": "portfolio_entry", "previous": null, "current": 253.0, "impact": "NEUTRAL", "summary": "Entrada de carteira registrada no modelo V3."},
+    {"entity": "CRSP", "field": "portfolio_entry", "previous": null, "current": 54.41, "impact": "NEUTRAL", "summary": "Entrada de carteira registrada no modelo V3."}
+  ],
+  "alerts": [
+    {"severity": "HIGH", "category": "DATA_QUALITY", "ticker": null, "message": "Os preços e indicadores de mercado ainda não foram validados nesta primeira execução estrutural do V3.", "action": "Executar coleta e validação antes de publicar."},
+    {"severity": "MEDIUM", "category": "PORTFOLIO", "ticker": "CRSP", "message": "Posição de biotecnologia com risco elevado e sem alvo ou stop definidos no V3.", "action": "Definir parâmetros após atualização de mercado."}
+  ],
+  "conclusion": {"summary": "O Radar Institucional V3 está estruturalmente inicializado. A próxima fase é validar este JSON contra o schema_v3.json e depois integrar dados reais de mercado sem alterar o frontend.", "stance": "SELECTIVE", "next_actions": ["Validar radar_v3.json contra schema_v3.json", "Criar validate_radar_v3.py", "Incluir demais ativos acompanhados pelo Radar", "Integrar fontes e substituir valores nulos por dados verificados"]},
+  "sources": [
+    {"name": "USER_PORTFOLIO", "category": "OTHER", "url": null, "supports": ["VRT entry_price", "VRT target_price", "CRSP entry_price"], "status": "OK"},
+    {"name": "RADAR_UNIVERSE", "category": "OTHER", "url": null, "supports": ["ETON inclusion"], "status": "PARTIAL"}
+  ]
+}

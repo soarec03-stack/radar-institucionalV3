@@ -1,3 +1,24 @@
+# RADAR INSTITUCIONAL V3 — RAW ANALYSIS INPUT
+#
+# Arquivo transitório de entrada do pipeline V3.
+# Pode receber:
+#   1) JSON V3 puro; ou
+#   2) análise textual com um bloco ```json contendo o objeto V3.
+#
+# REGRA:
+# O conteúdo abaixo NÃO é publicado diretamente.
+# automation/generate_radar_v3.py extrai, normaliza e valida o objeto.
+# radar_v3.json só é substituído quando a validação obrigatória for aprovada.
+#
+# Fluxo:
+# ChatGPT Radar Institucional V3
+#       -> input/radar_input_v3.txt
+#       -> automation/generate_radar_v3.py
+#       -> schema_v3.json + regras de negócio
+#       -> radar_v3.json
+#       -> futuro: SQLite / Historical Engine
+
+```json
 {
   "schema_version": "3.0",
   "radar_run": {
@@ -48,12 +69,8 @@
     "base": {
       "name": "BASE",
       "probability": 100,
-      "conditions": [
-        "Template ainda não preenchido"
-      ],
-      "strategy": [
-        "Substituir pela análise real"
-      ],
+      "conditions": ["Template ainda não preenchido"],
+      "strategy": ["Substituir pela análise real"],
       "asset_impacts": []
     },
     "bear": {
@@ -77,9 +94,8 @@
   "conclusion": {
     "summary": "Template de entrada do pipeline V3.",
     "stance": "WAIT",
-    "next_actions": [
-      "Substituir pelo JSON real do Radar Institucional V3"
-    ]
+    "next_actions": ["Substituir pelo JSON real do Radar Institucional V3"]
   },
   "sources": []
 }
+```

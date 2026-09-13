@@ -1,0 +1,45 @@
+{
+  "policy_version": "3.0",
+  "description": "Política de qualidade e confiança do Radar Institucional V3.",
+  "publication": {
+    "minimum_asset_confidence": 0.75,
+    "minimum_market_regime_confidence": 0.7,
+    "require_verified_price_provenance": true,
+    "block_on_unavailable_price": true,
+    "block_on_critical_issues": true
+  },
+  "freshness_hours": {
+    "MARKET": 24,
+    "TECHNICAL": 24,
+    "MACRO": 72,
+    "NEWS": 48,
+    "INSTITUTIONAL": 72,
+    "COMPANY": 168,
+    "OTHER": 168
+  },
+  "confidence_bands": {
+    "VERIFIED": {
+      "min": 0.85,
+      "max": 1.0
+    },
+    "PARTIAL": {
+      "min": 0.6,
+      "max": 0.849999
+    },
+    "LOW": {
+      "min": 0.01,
+      "max": 0.599999
+    },
+    "UNAVAILABLE": {
+      "min": 0.0,
+      "max": 0.0
+    }
+  },
+  "critical_fields": [
+    "assets[].price",
+    "assets[].confidence",
+    "assets[].provenance",
+    "market_regime.confidence",
+    "portfolio.positions[].current_price"
+  ]
+}
