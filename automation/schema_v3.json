@@ -35,7 +35,8 @@
       "items": {
         "$ref": "#/$defs/asset"
       },
-      "default": []
+      "default": [],
+      "minItems": 1
     },
     "portfolio": {
       "$ref": "#/$defs/portfolio"

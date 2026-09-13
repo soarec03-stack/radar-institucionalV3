@@ -18,6 +18,7 @@ DEFAULT_HISTORY_DIR = BASE_DIR / "data" / "history" / "raw-json"
 VALIDATOR_PATH = BASE_DIR / "automation" / "validate_radar_v3.py"
 DATA_QUALITY_PATH = BASE_DIR / "automation" / "data_quality_v3.py"
 CONFIDENCE_ENGINE_PATH = BASE_DIR / "automation" / "confidence_engine_v3.py"
+DATAPOINT_ENGINE_PATH = BASE_DIR / "automation" / "datapoint_provenance_v3.py"
 
 
 def load_module(module_name, path):
@@ -32,6 +33,7 @@ def load_module(module_name, path):
 validator = load_module("validate_radar_v3", VALIDATOR_PATH)
 data_quality = load_module("data_quality_v3", DATA_QUALITY_PATH)
 confidence_engine = load_module("confidence_engine_v3", CONFIDENCE_ENGINE_PATH)
+datapoint_engine = load_module("datapoint_provenance_v3", DATAPOINT_ENGINE_PATH)
 
 
 def load_json(path):
@@ -285,6 +287,10 @@ def main():
         print(f"\nERRO: registro de fontes nao encontrado: {registry_path}")
         return 2
 
+    if not DATAPOINT_ENGINE_PATH.exists():
+        print(f"\nERRO: engine de data points nao encontrado: {DATAPOINT_ENGINE_PATH}")
+        return 2
+
     try:
         raw_text = input_path.read_text(encoding="utf-8")
         data = extract_json_from_text(raw_text)
@@ -312,6 +318,14 @@ def main():
         print(f"\nERRO: registry JSON invalido: {exc}")
         return 2
 
+    assets = data.get("assets")
+    if not isinstance(assets, list) or len(assets) == 0:
+        print("\n[PROTECAO DO PIPELINE]")
+        print("  X EMPTY_ASSETS: assets[] nao pode estar vazio.")
+        print("  X O radar_v3.json anterior sera preservado.")
+        print("\nRESULTADO: REPROVADO — RADAR SEM ATIVOS")
+        return 1
+
     schema_errors = validator.validate_schema(data, schema)
     business_errors, warnings = validator.validate_business_rules(data)
 
@@ -323,9 +337,28 @@ def main():
 
     if warnings and not args.allow_warnings:
         print(
-            "\nRESULTADO: BLOQUEADO POR AVISOS — "
-            "use --allow-warnings se quiser gerar conscientemente."
+            "  ! Avisos de validacao nao bloqueiam o enriquecimento; "
+            "serao considerados novamente no resultado final."
         )
+
+    print("\n[DATA-POINT PROVENANCE]")
+    data, datapoint_changes = datapoint_engine.apply(data)
+
+    if not datapoint_changes:
+        print("  X Nenhum ativo encontrado para criar data points.")
+        print("\nRESULTADO: REPROVADO — DATA-POINT ENGINE SEM ATIVOS")
+        return 1
+
+    for ticker, points in datapoint_changes:
+        points_text = ", ".join(points) if points else "nenhum"
+        print(f"  OK {ticker}: {points_text}")
+
+    datapoint_schema_errors = validator.validate_schema(data, schema)
+    if datapoint_schema_errors:
+        print("\n[ERROS APOS DATA-POINT PROVENANCE]")
+        for err in datapoint_schema_errors:
+            print(f"  X {err}")
+        print("\nRESULTADO: REPROVADO APOS DATA-POINT PROVENANCE")
         return 1
 
     print("\n[CONFIDENCE ENGINE]")
@@ -338,13 +371,25 @@ def main():
         current = item["current"]
         comps = item["components"]
         print(
-            f"  {item['ticker']}: {current['score']:.4f} / {current['status']} "
+            f"  {item['ticker']}: ASSET {current['score']:.4f} / {current['status']} "
             f"(SQ={comps['source_quality']:.2f}, "
             f"SA={comps['source_agreement']:.2f}, "
             f"FR={comps['freshness']:.2f}, "
             f"CO={comps['completeness']:.2f}, "
             f"VE={comps['verification']:.2f})"
         )
+        for point_name, point_result in sorted(item.get("data_points", {}).items()):
+            point_conf = point_result["current"]
+            point_comps = point_result["components"]
+            print(
+                f"    - {point_name}: {point_conf['score']:.4f} / "
+                f"{point_conf['status']} "
+                f"(SQ={point_comps['source_quality']:.2f}, "
+                f"SA={point_comps['source_agreement']:.2f}, "
+                f"FR={point_comps['freshness']:.2f}, "
+                f"CO={point_comps['completeness']:.2f}, "
+                f"VE={point_comps['verification']:.2f})"
+            )
 
     # Revalida regras de negocio após o cálculo automático de confidence.
     post_schema_errors = validator.validate_schema(data, schema)

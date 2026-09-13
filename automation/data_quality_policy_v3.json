@@ -8,6 +8,31 @@
     "block_on_unavailable_price": true,
     "block_on_critical_issues": true
   },
+  "data_points": {
+    "required_for_publication": [
+      "price"
+    ],
+    "minimum_confidence": {
+      "price": 0.85,
+      "volume": 0.75,
+      "technical": 0.75,
+      "fundamentals": 0.8,
+      "catalysts": 0.6,
+      "institutional_flow": 0.75,
+      "macro": 0.75
+    },
+    "unavailable_optional_severity": "WARNING",
+    "low_confidence_optional_severity": "WARNING",
+    "require_verified_provenance": {
+      "price": true,
+      "volume": false,
+      "technical": false,
+      "fundamentals": false,
+      "catalysts": false,
+      "institutional_flow": false,
+      "macro": false
+    }
+  },
   "freshness_hours": {
     "MARKET": 24,
     "TECHNICAL": 24,
@@ -37,6 +62,7 @@
   },
   "critical_fields": [
     "assets[].price",
+    "assets[].data_points.price",
     "assets[].confidence",
     "assets[].provenance",
     "market_regime.confidence",
