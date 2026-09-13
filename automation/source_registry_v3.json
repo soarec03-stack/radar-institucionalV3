@@ -1,0 +1,274 @@
+{
+  "registry_version": "3.0",
+  "description": "Registro oficial de fontes e pesos de confianca do Radar Institucional V3.",
+  "scoring": {
+    "source_quality_weight": 0.3,
+    "source_agreement_weight": 0.25,
+    "freshness_weight": 0.2,
+    "completeness_weight": 0.15,
+    "verification_weight": 0.1
+  },
+  "tiers": {
+    "TIER_1": {
+      "description": "Fonte primaria/oficial ou institucional de alta autoridade.",
+      "base_confidence": 0.95
+    },
+    "TIER_2": {
+      "description": "Fonte profissional consolidada e amplamente utilizada.",
+      "base_confidence": 0.85
+    },
+    "TIER_3": {
+      "description": "Fonte secundaria util para confirmacao, contexto ou cobertura complementar.",
+      "base_confidence": 0.7
+    },
+    "TIER_4": {
+      "description": "Fonte auxiliar; nunca suficiente isoladamente para dado critico.",
+      "base_confidence": 0.5
+    }
+  },
+  "sources": [
+    {
+      "id": "B3",
+      "name": "B3",
+      "tier": "TIER_1",
+      "category": "INSTITUTIONAL",
+      "authority_score": 1.0,
+      "supports": [
+        "institutional_flow",
+        "market_data",
+        "listed_assets",
+        "derivatives",
+        "corporate_actions"
+      ],
+      "primary_for": [
+        "brazil_market",
+        "foreign_flow",
+        "listed_derivatives"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte oficial do mercado brasileiro."
+    },
+    {
+      "id": "FED",
+      "name": "Federal Reserve",
+      "tier": "TIER_1",
+      "category": "MACRO",
+      "authority_score": 1.0,
+      "supports": [
+        "rates",
+        "monetary_policy",
+        "macro_data",
+        "financial_conditions"
+      ],
+      "primary_for": [
+        "fed_policy",
+        "us_rates"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte oficial para politica monetaria dos EUA."
+    },
+    {
+      "id": "SEC",
+      "name": "U.S. Securities and Exchange Commission",
+      "tier": "TIER_1",
+      "category": "COMPANY",
+      "authority_score": 1.0,
+      "supports": [
+        "filings",
+        "financial_statements",
+        "company_events",
+        "ownership"
+      ],
+      "primary_for": [
+        "us_company_filings"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte oficial para filings e divulgacoes regulatorias nos EUA."
+    },
+    {
+      "id": "COMPANY_IR",
+      "name": "Company Investor Relations",
+      "tier": "TIER_1",
+      "category": "COMPANY",
+      "authority_score": 0.95,
+      "supports": [
+        "earnings",
+        "guidance",
+        "presentations",
+        "company_events",
+        "fundamentals"
+      ],
+      "primary_for": [
+        "company_guidance",
+        "official_company_updates"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Investor Relations oficial da companhia analisada."
+    },
+    {
+      "id": "REUTERS",
+      "name": "Reuters",
+      "tier": "TIER_2",
+      "category": "NEWS",
+      "authority_score": 0.92,
+      "supports": [
+        "news",
+        "market_context",
+        "company_events",
+        "macro",
+        "geopolitics"
+      ],
+      "primary_for": [
+        "breaking_news",
+        "market_context"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte profissional de noticias e contexto de mercado."
+    },
+    {
+      "id": "TRADINGVIEW",
+      "name": "TradingView",
+      "tier": "TIER_2",
+      "category": "MARKET",
+      "authority_score": 0.88,
+      "supports": [
+        "price",
+        "volume",
+        "technical_indicators",
+        "trend",
+        "charts"
+      ],
+      "primary_for": [
+        "technical_analysis",
+        "market_price_reference"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte principal do Radar para preco, grafico, volume e tendencia."
+    },
+    {
+      "id": "INVESTING",
+      "name": "Investing.com",
+      "tier": "TIER_2",
+      "category": "MACRO",
+      "authority_score": 0.82,
+      "supports": [
+        "economic_calendar",
+        "macro",
+        "markets",
+        "rates",
+        "commodities"
+      ],
+      "primary_for": [
+        "economic_calendar",
+        "macro_context"
+      ],
+      "can_verify_critical_data": false,
+      "notes": "Fonte de calendario economico, macro e mercados; preferir confirmacao institucional para dados criticos."
+    },
+    {
+      "id": "CME",
+      "name": "CME Group",
+      "tier": "TIER_1",
+      "category": "MARKET",
+      "authority_score": 0.98,
+      "supports": [
+        "futures",
+        "rates",
+        "commodities",
+        "derivatives"
+      ],
+      "primary_for": [
+        "us_futures",
+        "derivatives_reference"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte oficial para diversos contratos futuros e derivativos."
+    },
+    {
+      "id": "US_TREASURY",
+      "name": "U.S. Department of the Treasury",
+      "tier": "TIER_1",
+      "category": "MACRO",
+      "authority_score": 1.0,
+      "supports": [
+        "treasury_yields",
+        "debt",
+        "fiscal_data"
+      ],
+      "primary_for": [
+        "us_treasury_data"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte institucional para dados do Tesouro dos EUA."
+    },
+    {
+      "id": "FRED",
+      "name": "Federal Reserve Economic Data",
+      "tier": "TIER_1",
+      "category": "MACRO",
+      "authority_score": 0.98,
+      "supports": [
+        "macro_series",
+        "rates",
+        "inflation",
+        "employment",
+        "financial_conditions"
+      ],
+      "primary_for": [
+        "historical_macro_series"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Base institucional de series economicas."
+    },
+    {
+      "id": "USER_PORTFOLIO",
+      "name": "User Portfolio Input",
+      "tier": "TIER_1",
+      "category": "OTHER",
+      "authority_score": 1.0,
+      "supports": [
+        "portfolio_entry",
+        "portfolio_target",
+        "portfolio_status",
+        "portfolio_quantity"
+      ],
+      "primary_for": [
+        "user_portfolio"
+      ],
+      "can_verify_critical_data": true,
+      "notes": "Fonte primaria apenas para dados declarados da carteira do usuario; nao valida dados de mercado."
+    },
+    {
+      "id": "RADAR_UNIVERSE",
+      "name": "Radar Institutional Universe",
+      "tier": "TIER_4",
+      "category": "OTHER",
+      "authority_score": 0.5,
+      "supports": [
+        "tracked_assets",
+        "watchlist_membership"
+      ],
+      "primary_for": [
+        "radar_watchlist"
+      ],
+      "can_verify_critical_data": false,
+      "notes": "Fonte interna para inclusao no universo monitorado; nao serve para validar preco, fundamentos ou eventos."
+    }
+  ],
+  "rules": {
+    "critical_data": {
+      "minimum_tier": "TIER_2",
+      "minimum_authority_score": 0.8,
+      "require_verification_capability": true
+    },
+    "source_agreement": {
+      "verified_minimum_sources": 2,
+      "partial_minimum_sources": 1,
+      "conflict_penalty": 0.25
+    },
+    "fallback": {
+      "allow_tier_3_for_critical_data": false,
+      "allow_tier_4_for_critical_data": false
+    }
+  }
+}
