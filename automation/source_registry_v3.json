@@ -253,6 +253,19 @@
       ],
       "can_verify_critical_data": false,
       "notes": "Fonte interna para inclusao no universo monitorado; nao serve para validar preco, fundamentos ou eventos."
+    },
+    {
+      "id": "YAHOO_FINANCE",
+      "name": "Yahoo Finance via yfinance",
+      "tier": "TIER_3",
+      "base_confidence": 0.7,
+      "categories": [
+        "MARKET",
+        "TECHNICAL"
+      ],
+      "verification_capable": false,
+      "publication_use": "RESEARCH_ONLY",
+      "notes": "Fonte de desenvolvimento para histórico de preço/volume. Não tratar como fonte institucional final do Radar V3."
     }
   ],
   "rules": {

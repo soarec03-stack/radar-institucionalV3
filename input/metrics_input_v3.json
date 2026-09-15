@@ -1,0 +1,118 @@
+{
+  "metrics_version": "3.0",
+  "generated_at": null,
+  "market_date": null,
+  "assets": [
+    {
+      "ticker": "VRT",
+      "fundamentals": {
+        "metrics": {
+          "revenue_growth_pct": null,
+          "eps_growth_pct": null,
+          "fcf_margin_pct": null,
+          "debt_to_ebitda": null,
+          "earnings_revision_pct": null,
+          "valuation_percentile": null
+        },
+        "source": {
+          "primary_source": null,
+          "secondary_source": null,
+          "source_url": null,
+          "retrieved_at": null,
+          "market_date": null,
+          "sources_attempted": []
+        }
+      },
+      "technical": {
+        "metrics": {
+          "price_vs_sma50_pct": null,
+          "price_vs_sma200_pct": null,
+          "rsi_14": null,
+          "macd_histogram_pct": null,
+          "relative_strength_20d_pct": null,
+          "volume_ratio": null,
+          "return_20d_pct": null,
+          "return_60d_pct": null
+        },
+        "source": {
+          "primary_source": null,
+          "secondary_source": null,
+          "source_url": null,
+          "retrieved_at": null,
+          "market_date": null,
+          "sources_attempted": []
+        }
+      },
+      "institutional_flow": {
+        "metrics": {
+          "institutional_flow_pct": null,
+          "volume_ratio": null,
+          "short_interest_change_pct": null,
+          "call_put_ratio": null
+        },
+        "source": {
+          "primary_source": null,
+          "secondary_source": null,
+          "source_url": null,
+          "retrieved_at": null,
+          "market_date": null,
+          "sources_attempted": []
+        }
+      },
+      "macro": {
+        "metrics": {
+          "rates_change_20d_bps": null,
+          "dollar_change_20d_pct": null,
+          "liquidity_change_20d_pct": null,
+          "sector_macro_surprise_pct": null
+        },
+        "source": {
+          "primary_source": null,
+          "secondary_source": null,
+          "source_url": null,
+          "retrieved_at": null,
+          "market_date": null,
+          "sources_attempted": []
+        }
+      }
+    },
+    {
+      "ticker": "CRSP",
+      "fundamentals": {
+        "metrics": {},
+        "source": {}
+      },
+      "technical": {
+        "metrics": {},
+        "source": {}
+      },
+      "institutional_flow": {
+        "metrics": {},
+        "source": {}
+      },
+      "macro": {
+        "metrics": {},
+        "source": {}
+      }
+    },
+    {
+      "ticker": "ETON",
+      "fundamentals": {
+        "metrics": {},
+        "source": {}
+      },
+      "technical": {
+        "metrics": {},
+        "source": {}
+      },
+      "institutional_flow": {
+        "metrics": {},
+        "source": {}
+      },
+      "macro": {
+        "metrics": {},
+        "source": {}
+      }
+    }
+  ]
+}

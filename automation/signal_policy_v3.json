@@ -1,0 +1,220 @@
+{
+  "policy_version": "3.0",
+  "engine": "signal_engine_v3",
+  "principles": {
+    "missing_is_not_neutral": true,
+    "do_not_invent_metrics": true,
+    "minimum_metric_coverage": 0.6,
+    "signal_range": [
+      0,
+      100
+    ]
+  },
+  "domains": {
+    "fundamentals": {
+      "output_key": "normalized_score",
+      "metrics": {
+        "revenue_growth_pct": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": -10,
+          "good": 30
+        },
+        "eps_growth_pct": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": -20,
+          "good": 40
+        },
+        "fcf_margin_pct": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": 0,
+          "good": 25
+        },
+        "debt_to_ebitda": {
+          "weight": 0.15,
+          "transform": "lower_better",
+          "bad": 4.0,
+          "good": 0.0
+        },
+        "earnings_revision_pct": {
+          "weight": 0.15,
+          "transform": "higher_better",
+          "bad": -10,
+          "good": 10
+        },
+        "valuation_percentile": {
+          "weight": 0.1,
+          "transform": "lower_better",
+          "bad": 90,
+          "good": 10
+        }
+      }
+    },
+    "technical": {
+      "output_key": "normalized_score",
+      "metrics": {
+        "price_vs_sma50_pct": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": -10,
+          "good": 10
+        },
+        "price_vs_sma200_pct": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": -15,
+          "good": 15
+        },
+        "rsi_14": {
+          "weight": 0.2,
+          "transform": "piecewise",
+          "points": [
+            [
+              20,
+              20
+            ],
+            [
+              30,
+              40
+            ],
+            [
+              50,
+              70
+            ],
+            [
+              65,
+              90
+            ],
+            [
+              75,
+              70
+            ],
+            [
+              85,
+              35
+            ],
+            [
+              100,
+              10
+            ]
+          ]
+        },
+        "macd_histogram_pct": {
+          "weight": 0.15,
+          "transform": "higher_better",
+          "bad": -2,
+          "good": 2
+        },
+        "relative_strength_20d_pct": {
+          "weight": 0.15,
+          "transform": "higher_better",
+          "bad": -10,
+          "good": 10
+        },
+        "volume_ratio": {
+          "weight": 0.1,
+          "transform": "higher_better",
+          "bad": 0.5,
+          "good": 2.0
+        }
+      }
+    },
+    "momentum": {
+      "source_domain": "technical",
+      "output_key": "momentum_score",
+      "metrics": {
+        "return_20d_pct": {
+          "weight": 0.35,
+          "transform": "higher_better",
+          "bad": -15,
+          "good": 15
+        },
+        "return_60d_pct": {
+          "weight": 0.35,
+          "transform": "higher_better",
+          "bad": -25,
+          "good": 25
+        },
+        "relative_strength_20d_pct": {
+          "weight": 0.3,
+          "transform": "higher_better",
+          "bad": -10,
+          "good": 10
+        }
+      }
+    },
+    "institutional_flow": {
+      "output_key": "normalized_score",
+      "metrics": {
+        "institutional_flow_pct": {
+          "weight": 0.4,
+          "transform": "higher_better",
+          "bad": -5,
+          "good": 5
+        },
+        "volume_ratio": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": 0.5,
+          "good": 2.0
+        },
+        "short_interest_change_pct": {
+          "weight": 0.2,
+          "transform": "lower_better",
+          "bad": 10,
+          "good": -10
+        },
+        "call_put_ratio": {
+          "weight": 0.2,
+          "transform": "higher_better",
+          "bad": 0.5,
+          "good": 2.0
+        }
+      }
+    },
+    "macro": {
+      "output_key": "normalized_score",
+      "metrics": {
+        "rates_change_20d_bps": {
+          "weight": 0.25,
+          "transform": "lower_better",
+          "bad": 50,
+          "good": -50
+        },
+        "dollar_change_20d_pct": {
+          "weight": 0.2,
+          "transform": "lower_better",
+          "bad": 5,
+          "good": -5
+        },
+        "liquidity_change_20d_pct": {
+          "weight": 0.25,
+          "transform": "higher_better",
+          "bad": -5,
+          "good": 5
+        },
+        "sector_macro_surprise_pct": {
+          "weight": 0.3,
+          "transform": "higher_better",
+          "bad": -10,
+          "good": 10
+        }
+      }
+    },
+    "catalysts": {
+      "output_key": "normalized_score",
+      "mode": "structured_items",
+      "minimum_items": 1,
+      "item_fields": {
+        "signed_impact": "signed_impact",
+        "probability": "probability",
+        "source_quality": "source_quality",
+        "horizon_days": "horizon_days"
+      },
+      "horizon_decay_days": 180,
+      "neutral": 50
+    }
+  }
+}

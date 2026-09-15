@@ -1,0 +1,174 @@
+{
+  "contract_version": "3.0",
+  "purpose": "Contrato de métricas observáveis para o Signal Engine V3.",
+  "principles": {
+    "no_manual_normalized_score_required": true,
+    "no_invented_metrics": true,
+    "missing_metric": null,
+    "signal_engine_calculates_normalized_scores": true
+  },
+  "data_points": {
+    "fundamentals": {
+      "value_type": "object",
+      "metrics": {
+        "revenue_growth_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "eps_growth_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "fcf_margin_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "debt_to_ebitda": {
+          "type": "number",
+          "unit": "x"
+        },
+        "earnings_revision_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "valuation_percentile": {
+          "type": "number",
+          "unit": "percentile",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "engine_output": [
+        "normalized_score"
+      ]
+    },
+    "technical": {
+      "value_type": "object",
+      "metrics": {
+        "price_vs_sma50_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "price_vs_sma200_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "rsi_14": {
+          "type": "number",
+          "min": 0,
+          "max": 100
+        },
+        "macd_histogram_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "relative_strength_20d_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "volume_ratio": {
+          "type": "number",
+          "unit": "x",
+          "min": 0
+        },
+        "return_20d_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "return_60d_pct": {
+          "type": "number",
+          "unit": "%"
+        }
+      },
+      "engine_output": [
+        "normalized_score",
+        "momentum_score"
+      ]
+    },
+    "institutional_flow": {
+      "value_type": "object",
+      "metrics": {
+        "institutional_flow_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "volume_ratio": {
+          "type": "number",
+          "unit": "x",
+          "min": 0
+        },
+        "short_interest_change_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "call_put_ratio": {
+          "type": "number",
+          "unit": "x",
+          "min": 0
+        }
+      },
+      "engine_output": [
+        "normalized_score"
+      ]
+    },
+    "macro": {
+      "value_type": "object",
+      "metrics": {
+        "rates_change_20d_bps": {
+          "type": "number",
+          "unit": "bps"
+        },
+        "dollar_change_20d_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "liquidity_change_20d_pct": {
+          "type": "number",
+          "unit": "%"
+        },
+        "sector_macro_surprise_pct": {
+          "type": "number",
+          "unit": "%"
+        }
+      },
+      "engine_output": [
+        "normalized_score"
+      ]
+    },
+    "catalysts": {
+      "value_type": "object",
+      "structure": {
+        "items": {
+          "type": "array",
+          "item": {
+            "description": {
+              "type": "string"
+            },
+            "signed_impact": {
+              "type": "number",
+              "min": -100,
+              "max": 100
+            },
+            "probability": {
+              "type": "number",
+              "min": 0,
+              "max": 1
+            },
+            "source_quality": {
+              "type": "number",
+              "min": 0,
+              "max": 1
+            },
+            "horizon_days": {
+              "type": "number",
+              "min": 0
+            }
+          }
+        }
+      },
+      "engine_output": [
+        "normalized_score"
+      ]
+    }
+  }
+}

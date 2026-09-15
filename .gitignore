@@ -2,15 +2,35 @@
 __pycache__/
 *.py[cod]
 
-# Local test outputs
+# Radar V3 - local test outputs
 radar_v3_confidence_test.json
 radar_v3_datapoints_test.json
+radar_v3_score_test.json
+radar_v3_signals_test.json
+radar_v3_metrics_test.json
+radar_v3_confidence_metrics_test.json
+
+# Metrics collector test outputs
+input/metrics_fundamentals_test_v3.json
+input/metrics_macro_test_v3.json
+input/metrics_technical_test_v3.json
+
+# Development backups
+*.before_*
+*_old
+*.py_old
+*.json_old
 
 # Runtime history / generated backups
 data/history/raw-json/*.json
 !data/history/raw-json/.gitkeep
 
+# Local secrets
+.env
+.env.*
+!.env.example
+
 # OS / editor
 .DS_Store
 Thumbs.db
-.vscode/
+.vscode/*.berefore_*

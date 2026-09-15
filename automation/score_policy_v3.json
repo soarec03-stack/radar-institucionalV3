@@ -1,0 +1,110 @@
+{
+  "policy_version": "3.0",
+  "engine": "score_engine_v3",
+  "description": "Política de cálculo automático do Radar Score 0–100.",
+  "components": {
+    "fundamental": {
+      "max_points": 20,
+      "source": "data_points.fundamentals",
+      "signal_keys": [
+        "normalized_score",
+        "score",
+        "fundamental_score"
+      ]
+    },
+    "technical": {
+      "max_points": 20,
+      "source": "data_points.technical",
+      "signal_keys": [
+        "normalized_score",
+        "score",
+        "technical_score"
+      ]
+    },
+    "momentum": {
+      "max_points": 15,
+      "source": "data_points.technical",
+      "signal_keys": [
+        "momentum_score",
+        "momentum",
+        "normalized_momentum"
+      ]
+    },
+    "institutional_flow": {
+      "max_points": 15,
+      "source": "data_points.institutional_flow",
+      "signal_keys": [
+        "normalized_score",
+        "score",
+        "flow_score"
+      ]
+    },
+    "catalysts": {
+      "max_points": 15,
+      "source": "data_points.catalysts",
+      "signal_keys": [
+        "normalized_score",
+        "score",
+        "catalyst_score"
+      ]
+    },
+    "macro": {
+      "max_points": 10,
+      "source": "data_points.macro",
+      "signal_keys": [
+        "normalized_score",
+        "score",
+        "macro_score"
+      ]
+    },
+    "risk": {
+      "max_points": 5,
+      "source": "risk.score",
+      "mode": "inverse_0_100"
+    }
+  },
+  "confidence_adjustment": {
+    "enabled": true,
+    "minimum_usable_confidence": 0.6,
+    "verified_multiplier": 1.0,
+    "partial_multiplier": 0.85,
+    "low_multiplier": 0.5,
+    "unavailable_multiplier": 0.0
+  },
+  "coverage": {
+    "minimum_for_reliable_score": 0.7,
+    "minimum_for_publication": 0.85
+  },
+  "labels": [
+    {
+      "min": 85,
+      "max": 100,
+      "label": "STRONG_BUY"
+    },
+    {
+      "min": 75,
+      "max": 84.9999,
+      "label": "BUY"
+    },
+    {
+      "min": 65,
+      "max": 74.9999,
+      "label": "WATCH_ACCUMULATE"
+    },
+    {
+      "min": 50,
+      "max": 64.9999,
+      "label": "HOLD"
+    },
+    {
+      "min": 35,
+      "max": 49.9999,
+      "label": "CAUTION"
+    },
+    {
+      "min": 0,
+      "max": 34.9999,
+      "label": "AVOID"
+    }
+  ]
+}

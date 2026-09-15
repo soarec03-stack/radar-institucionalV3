@@ -1,0 +1,16 @@
+{
+  "pipeline": [
+    "metrics_input_v3.json",
+    "metrics_loader_v3.py",
+    "confidence_engine_v3.py",
+    "signal_engine_v3.py",
+    "score_engine_v3.py"
+  ],
+  "rules": [
+    "metrics_input contains observable facts only",
+    "metrics_loader never calculates normalized signals",
+    "signal_engine never invents missing metrics",
+    "score_engine only consumes normalized signals plus confidence",
+    "all values must preserve provenance and retrieval time"
+  ]
+}
