@@ -34,3 +34,4 @@ data/history/raw-json/*.json
 .DS_Store
 Thumbs.db
 .vscode/*.berefore_*
+*.berefore_*
