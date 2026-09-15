@@ -92,7 +92,7 @@ def validate_business_rules(data):
 
     asset_ticker_set = set(asset_tickers)
 
-    # 3. score.total = soma dos componentes
+    # 3. Score V3 — semantica, cobertura e arredondamento
     score_components = [
         "fundamental",
         "technical",
@@ -102,6 +102,12 @@ def validate_business_rules(data):
         "macro",
         "risk",
     ]
+
+    SCORE_ROUNDING_TOLERANCE = 0.02
+    SCORE_VALUE_TOLERANCE = 0.011
+    COVERAGE_TOLERANCE = 0.0001
+    MINIMUM_ANALYTIC_COVERAGE = 0.70
+    MINIMUM_PUBLICATION_COVERAGE = 0.85
 
     for i, asset in enumerate(assets):
         ticker = asset.get("ticker", f"assets[{i}]")
@@ -114,37 +120,156 @@ def validate_business_rules(data):
             )
             continue
 
-        calculated = sum(score[name] for name in score_components)
-        declared = score.get("total")
+        calculated_components = sum(score[name] for name in score_components)
+        declared_total = score.get("total")
+        raw_score = score.get("raw_score")
+        available_score = score.get("available_score")
+        normalized_score = score.get("normalized_score")
+        coverage = score.get("coverage")
+        status = score.get("status")
+        analytically_usable = score.get("analytically_usable")
+        publishable = score.get("publishable")
+        label = score.get("label")
 
-        if declared is None:
+        # 3.1 total representa a contribuicao bruta e deve acompanhar os
+        # componentes. Aceita pequena diferenca causada pelo arredondamento
+        # individual dos sete componentes para duas casas decimais.
+        if declared_total is None:
             errors.append(f"{ticker}: score.total ausente.")
-        elif abs(calculated - declared) > 1e-9:
+        elif abs(calculated_components - declared_total) > SCORE_ROUNDING_TOLERANCE:
             errors.append(
-                f"{ticker}: score.total={declared} mas soma dos componentes={calculated}."
+                f"{ticker}: score.total={declared_total} mas soma dos "
+                f"componentes={calculated_components:.2f}; tolerancia="
+                f"{SCORE_ROUNDING_TOLERANCE:.2f}."
             )
 
-        # 4. label deve bater com score total
-        if declared is not None:
-            expected = expected_score_label(declared)
-            actual = score.get("label")
-            if expected and actual != expected:
+        # 3.2 raw_score e total sao semanticamente equivalentes.
+        if declared_total is not None and raw_score is not None:
+            if abs(float(raw_score) - float(declared_total)) > SCORE_VALUE_TOLERANCE:
                 errors.append(
-                    f"{ticker}: score.label='{actual}' incoerente com total={declared}. "
-                    f"Esperado: '{expected}'."
+                    f"{ticker}: score.raw_score={raw_score} deve ser igual "
+                    f"a score.total={declared_total}."
                 )
 
-            # 5. decision.action coerente com faixa de score
-            decision = asset.get("decision", {})
-            action = decision.get("action")
-            if actual in DECISION_ACTIONS_BY_SCORE_LABEL and action:
-                allowed = DECISION_ACTIONS_BY_SCORE_LABEL[actual]
-                if action not in allowed:
-                    warnings.append(
-                        f"{ticker}: decision.action='{action}' e score.label='{actual}' "
-                        f"formam uma combinacao atipica. Permitidos/recomendados: "
-                        f"{', '.join(sorted(allowed))}."
+        # 3.3 coverage deriva do available_score sobre o modelo total de 100 pontos.
+        if available_score is not None and coverage is not None:
+            expected_coverage = float(available_score) / 100.0
+            if abs(float(coverage) - expected_coverage) > COVERAGE_TOLERANCE:
+                errors.append(
+                    f"{ticker}: score.coverage={coverage} incoerente com "
+                    f"available_score={available_score}; esperado "
+                    f"{expected_coverage:.4f}."
+                )
+
+        # 3.4 Estado semantico do score.
+        if coverage is not None:
+            coverage_value = float(coverage)
+
+            if coverage_value < MINIMUM_ANALYTIC_COVERAGE:
+                expected_status = "INSUFFICIENT_DATA"
+                expected_usable = False
+                expected_publishable = False
+            elif coverage_value < MINIMUM_PUBLICATION_COVERAGE:
+                expected_status = "PARTIAL"
+                expected_usable = True
+                expected_publishable = False
+            else:
+                expected_status = "CALCULATED"
+                expected_usable = True
+                expected_publishable = True
+
+            if status != expected_status:
+                errors.append(
+                    f"{ticker}: score.status='{status}' incoerente com "
+                    f"coverage={coverage_value:.0%}. Esperado: "
+                    f"'{expected_status}'."
+                )
+
+            if analytically_usable is not expected_usable:
+                errors.append(
+                    f"{ticker}: score.analytically_usable="
+                    f"{analytically_usable!r}; esperado "
+                    f"{expected_usable!r} para coverage={coverage_value:.0%}."
+                )
+
+            if publishable is not expected_publishable:
+                errors.append(
+                    f"{ticker}: score.publishable={publishable!r}; esperado "
+                    f"{expected_publishable!r} para coverage={coverage_value:.0%}."
+                )
+
+        # 3.5 normalized_score somente existe a partir da cobertura analitica.
+        if status == "INSUFFICIENT_DATA":
+            if normalized_score is not None:
+                errors.append(
+                    f"{ticker}: normalized_score deve ser null quando "
+                    "status='INSUFFICIENT_DATA'."
+                )
+            if label is not None:
+                errors.append(
+                    f"{ticker}: score.label deve estar ausente quando "
+                    "status='INSUFFICIENT_DATA'."
+                )
+
+        elif status in {"PARTIAL", "CALCULATED"}:
+            if available_score is None or float(available_score) <= 0:
+                errors.append(
+                    f"{ticker}: available_score deve ser > 0 para status='{status}'."
+                )
+            elif raw_score is None:
+                errors.append(
+                    f"{ticker}: raw_score ausente para status='{status}'."
+                )
+            else:
+                expected_normalized = round(
+                    (float(raw_score) / float(available_score)) * 100.0, 2
+                )
+                expected_normalized = max(0.0, min(100.0, expected_normalized))
+
+                if normalized_score is None:
+                    errors.append(
+                        f"{ticker}: normalized_score ausente para status='{status}'."
                     )
+                elif abs(
+                    float(normalized_score) - expected_normalized
+                ) > SCORE_VALUE_TOLERANCE:
+                    errors.append(
+                        f"{ticker}: normalized_score={normalized_score} "
+                        f"incoerente; esperado {expected_normalized:.2f}."
+                    )
+
+            # PARTIAL pode ser analisado, mas nao recebe label operacional.
+            if status == "PARTIAL" and label is not None:
+                errors.append(
+                    f"{ticker}: score.label deve estar ausente enquanto "
+                    "status='PARTIAL'."
+                )
+
+            # CALCULATED/publicavel recebe label sobre normalized_score,
+            # nunca sobre raw_score.
+            if status == "CALCULATED":
+                if normalized_score is not None:
+                    expected = expected_score_label(float(normalized_score))
+                    if label != expected:
+                        errors.append(
+                            f"{ticker}: score.label='{label}' incoerente com "
+                            f"normalized_score={normalized_score}. "
+                            f"Esperado: '{expected}'."
+                        )
+
+                # decision.action so e comparada ao score quando existe
+                # label operacional publicavel.
+                decision = asset.get("decision", {})
+                action = decision.get("action")
+                if label in DECISION_ACTIONS_BY_SCORE_LABEL and action:
+                    allowed = DECISION_ACTIONS_BY_SCORE_LABEL[label]
+                    if action not in allowed:
+                        warnings.append(
+                            f"{ticker}: decision.action='{action}' e "
+                            f"score.label='{label}' formam uma combinacao "
+                            f"atipica. Permitidos/recomendados: "
+                            f"{', '.join(sorted(allowed))}."
+                        )
 
     # 6. tickers da carteira devem existir em assets
     for i, position in enumerate(positions):

@@ -228,7 +228,14 @@
         "institutional_flow",
         "catalysts",
         "macro",
-        "risk"
+        "risk",
+        "status",
+        "raw_score",
+        "available_score",
+        "normalized_score",
+        "coverage",
+        "analytically_usable",
+        "publishable"
       ],
       "properties": {
         "total": {
@@ -281,6 +288,43 @@
             "CAUTION",
             "AVOID"
           ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "INSUFFICIENT_DATA",
+            "PARTIAL",
+            "CALCULATED"
+          ]
+        },
+        "raw_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "available_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "normalized_score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "analytically_usable": {
+          "type": "boolean"
+        },
+        "publishable": {
+          "type": "boolean"
         }
       }
     },
@@ -536,19 +580,91 @@
               "$ref": "#/$defs/dataPoint"
             },
             "technical": {
-              "$ref": "#/$defs/dataPoint"
+              "allOf": [
+                {
+                  "$ref": "#/$defs/dataPoint"
+                },
+                {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "$ref": "#/$defs/technicalMetrics"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
             },
             "fundamentals": {
-              "$ref": "#/$defs/dataPoint"
+              "allOf": [
+                {
+                  "$ref": "#/$defs/dataPoint"
+                },
+                {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "$ref": "#/$defs/fundamentalMetrics"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
             },
             "catalysts": {
               "$ref": "#/$defs/dataPoint"
             },
             "institutional_flow": {
-              "$ref": "#/$defs/dataPoint"
+              "allOf": [
+                {
+                  "$ref": "#/$defs/dataPoint"
+                },
+                {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "$ref": "#/$defs/institutionalFlowMetrics"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
             },
             "macro": {
-              "$ref": "#/$defs/dataPoint"
+              "allOf": [
+                {
+                  "$ref": "#/$defs/dataPoint"
+                },
+                {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "$ref": "#/$defs/macroMetrics"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
             }
           },
           "additionalProperties": false
@@ -1023,6 +1139,185 @@
           ]
         }
       }
+    },
+    "fundamentalMetrics": {
+      "type": "object",
+      "properties": {
+        "revenue_growth_pct": {
+          "type": "number"
+        },
+        "eps_growth_pct": {
+          "type": "number"
+        },
+        "fcf_margin_pct": {
+          "type": "number"
+        },
+        "debt_to_ebitda": {
+          "type": "number"
+        },
+        "earnings_revision_pct": {
+          "type": "number"
+        },
+        "valuation_percentile": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "normalized_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "technicalMetrics": {
+      "type": "object",
+      "properties": {
+        "price_vs_sma50_pct": {
+          "type": "number"
+        },
+        "price_vs_sma200_pct": {
+          "type": "number"
+        },
+        "rsi_14": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "macd_histogram_pct": {
+          "type": "number"
+        },
+        "relative_strength_20d_pct": {
+          "type": "number"
+        },
+        "volume_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "return_20d_pct": {
+          "type": "number"
+        },
+        "return_60d_pct": {
+          "type": "number"
+        },
+        "normalized_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "momentum_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "institutionalFlowMetrics": {
+      "type": "object",
+      "properties": {
+        "institutional_flow_pct": {
+          "type": "number"
+        },
+        "volume_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_interest_change_pct": {
+          "type": "number"
+        },
+        "call_put_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "normalized_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "macroMetrics": {
+      "type": "object",
+      "properties": {
+        "rates_change_20d_bps": {
+          "type": "number"
+        },
+        "dollar_change_20d_pct": {
+          "type": "number"
+        },
+        "liquidity_change_20d_pct": {
+          "type": "number"
+        },
+        "sector_macro_surprise_pct": {
+          "type": "number"
+        },
+        "normalized_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "catalystMetricItem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "signed_impact": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100
+        },
+        "probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source_quality": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "horizon_days": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "signed_impact",
+        "probability",
+        "source_quality",
+        "horizon_days"
+      ],
+      "additionalProperties": false
+    },
+    "catalystMetrics": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/catalystMetricItem"
+          },
+          "minItems": 1
+        },
+        "normalized_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
     }
   }
 }
