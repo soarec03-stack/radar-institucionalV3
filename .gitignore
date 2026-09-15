@@ -35,3 +35,7 @@ data/history/raw-json/*.json
 Thumbs.db
 .vscode/*.berefore_*
 *.berefore_*
+
+data/cache/sec13f/
+data/audit/sec13f/
+input/metrics_institutional_holdings_test_v3.json

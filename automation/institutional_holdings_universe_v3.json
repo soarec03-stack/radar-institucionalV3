@@ -1,0 +1,21 @@
+{
+  "version": "3.0",
+  "description": "Universo de ativos para coleta de holdings institucionais via SEC Form 13F.",
+  "assets": {
+    "VRT": {
+      "issuer_name": "Vertiv Holdings Co",
+      "cusip": "92537N108",
+      "enabled": true
+    },
+    "CRSP": {
+      "issuer_name": "CRISPR Therapeutics AG",
+      "cusip": "H17182108",
+      "enabled": true
+    },
+    "ETON": {
+      "issuer_name": "Eton Pharmaceuticals Inc",
+      "cusip": "29772L108",
+      "enabled": true
+    }
+  }
+}
