@@ -1,0 +1,131 @@
+{
+  "schema_version": "3.0",
+  "universe_version": "3.4D.1B",
+  "universe_name": "RADAR_INSTITUCIONAL_MASTER_ASSET_UNIVERSE",
+  "description": "Cadastro mestre de identidade dos ativos acompanhados pelo Radar Institucional V3. Os ativos atuais constituem universo piloto e nao representam lista fixa do sistema.",
+  "principles": {
+    "pilot_assets_are_not_hardcoded_business_rules": true,
+    "single_source_of_asset_identity": true,
+    "collectors_must_not_define_asset_identity_independently": true,
+    "ticker_only_identity_is_not_sufficient": true,
+    "market_data_must_not_be_stored_here": true,
+    "scores_must_not_be_stored_here": true,
+    "portfolio_positions_must_not_be_stored_here": true,
+    "credentials_must_not_be_stored_here": true
+  },
+  "supported_domains": [
+    "INSTITUTIONAL_HOLDINGS_13F",
+    "SHORT_INTEREST",
+    "OPTIONS",
+    "TECHNICAL",
+    "FUNDAMENTALS",
+    "MACRO"
+  ],
+  "assets": {
+    "VRT": {
+      "enabled": true,
+      "ticker": "VRT",
+      "issuer_name": "Vertiv Holdings Co",
+      "security_name": "Class A Common Stock",
+      "security_type": "COMMON_STOCK",
+      "country_of_issuer": "US",
+      "listing": {
+        "exchange": "NYSE",
+        "exchange_group": "NYSE_GROUP",
+        "currency": "USD"
+      },
+      "identifiers": {
+        "cusip": "92537N108"
+      },
+      "domain_eligibility": {
+        "INSTITUTIONAL_HOLDINGS_13F": true,
+        "SHORT_INTEREST": true,
+        "OPTIONS": null,
+        "TECHNICAL": true,
+        "FUNDAMENTALS": true,
+        "MACRO": true
+      },
+      "source_routing": {
+        "institutional_holdings": {
+          "primary_source": "SEC",
+          "dataset": "FORM_13F_DATA_SET"
+        },
+        "short_interest": {
+          "primary_source": "FINRA",
+          "dataset": "CONSOLIDATED_SHORT_INTEREST",
+          "listing_exchange_verification": "NYSE"
+        }
+      }
+    },
+    "CRSP": {
+      "enabled": true,
+      "ticker": "CRSP",
+      "issuer_name": "CRISPR Therapeutics AG",
+      "security_name": "Common Shares",
+      "security_type": "COMMON_SHARES",
+      "country_of_issuer": "CH",
+      "listing": {
+        "exchange": "NASDAQ",
+        "exchange_group": "NASDAQ",
+        "currency": "USD"
+      },
+      "identifiers": {
+        "cusip": "H17182108"
+      },
+      "domain_eligibility": {
+        "INSTITUTIONAL_HOLDINGS_13F": true,
+        "SHORT_INTEREST": true,
+        "OPTIONS": null,
+        "TECHNICAL": true,
+        "FUNDAMENTALS": true,
+        "MACRO": true
+      },
+      "source_routing": {
+        "institutional_holdings": {
+          "primary_source": "SEC",
+          "dataset": "FORM_13F_DATA_SET"
+        },
+        "short_interest": {
+          "primary_source": "FINRA",
+          "dataset": "CONSOLIDATED_SHORT_INTEREST",
+          "listing_exchange_verification": "NASDAQ"
+        }
+      }
+    },
+    "ETON": {
+      "enabled": true,
+      "ticker": "ETON",
+      "issuer_name": "Eton Pharmaceuticals Inc",
+      "security_name": "Common Stock",
+      "security_type": "COMMON_STOCK",
+      "country_of_issuer": "US",
+      "listing": {
+        "exchange": "NASDAQ",
+        "exchange_group": "NASDAQ",
+        "currency": "USD"
+      },
+      "identifiers": {
+        "cusip": "29772L108"
+      },
+      "domain_eligibility": {
+        "INSTITUTIONAL_HOLDINGS_13F": true,
+        "SHORT_INTEREST": true,
+        "OPTIONS": null,
+        "TECHNICAL": true,
+        "FUNDAMENTALS": true,
+        "MACRO": true
+      },
+      "source_routing": {
+        "institutional_holdings": {
+          "primary_source": "SEC",
+          "dataset": "FORM_13F_DATA_SET"
+        },
+        "short_interest": {
+          "primary_source": "FINRA",
+          "dataset": "CONSOLIDATED_SHORT_INTEREST",
+          "listing_exchange_verification": "NASDAQ"
+        }
+      }
+    }
+  }
+}
