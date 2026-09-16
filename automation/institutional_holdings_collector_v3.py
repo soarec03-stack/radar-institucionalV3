@@ -1,7 +1,7 @@
 """
 RADAR INSTITUCIONAL V3
 Institutional Holdings Collector
-Version: V3.4B.2 - Corporate Action Guard Integration
+Version: V3.4C.1 - Institutional Holdings Quality Gate
 
 Fonte:
     SEC Form 13F Data Sets
@@ -39,7 +39,9 @@ Controles:
 
 IMPORTANTE:
     AVAILABLE significa apenas que a metrica conseguiu ser calculada.
-    A homologacao de thresholds de qualidade sera realizada posteriormente.
+    A qualidade metodologica e avaliada por Quality Gate externo.
+    O collector le os thresholds da policy V3.4C.0 e nao atribui
+    confidence numerica.
 """
 
 from __future__ import annotations
@@ -68,7 +70,7 @@ from bs4 import BeautifulSoup
 # CONFIGURACAO
 # ============================================================
 
-COLLECTOR_VERSION = "3.4B.2"
+COLLECTOR_VERSION = "3.4C.1"
 
 SEC_BASE_URL = "https://www.sec.gov"
 
@@ -91,6 +93,10 @@ DEFAULT_CACHE_DIR = Path(
 
 DEFAULT_CORPORATE_ACTION_REGISTRY = Path(
     "automation/corporate_action_registry_v3.json"
+)
+
+DEFAULT_QUALITY_POLICY = Path(
+    "automation/institutional_holdings_quality_policy_v3.json"
 )
 
 REQUEST_TIMEOUT = 180
@@ -2097,6 +2103,271 @@ def get_corporate_action_for_window(
 
 
 # ============================================================
+# INSTITUTIONAL HOLDINGS QUALITY GATE V3.4C.1
+# ============================================================
+
+QUALITY_STATUSES = {
+    "VERIFIED",
+    "PARTIAL",
+    "INSUFFICIENT_COVERAGE",
+    "BLOCKED",
+}
+
+
+def load_quality_policy(path: Path) -> dict[str, Any]:
+    payload = read_json(path)
+
+    if payload.get("policy_name") != "INSTITUTIONAL_HOLDINGS_QUALITY_GATE":
+        raise RuntimeError("Quality Policy invalida: policy_name.")
+
+    thresholds = payload.get("thresholds")
+    blocking = payload.get("blocking_controls")
+
+    if not isinstance(thresholds, dict):
+        raise RuntimeError("Quality Policy sem thresholds.")
+
+    if not isinstance(blocking, dict):
+        raise RuntimeError("Quality Policy sem blocking_controls.")
+
+    minimum_managers = safe_int(
+        thresholds.get("minimum_comparable_managers")
+    )
+
+    coverage = thresholds.get("manager_coverage", {})
+    verified_minimum = safe_float(coverage.get("verified_minimum"))
+    partial_minimum = safe_float(coverage.get("partial_minimum"))
+
+    if minimum_managers < 1:
+        raise RuntimeError(
+            "Quality Policy: minimum_comparable_managers deve ser >= 1."
+        )
+
+    if (
+        verified_minimum is None
+        or partial_minimum is None
+        or not 0.0 <= partial_minimum <= 1.0
+        or not 0.0 <= verified_minimum <= 1.0
+        or partial_minimum >= verified_minimum
+    ):
+        raise RuntimeError("Quality Policy: thresholds de coverage invalidos.")
+
+    return payload
+
+
+def _quality_check(
+    name: str,
+    required: bool,
+    passed: bool,
+    observed: Any,
+    expected: Any,
+) -> dict[str, Any]:
+    return {
+        "control": name,
+        "required": bool(required),
+        "passed": bool(passed) if required else True,
+        "observed": observed,
+        "expected": expected,
+    }
+
+
+def evaluate_institutional_holdings_quality(
+    result: dict[str, Any],
+    config: dict[str, Any],
+    policy: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    Avalia qualidade sem recalcular a metrica.
+
+    Ordem:
+      1. blocking controls
+      2. minimum comparable managers
+      3. manager coverage
+      4. quality status
+      5. analytically usable
+
+    Thresholds quantitativos sao lidos exclusivamente da policy.
+    """
+    thresholds = policy["thresholds"]
+    blocking = policy["blocking_controls"]
+
+    minimum_managers = safe_int(
+        thresholds["minimum_comparable_managers"]
+    )
+    coverage_policy = thresholds["manager_coverage"]
+    verified_minimum = float(coverage_policy["verified_minimum"])
+    partial_minimum = float(coverage_policy["partial_minimum"])
+
+    provenance = result.get("provenance") or {}
+    corporate_action = result.get("corporate_action") or {}
+
+    current_period = result.get("current_period")
+    previous_period = result.get("previous_period")
+    comparable_managers = safe_int(result.get("comparable_managers"))
+    previous_shares = safe_float(result.get("raw_previous_shares"))
+    adjusted_metric = safe_float(result.get("adjusted_holdings_change_pct"))
+    manager_coverage = safe_float(result.get("manager_coverage"))
+    incomplete_comparable = safe_int(
+        result.get("incomplete_comparable_managers")
+    )
+
+    checks = [
+        _quality_check(
+            "CUSIP",
+            blocking.get("require_cusip") is True,
+            bool(normalize_cusip(config.get("cusip"))),
+            normalize_cusip(config.get("cusip")) or None,
+            "NON_EMPTY_VALID_NORMALIZED_CUSIP",
+        ),
+        _quality_check(
+            "TWO_PERIODS",
+            blocking.get("require_two_periods") is True,
+            bool(current_period and previous_period and current_period != previous_period),
+            {
+                "previous_period": previous_period,
+                "current_period": current_period,
+            },
+            "TWO_DISTINCT_PERIODS",
+        ),
+        _quality_check(
+            "COMPARABLE_MANAGERS",
+            blocking.get("require_comparable_managers") is True,
+            comparable_managers > 0,
+            comparable_managers,
+            "> 0",
+        ),
+        _quality_check(
+            "POSITIVE_PREVIOUS_SHARES",
+            blocking.get("require_positive_previous_shares") is True,
+            previous_shares is not None and previous_shares > 0,
+            previous_shares,
+            "> 0",
+        ),
+        _quality_check(
+            "ZERO_INCOMPLETE_COMPARABLE_STATES",
+            blocking.get("require_zero_incomplete_comparable_states") is True,
+            incomplete_comparable == 0,
+            incomplete_comparable,
+            0,
+        ),
+        _quality_check(
+            "CORPORATE_ACTION_GUARD",
+            blocking.get("require_corporate_action_guard_pass") is True,
+            corporate_action.get("guard_passed") is True,
+            {
+                "status": corporate_action.get("status"),
+                "guard_passed": corporate_action.get("guard_passed"),
+            },
+            "PASS",
+        ),
+        _quality_check(
+            "ADJUSTED_METRIC",
+            blocking.get("require_adjusted_metric") is True,
+            adjusted_metric is not None,
+            adjusted_metric,
+            "NOT_NULL",
+        ),
+        _quality_check(
+            "SEC_TIER_1_PROVENANCE",
+            blocking.get("require_sec_tier_1_provenance") is True,
+            (
+                provenance.get("source") == "SEC"
+                and provenance.get("source_type") == "FORM_13F_DATA_SET"
+                and provenance.get("tier") == policy["metric"]["required_source_tier"]
+            ),
+            {
+                "source": provenance.get("source"),
+                "source_type": provenance.get("source_type"),
+                "tier": provenance.get("tier"),
+            },
+            {
+                "source": policy["metric"]["source"],
+                "source_type": policy["metric"]["source_type"],
+                "tier": policy["metric"]["required_source_tier"],
+            },
+        ),
+        _quality_check(
+            "DATA_STATUS_AVAILABLE",
+            blocking.get("require_data_status_available") is True,
+            result.get("data_status") == "AVAILABLE",
+            result.get("data_status"),
+            "AVAILABLE",
+        ),
+    ]
+
+    failed_blocking_controls = [
+        check["control"]
+        for check in checks
+        if check["required"] and not check["passed"]
+    ]
+
+    if failed_blocking_controls:
+        quality_status = "BLOCKED"
+        analytically_usable = False
+        reason = "BLOCKING_CONTROL_FAILED"
+    elif comparable_managers < minimum_managers:
+        quality_status = "INSUFFICIENT_COVERAGE"
+        analytically_usable = False
+        reason = "MINIMUM_COMPARABLE_MANAGERS_NOT_MET"
+    elif manager_coverage is None or manager_coverage < partial_minimum:
+        quality_status = "INSUFFICIENT_COVERAGE"
+        analytically_usable = False
+        reason = "MANAGER_COVERAGE_BELOW_PARTIAL_MINIMUM"
+    elif manager_coverage < verified_minimum:
+        quality_status = "PARTIAL"
+        analytically_usable = True
+        reason = "MANAGER_COVERAGE_PARTIAL"
+    else:
+        quality_status = "VERIFIED"
+        analytically_usable = True
+        reason = "QUALITY_GATE_VERIFIED"
+
+    if quality_status not in QUALITY_STATUSES:
+        raise RuntimeError(f"Quality status invalido: {quality_status}")
+
+    return {
+        "policy_version": policy.get("policy_version"),
+        "status": quality_status,
+        "analytically_usable": analytically_usable,
+        "reason": reason,
+        "blocking_controls_passed": not failed_blocking_controls,
+        "failed_blocking_controls": failed_blocking_controls,
+        "minimum_comparable_managers": minimum_managers,
+        "comparable_managers": comparable_managers,
+        "manager_coverage": manager_coverage,
+        "manager_coverage_thresholds": {
+            "verified_minimum": verified_minimum,
+            "partial_minimum": partial_minimum,
+        },
+        "checks": checks,
+    }
+
+
+def apply_quality_gate(
+    result: dict[str, Any],
+    config: dict[str, Any],
+    policy: dict[str, Any],
+) -> None:
+    quality_gate = evaluate_institutional_holdings_quality(
+        result,
+        config,
+        policy,
+    )
+
+    result["quality_gate"] = quality_gate
+    result["quality_status"] = quality_gate["status"]
+    result["analytically_usable"] = quality_gate["analytically_usable"]
+
+    if quality_gate["status"] == "BLOCKED":
+        result["diagnostics"].append("INSTITUTIONAL_HOLDINGS_QUALITY_GATE_BLOCKED")
+    elif quality_gate["status"] == "INSUFFICIENT_COVERAGE":
+        result["diagnostics"].append(
+            "INSTITUTIONAL_HOLDINGS_INSUFFICIENT_COVERAGE"
+        )
+    elif quality_gate["status"] == "PARTIAL":
+        result["diagnostics"].append("INSTITUTIONAL_HOLDINGS_PARTIAL_QUALITY")
+
+
+# ============================================================
 # ASSET RESULT
 # ============================================================
 
@@ -2104,6 +2375,7 @@ def build_asset_result(
     ticker: str,
     config: dict[str, Any],
     corporate_action_registry: dict[str, Any],
+    quality_policy: dict[str, Any],
     asset_periods: dict[
         str,
         dict[
@@ -2526,8 +2798,6 @@ def build_asset_result(
             "CORPORATE_ACTION_GUARD_BLOCKED_ADJUSTED_METRIC"
         )
 
-    result["quality_status"] = "NOT_HOMOLOGATED"
-    result["analytically_usable"] = False
     result["provenance"]["market_date"] = current_period
     result["provenance"]["previous_market_date"] = previous_period
     result["provenance"]["cusip"] = normalize_cusip(config.get("cusip"))
@@ -2555,6 +2825,12 @@ def build_asset_result(
         ].append(
             "INCOMPLETE_COMPARABLE_MANAGER_STATES"
         )
+
+    apply_quality_gate(
+        result,
+        config,
+        quality_policy,
+    )
 
     return result
 
@@ -2677,6 +2953,7 @@ def collect(
     cache_dir: Path,
     dataset_count: int,
     corporate_action_registry_path: Path,
+    quality_policy_path: Path,
 ) -> dict[str, Any]:
 
     universe = load_universe(
@@ -2689,6 +2966,10 @@ def collect(
 
     corporate_action_registry = load_corporate_action_registry(
         corporate_action_registry_path
+    )
+
+    quality_policy = load_quality_policy(
+        quality_policy_path
     )
 
     session = build_session()
@@ -2972,6 +3253,7 @@ def collect(
             ticker,
             config,
             corporate_action_registry,
+            quality_policy,
             asset_manager_positions.get(
                 ticker,
                 {}
@@ -3077,8 +3359,17 @@ def collect(
             "published_metric_basis":
                 "ADJUSTED_HOLDINGS_CHANGE_PCT",
 
+            "quality_gate_policy":
+                str(quality_policy_path),
+
+            "quality_gate_policy_version":
+                quality_policy.get("policy_version"),
+
             "quality_thresholds":
-                "NOT_YET_HOMOLOGATED",
+                quality_policy.get("thresholds"),
+
+            "quality_gate":
+                "INSTITUTIONAL_HOLDINGS_QUALITY_GATE_V3_4C_1",
         },
 
         "datasets":
@@ -3112,7 +3403,7 @@ def parse_args() -> argparse.Namespace:
         description=(
             "Radar Institucional V3 - "
             "SEC 13F Institutional Holdings "
-            "Collector V3.4B.2"
+            "Collector V3.4C.1"
         )
     )
 
@@ -3159,6 +3450,13 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_CORPORATE_ACTION_REGISTRY,
         help="Evidence Registry homologado do Corporate Action Guard.",
+    )
+
+    parser.add_argument(
+        "--quality-policy",
+        type=Path,
+        default=DEFAULT_QUALITY_POLICY,
+        help="Policy homologada do Institutional Holdings Quality Gate.",
     )
 
     return parser.parse_args()
@@ -3214,6 +3512,13 @@ def print_asset_result(
     print(
         f"       corporate action status={ca.get('status')} "
         f"guard={'PASS' if ca.get('guard_passed') else 'BLOCK'}"
+    )
+
+    qg = result.get("quality_gate") or {}
+    print(
+        f"       quality={result.get('quality_status')} "
+        f"analytically_usable={result.get('analytically_usable')} "
+        f"reason={qg.get('reason')}"
     )
 
     print(
@@ -3333,7 +3638,7 @@ def main() -> int:
 
     print(
         f"VERSION {COLLECTOR_VERSION} "
-        "- CORPORATE ACTION GUARD INTEGRATION"
+        "- INSTITUTIONAL HOLDINGS QUALITY GATE"
     )
 
     print(
@@ -3357,6 +3662,9 @@ def main() -> int:
 
             corporate_action_registry_path=
                 args.corporate_action_registry,
+
+            quality_policy_path=
+                args.quality_policy,
         )
 
     except Exception as exc:
