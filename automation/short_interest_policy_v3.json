@@ -1,0 +1,249 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "3.4D.0",
+  "policy_name": "SHORT_INTEREST_METHODOLOGY_AND_SOURCE_POLICY",
+  "metric": {
+    "name": "short_interest_change_pct",
+    "description": "Percentual de variacao do estoque oficial de posicoes short entre dois settlement dates oficiais consecutivos da mesma security.",
+    "unit": "PERCENT",
+    "basis": "SHORT_INTEREST_SHARES_OUTSTANDING",
+    "formula": "((current_short_interest_shares - previous_short_interest_shares) / previous_short_interest_shares) * 100",
+    "interpretation_stage": "SIGNAL_ENGINE",
+    "collector_must_not_assign_signal": true,
+    "collector_must_not_assign_numeric_confidence": true
+  },
+  "temporal_policy": {
+    "comparison_basis": "CONSECUTIVE_OFFICIAL_SETTLEMENT_DATES",
+    "frequency": "SEMI_MONTHLY_OR_OFFICIAL_PUBLICATION_FREQUENCY",
+    "interpolation_allowed": false,
+    "daily_estimation_allowed": false,
+    "arbitrary_calendar_window_allowed": false,
+    "requirements": {
+      "previous_settlement_date_required": true,
+      "current_settlement_date_required": true,
+      "current_must_be_after_previous": true,
+      "consecutive_official_periods_required": true
+    }
+  },
+  "identity_policy": {
+    "ticker_only_identity_allowed": false,
+    "required_fields": [
+      "ticker",
+      "listing_exchange",
+      "security_identity"
+    ],
+    "preserve_when_available": [
+      "cusip"
+    ],
+    "comparison_requires_identity_continuity": true,
+    "identity_conflict_action": "BLOCKED"
+  },
+  "source_policy": {
+    "minimum_analytical_tier": "TIER_1",
+    "authoritative_sources": [
+      {
+        "source_id": "FINRA",
+        "tier": "TIER_1",
+        "role": "REGULATORY_AUTHORITY_AND_OFFICIAL_DATA_WHEN_APPLICABLE"
+      },
+      {
+        "source_id": "NASDAQ",
+        "tier": "TIER_1",
+        "role": "OFFICIAL_LISTING_EXCHANGE_SHORT_INTEREST"
+      },
+      {
+        "source_id": "NYSE_GROUP",
+        "tier": "TIER_1",
+        "role": "OFFICIAL_LISTING_EXCHANGE_SHORT_INTEREST"
+      }
+    ],
+    "supporting_sources": [
+      {
+        "tier": "TIER_2",
+        "publication_use": "SUPPORT_ONLY"
+      },
+      {
+        "tier": "TIER_3",
+        "publication_use": "RESEARCH_ONLY"
+      }
+    ],
+    "research_sources": [
+      {
+        "source_id": "YAHOO_FINANCE",
+        "tier": "TIER_3",
+        "publication_use": "RESEARCH_ONLY",
+        "may_authorize_final_metric": false
+      }
+    ],
+    "official_source_required_for_analytical_use": true,
+    "vendor_only_metric_analytically_usable": false
+  },
+  "short_sale_volume_policy": {
+    "daily_short_sale_volume_is_short_interest": false,
+    "daily_short_sale_volume_as_substitute_allowed": false,
+    "daily_short_sale_volume_may_be_stored_separately": true,
+    "daily_short_sale_volume_must_not_populate": "short_interest_change_pct"
+  },
+  "calculation_policy": {
+    "current_short_interest_required": true,
+    "previous_short_interest_required": true,
+    "previous_short_interest_must_be_greater_than_zero": true,
+    "missing_value_is_zero": false,
+    "missing_value_is_neutral": false,
+    "estimate_missing_values": false,
+    "infinite_percentage_allowed": false,
+    "calculation_precision_decimals": 6,
+    "preserve_raw_values": true
+  },
+  "corporate_action_policy": {
+    "reconciliation_required": true,
+    "infer_action_from_short_interest_change": false,
+    "double_adjustment_allowed": false,
+    "statuses": [
+      "NOT_CHECKED",
+      "NO_ACTION",
+      "SOURCE_ADJUSTED",
+      "VERIFIED_ACTION",
+      "UNRESOLVED"
+    ],
+    "rules": {
+      "NOT_CHECKED": {
+        "analytically_usable": false,
+        "action": "BLOCK"
+      },
+      "NO_ACTION": {
+        "analytically_usable": true,
+        "action": "PASS"
+      },
+      "SOURCE_ADJUSTED": {
+        "analytically_usable": true,
+        "action": "PASS_WITHOUT_ADDITIONAL_ADJUSTMENT"
+      },
+      "VERIFIED_ACTION": {
+        "analytically_usable": true,
+        "action": "APPLY_ONLY_DOCUMENTED_RECONCILIATION"
+      },
+      "UNRESOLVED": {
+        "analytically_usable": false,
+        "action": "BLOCK"
+      }
+    }
+  },
+  "output_contract": {
+    "required_fields": [
+      "ticker",
+      "security_identity",
+      "listing_exchange",
+      "previous_settlement_date",
+      "current_settlement_date",
+      "previous_short_interest_shares",
+      "current_short_interest_shares",
+      "short_interest_change_shares",
+      "short_interest_change_pct",
+      "corporate_action_status",
+      "data_status",
+      "quality_status",
+      "analytically_usable",
+      "provenance",
+      "diagnostics"
+    ],
+    "optional_fields": [
+      "cusip",
+      "previous_days_to_cover",
+      "current_days_to_cover",
+      "previous_average_daily_volume",
+      "current_average_daily_volume"
+    ]
+  },
+  "data_statuses": [
+    "AVAILABLE",
+    "UNAVAILABLE"
+  ],
+  "quality_gate": {
+    "fail_closed": true,
+    "statuses": [
+      "VERIFIED",
+      "PARTIAL",
+      "BLOCKED",
+      "UNAVAILABLE"
+    ],
+    "blocking_controls": {
+      "security_identity_valid": true,
+      "listing_exchange_known": true,
+      "official_tier_1_source": true,
+      "two_consecutive_settlement_dates": true,
+      "current_short_interest_present": true,
+      "previous_short_interest_present": true,
+      "previous_short_interest_greater_than_zero": true,
+      "corporate_action_reconciliation_passed": true,
+      "identity_continuity_passed": true
+    },
+    "classification": {
+      "VERIFIED": {
+        "blocking_controls_must_pass": true,
+        "critical_metric_complete": true,
+        "analytically_usable": true
+      },
+      "PARTIAL": {
+        "blocking_controls_must_pass": true,
+        "critical_metric_complete": true,
+        "auxiliary_data_may_be_missing": true,
+        "analytically_usable": true
+      },
+      "BLOCKED": {
+        "any_blocking_control_failed": true,
+        "analytically_usable": false
+      },
+      "UNAVAILABLE": {
+        "critical_metric_not_calculable": true,
+        "analytically_usable": false
+      }
+    },
+    "partial_must_not_bypass_blocking_control": true
+  },
+  "provenance_policy": {
+    "required": true,
+    "required_fields": [
+      "source",
+      "source_tier",
+      "retrieved_at"
+    ],
+    "preserve_source_settlement_date": true,
+    "preserve_source_security_identity": true,
+    "preserve_source_url_when_available": true
+  },
+  "missing_data_policy": {
+    "missing_is_zero": false,
+    "missing_is_neutral": false,
+    "missing_is_estimated": false,
+    "current_missing_action": "UNAVAILABLE",
+    "previous_missing_action": "UNAVAILABLE",
+    "previous_zero_action": "UNAVAILABLE",
+    "identity_conflict_action": "BLOCKED",
+    "corporate_action_unresolved_action": "BLOCKED",
+    "non_official_source_only_action": "RESEARCH_ONLY"
+  },
+  "engine_boundaries": {
+    "collector_may_calculate_fact": true,
+    "collector_may_evaluate_quality": true,
+    "collector_may_assign_signal": false,
+    "collector_may_assign_numeric_confidence": false,
+    "collector_may_modify_radar_score": false,
+    "collector_may_modify_decision": false,
+    "signal_engine_integration_enabled": false,
+    "confidence_engine_integration_enabled": false,
+    "score_engine_integration_enabled": false
+  },
+  "methodology_principles": [
+    "SHORT_INTEREST_IS_AN_OPEN_POSITION_SNAPSHOT_NOT_DAILY_SHORT_SALE_VOLUME",
+    "MISSING_IS_NOT_ZERO",
+    "MISSING_IS_NOT_NEUTRAL",
+    "DO_NOT_INTERPOLATE_OFFICIAL_SETTLEMENT_DATES",
+    "DO_NOT_ESTIMATE_MISSING_SHORT_INTEREST",
+    "DO_NOT_USE_TICKER_ONLY_AS_SECURITY_IDENTITY",
+    "DO_NOT_DOUBLE_ADJUST_CORPORATE_ACTIONS",
+    "DO_NOT_USE_NON_OFFICIAL_VENDOR_DATA_TO_AUTHORIZE_FINAL_ANALYTICAL_METRIC",
+    "PRESERVE_FACT_QUALITY_AND_ANALYTICAL_USABILITY_AS_SEPARATE_CONCEPTS",
+    "FAIL_CLOSED_ON_IDENTITY_OR_CORPORATE_ACTION_UNCERTAINTY"
+  ]
+}
