@@ -73,6 +73,9 @@ REQUIRED_LISTING_FIELDS = {
 # Nesta etapa validamos formato/duplicidade, não fazemos lookup externo.
 CUSIP_PATTERN = re.compile(r"^[A-Z0-9]{9}$")
 
+# SEC Central Index Key (CIK), armazenado como string canonica de 10 digitos.
+SEC_CIK_PATTERN = re.compile(r"^[0-9]{10}$")
+
 # Ticker deliberadamente conservador.
 # Permite exemplos como BRK.B e BF-B sem vincular o sistema
 # aos três ativos piloto.
@@ -433,7 +436,7 @@ def validate_identifiers(
     cusip = identifiers.get("cusip")
 
     # CUSIP continua requerido para o universo piloto atual,
-    # pois o domínio 13F homologado depende dele.
+    # pois o dominio 13F homologado depende dele.
     if not is_non_empty_string(cusip):
         add_error(
             issues,
@@ -441,21 +444,39 @@ def validate_identifiers(
             f"{location}.cusip",
             "CUSIP obrigatorio para o contrato mestre atual.",
         )
-        return
+    else:
+        normalized = cusip.strip().upper()
 
-    normalized = cusip.strip().upper()
+        if not CUSIP_PATTERN.fullmatch(normalized):
+            add_error(
+                issues,
+                "INVALID_CUSIP_FORMAT",
+                f"{location}.cusip",
+                (
+                    "CUSIP deve possuir exatamente "
+                    "9 caracteres alfanumericos."
+                ),
+            )
 
-    if not CUSIP_PATTERN.fullmatch(normalized):
+    sec_cik = identifiers.get("sec_cik")
+
+    if not is_non_empty_string(sec_cik):
         add_error(
             issues,
-            "INVALID_CUSIP_FORMAT",
-            f"{location}.cusip",
-            (
-                "CUSIP deve possuir exatamente "
-                "9 caracteres alfanumericos."
-            ),
+            "SEC_CIK_REQUIRED",
+            f"{location}.sec_cik",
+            "SEC CIK obrigatorio para o contrato mestre atual.",
         )
+    else:
+        sec_cik_normalized = sec_cik.strip()
 
+        if not SEC_CIK_PATTERN.fullmatch(sec_cik_normalized):
+            add_error(
+                issues,
+                "SEC_CIK_INVALID",
+                f"{location}.sec_cik",
+                "SEC CIK deve possuir exatamente 10 digitos numericos.",
+            )
 
 def validate_domain_eligibility(
     base: str,
@@ -555,6 +576,7 @@ def validate_cross_asset_uniqueness(
 ) -> None:
     seen_tickers: dict[str, str] = {}
     seen_cusips: dict[str, str] = {}
+    seen_sec_ciks: dict[str, str] = {}
 
     for asset_key, asset in assets.items():
         if not isinstance(asset, dict):
@@ -564,7 +586,6 @@ def validate_cross_asset_uniqueness(
 
         if is_non_empty_string(ticker):
             ticker_normalized = ticker.strip().upper()
-
             previous = seen_tickers.get(ticker_normalized)
 
             if previous is not None and previous != asset_key:
@@ -572,10 +593,7 @@ def validate_cross_asset_uniqueness(
                     issues,
                     "DUPLICATE_TICKER",
                     f"assets.{asset_key}.ticker",
-                    (
-                        f"Ticker {ticker_normalized} tambem "
-                        f"utilizado por {previous}."
-                    ),
+                    f"Ticker {ticker_normalized} tambem utilizado por {previous}.",
                 )
             else:
                 seen_tickers[ticker_normalized] = asset_key
@@ -589,7 +607,6 @@ def validate_cross_asset_uniqueness(
 
         if is_non_empty_string(cusip):
             cusip_normalized = cusip.strip().upper()
-
             previous = seen_cusips.get(cusip_normalized)
 
             if previous is not None and previous != asset_key:
@@ -597,14 +614,28 @@ def validate_cross_asset_uniqueness(
                     issues,
                     "DUPLICATE_CUSIP",
                     f"assets.{asset_key}.identifiers.cusip",
-                    (
-                        f"CUSIP {cusip_normalized} tambem "
-                        f"utilizado por {previous}."
-                    ),
+                    f"CUSIP {cusip_normalized} tambem utilizado por {previous}.",
                 )
             else:
                 seen_cusips[cusip_normalized] = asset_key
 
+        sec_cik = identifiers.get("sec_cik")
+
+        if is_non_empty_string(sec_cik):
+            sec_cik_normalized = sec_cik.strip()
+
+            if SEC_CIK_PATTERN.fullmatch(sec_cik_normalized):
+                previous = seen_sec_ciks.get(sec_cik_normalized)
+
+                if previous is not None and previous != asset_key:
+                    add_error(
+                        issues,
+                        "DUPLICATE_SEC_CIK",
+                        f"assets.{asset_key}.identifiers.sec_cik",
+                        f"SEC CIK {sec_cik_normalized} tambem utilizado por {previous}.",
+                    )
+                else:
+                    seen_sec_ciks[sec_cik_normalized] = asset_key
 
 def validate_universe(
     universe: dict[str, Any],

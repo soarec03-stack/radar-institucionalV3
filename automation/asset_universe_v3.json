@@ -35,7 +35,8 @@
         "currency": "USD"
       },
       "identifiers": {
-        "cusip": "92537N108"
+        "cusip": "92537N108",
+        "sec_cik": "0001674101"
       },
       "domain_eligibility": {
         "INSTITUTIONAL_HOLDINGS_13F": true,
@@ -70,7 +71,8 @@
         "currency": "USD"
       },
       "identifiers": {
-        "cusip": "H17182108"
+        "cusip": "H17182108",
+        "sec_cik": "0001674416"
       },
       "domain_eligibility": {
         "INSTITUTIONAL_HOLDINGS_13F": true,
@@ -105,7 +107,8 @@
         "currency": "USD"
       },
       "identifiers": {
-        "cusip": "29772L108"
+        "cusip": "29772L108",
+        "sec_cik": "0001710340"
       },
       "domain_eligibility": {
         "INSTITUTIONAL_HOLDINGS_13F": true,
