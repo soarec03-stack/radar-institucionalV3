@@ -39,3 +39,4 @@ Thumbs.db
 data/cache/sec13f/
 data/audit/sec13f/
 input/metrics_institutional_holdings_test_v3.json
+input/corporate_action_guard_test_v3.json

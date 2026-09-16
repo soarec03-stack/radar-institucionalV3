@@ -1,0 +1,84 @@
+{
+  "version": "3.4B.1",
+  "name": "Corporate Action Guard Policy",
+  "principles": {
+    "absence_of_evidence_is_not_no_action": true,
+    "do_not_infer_action_from_holdings_change": true,
+    "verified_action_required_for_adjustment": true,
+    "preserve_raw_values": true,
+    "fail_closed_on_unresolved": true
+  },
+  "statuses": {
+    "NOT_CHECKED": "Janela ainda nao homologada.",
+    "NO_ACTION": "Revisao concluida; nenhuma acao aplicavel.",
+    "VERIFIED_ACTION": "Acao confirmada com parametros suficientes.",
+    "UNRESOLVED": "Evidencia incompleta ou conflitante; ajuste bloqueado."
+  },
+  "action_types": [
+    "NONE",
+    "STOCK_SPLIT",
+    "REVERSE_STOCK_SPLIT",
+    "CUSIP_CHANGE",
+    "RECLASSIFICATION",
+    "OTHER",
+    "UNKNOWN"
+  ],
+  "source_policy": {
+    "authoritative": [
+      {
+        "source_type": "SEC_FILING",
+        "tier": "TIER_1"
+      },
+      {
+        "source_type": "OFFICIAL_EXCHANGE_NOTICE",
+        "tier": "TIER_1"
+      },
+      {
+        "source_type": "ISSUER_INVESTOR_RELATIONS",
+        "tier": "TIER_1"
+      }
+    ],
+    "supporting_only": [
+      {
+        "source_type": "MARKET_DATA_VENDOR",
+        "tier": "TIER_2_OR_3"
+      }
+    ],
+    "research_only": [
+      {
+        "source_type": "YAHOO_FINANCE",
+        "tier": "TIER_3"
+      }
+    ]
+  },
+  "verification_rules": {
+    "no_action": {
+      "minimum_authoritative_sources": 1,
+      "requires_window_review_completed": true,
+      "requires_identity_continuity_review": true
+    },
+    "verified_action": {
+      "minimum_authoritative_sources": 1,
+      "required_fields_for_share_adjustment": [
+        "action_type",
+        "effective_date",
+        "ratio_numerator",
+        "ratio_denominator"
+      ]
+    },
+    "unresolved_when": [
+      "authoritative_sources_conflict",
+      "action_suspected_but_ratio_missing",
+      "identity_change_not_reconciled",
+      "source_review_incomplete"
+    ]
+  },
+  "adjustment": {
+    "stock_split_factor": "ratio_numerator / ratio_denominator",
+    "reverse_stock_split_factor": "ratio_numerator / ratio_denominator",
+    "adjusted_previous_shares": "raw_previous_shares * adjustment_factor",
+    "adjusted_holdings_change_pct": "((raw_current_shares - adjusted_previous_shares) / adjusted_previous_shares) * 100",
+    "no_action_factor": 1.0,
+    "unresolved_adjusted_value": null
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "schema_version": "3.0",
+  "registry_version": "3.4B.1B",
+  "description": "Evidence Registry do Corporate Action Guard. Revisao homologada para a janela 31-MAR-2026 -> 30-JUN-2026. NO_ACTION significa que o procedimento de revisao definido pela politica foi concluido sem identificar stock split/reverse stock split ou mudanca de identidade que exija ajuste de shares na comparacao 13F.",
+  "comparison_window": {
+    "previous_period": "31-MAR-2026",
+    "current_period": "30-JUN-2026"
+  },
+  "review_methodology": {
+    "version": "V3.4B.1B",
+    "primary_source": "SEC_EDGAR",
+    "scope": [
+      "issuer_identity_continuity",
+      "listed_security_class_continuity",
+      "ticker_continuity",
+      "share_adjusting_corporate_actions"
+    ],
+    "important_limitation": "NO_ACTION nao prova inexistencia absoluta de qualquer corporate action. Registra que a revisao oficial da janela nao identificou acao share-adjusting aplicavel ao calculo de holdings."
+  },
+  "assets": {
+    "VRT": {
+      "issuer_name": "Vertiv Holdings Co",
+      "cusip": "92537N108",
+      "status": "NO_ACTION",
+      "action_type": "NONE",
+      "effective_date": null,
+      "ratio_numerator": null,
+      "ratio_denominator": null,
+      "old_cusip": "92537N108",
+      "new_cusip": "92537N108",
+      "window_review_completed": true,
+      "identity_continuity_review": true,
+      "verified": true,
+      "adjustment_required": false,
+      "evidence": [
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "10-Q",
+          "period_of_report": "2026-03-31",
+          "filing_date": "2026-04-22",
+          "accession_number": "0001628280-26-026556",
+          "issuer": "Vertiv Holdings Co",
+          "review_scope": "IDENTITY_AND_SECURITY_CLASS",
+          "finding": "CLASS_A_COMMON_STOCK_VRT_NYSE_CONFIRMED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1674101/000162828026026556/vrt-20260331.htm"
+        },
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "8-K",
+          "period_of_report": "2026-06-17",
+          "filing_date": "2026-06-17",
+          "accession_number": "0001628280-26-044317",
+          "issuer": "Vertiv Holdings Co",
+          "review_scope": "WINDOW_CONTINUITY",
+          "finding": "CLASS_A_COMMON_STOCK_VRT_CONTINUITY_CONFIRMED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1674101/000162828026044317/vrt-20260617.htm"
+        },
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "10-Q",
+          "period_of_report": "2026-06-30",
+          "filing_date": "2026-07-29",
+          "accession_number": "0001628280-26-050609",
+          "issuer": "Vertiv Holdings Co",
+          "review_scope": "IDENTITY_AND_SECURITY_CLASS",
+          "finding": "ENDPOINT_REVIEW_NO_SHARE_ADJUSTING_ACTION_IDENTIFIED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1674101/000162828026050609/vrt-20260630.htm"
+        }
+      ],
+      "notes": "SEC filings confirm continuity of Vertiv Class A common stock / VRT. No share-adjusting action applicable to the comparison window was identified. CUSIP values remain sourced from the separately controlled 13F universe."
+    },
+    "CRSP": {
+      "issuer_name": "CRISPR Therapeutics AG",
+      "cusip": "H17182108",
+      "status": "NO_ACTION",
+      "action_type": "NONE",
+      "effective_date": null,
+      "ratio_numerator": null,
+      "ratio_denominator": null,
+      "old_cusip": "H17182108",
+      "new_cusip": "H17182108",
+      "window_review_completed": true,
+      "identity_continuity_review": true,
+      "verified": true,
+      "adjustment_required": false,
+      "evidence": [
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "10-Q",
+          "period_of_report": "2026-03-31",
+          "filing_date": "2026-05-04",
+          "accession_number": "0001193125-26-204188",
+          "issuer": "CRISPR Therapeutics AG",
+          "review_scope": "IDENTITY_AND_SECURITY_CLASS",
+          "finding": "COMMON_SHARES_CRSP_CONTINUITY_CONFIRMED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1674416/000119312526204188/crsp-20260331.htm"
+        },
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "10-Q",
+          "period_of_report": "2026-06-30",
+          "filing_date": "2026-08-03",
+          "accession_number": "0001193125-26-330672",
+          "issuer": "CRISPR Therapeutics AG",
+          "review_scope": "IDENTITY_AND_SECURITY_CLASS",
+          "finding": "COMMON_SHARES_CHF_0_03_CRSP_NASDAQ_CONFIRMED_NO_SHARE_ADJUSTING_ACTION_IDENTIFIED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1674416/000119312526330672/crsp-20260630.htm"
+        }
+      ],
+      "notes": "Q1/Q2 SEC filings preserve CRISPR Therapeutics AG common shares and ticker CRSP. No share-adjusting action applicable to the comparison window was identified. CUSIP values remain sourced from the separately controlled 13F universe."
+    },
+    "ETON": {
+      "issuer_name": "Eton Pharmaceuticals Inc",
+      "cusip": "29772L108",
+      "status": "NO_ACTION",
+      "action_type": "NONE",
+      "effective_date": null,
+      "ratio_numerator": null,
+      "ratio_denominator": null,
+      "old_cusip": "29772L108",
+      "new_cusip": "29772L108",
+      "window_review_completed": true,
+      "identity_continuity_review": true,
+      "verified": true,
+      "adjustment_required": false,
+      "evidence": [
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "10-Q",
+          "period_of_report": "2026-03-31",
+          "filing_date": "2026-05-14",
+          "accession_number": "0001437749-26-017064",
+          "issuer": "Eton Pharmaceuticals Inc",
+          "review_scope": "IDENTITY_AND_CAPITAL_STRUCTURE",
+          "finding": "COMMON_STOCK_CONTINUITY_AND_Q1_ISSUANCE_SOURCES_REVIEWED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1710340/000143774926017064/eton20260331_10q.htm"
+        },
+        {
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "document_type": "10-Q",
+          "period_of_report": "2026-06-30",
+          "filing_date": "2026-08-13",
+          "accession_number": "0001437749-26-027684",
+          "issuer": "Eton Pharmaceuticals Inc",
+          "review_scope": "IDENTITY_AND_CAPITAL_STRUCTURE",
+          "finding": "COMMON_STOCK_ETON_NASDAQ_CONTINUITY_AND_Q2_ISSUANCE_SOURCES_REVIEWED_NO_SHARE_ADJUSTING_ACTION_IDENTIFIED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1710340/000143774926027684/eton20260630_10q.htm"
+        }
+      ],
+      "notes": "Q2 SEC filing confirms common stock $0.001 / ETON / Nasdaq and explains share changes through option exercises, RSU activity and warrant exercise rather than a stock split or reverse stock split. CUSIP values remain sourced from the separately controlled 13F universe."
+    }
+  }
+}
