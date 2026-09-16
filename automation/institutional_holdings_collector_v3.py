@@ -1,7 +1,7 @@
 """
 RADAR INSTITUCIONAL V3
 Institutional Holdings Collector
-Version: V3.4A.5 - Amendment Reconstruction Correction
+Version: V3.4B.2 - Corporate Action Guard Integration
 
 Fonte:
     SEC Form 13F Data Sets
@@ -68,7 +68,7 @@ from bs4 import BeautifulSoup
 # CONFIGURACAO
 # ============================================================
 
-COLLECTOR_VERSION = "3.4A.5"
+COLLECTOR_VERSION = "3.4B.2"
 
 SEC_BASE_URL = "https://www.sec.gov"
 
@@ -87,6 +87,10 @@ DEFAULT_OUTPUT = Path(
 
 DEFAULT_CACHE_DIR = Path(
     "data/cache/sec13f"
+)
+
+DEFAULT_CORPORATE_ACTION_REGISTRY = Path(
+    "automation/corporate_action_registry_v3.json"
 )
 
 REQUEST_TIMEOUT = 180
@@ -1989,12 +1993,117 @@ def build_asset_manager_positions(
 
 
 # ============================================================
+# CORPORATE ACTION GUARD V3.4B.1 INTEGRATION
+# ============================================================
+
+CA_SHARE_TYPES = {"STOCK_SPLIT", "REVERSE_STOCK_SPLIT"}
+
+def load_corporate_action_registry(path: Path) -> dict[str, Any]:
+    payload = read_json(path)
+    if not isinstance(payload.get("assets"), dict) or not payload["assets"]:
+        raise RuntimeError("Corporate Action Registry sem assets.")
+    return payload
+
+def get_corporate_action_for_window(
+    registry: dict[str, Any],
+    ticker: str,
+    previous_period: str,
+    current_period: str,
+) -> dict[str, Any]:
+    result = {
+        "status": "NOT_CHECKED",
+        "action_type": "UNKNOWN",
+        "verified": False,
+        "guard_passed": False,
+        "adjustment_authorized": False,
+        "adjustment_factor": None,
+        "adjustment_required": False,
+        "effective_date": None,
+        "evidence_count": 0,
+        "diagnostics": [],
+    }
+    window = registry.get("comparison_window", {})
+    if (
+        window.get("previous_period") != previous_period
+        or window.get("current_period") != current_period
+    ):
+        result["status"] = "UNRESOLVED"
+        result["diagnostics"].append("CORPORATE_ACTION_WINDOW_MISMATCH")
+        return result
+
+    entry = registry.get("assets", {}).get(ticker)
+    if not isinstance(entry, dict):
+        result["diagnostics"].append("CORPORATE_ACTION_REGISTRY_ENTRY_MISSING")
+        return result
+
+    status = entry.get("status")
+    action_type = entry.get("action_type")
+    result.update({
+        "status": status,
+        "action_type": action_type,
+        "verified": bool(entry.get("verified", False)),
+        "adjustment_required": bool(entry.get("adjustment_required", False)),
+        "effective_date": entry.get("effective_date"),
+        "evidence_count": len(entry.get("evidence", [])),
+    })
+
+    if status == "NO_ACTION":
+        valid = (
+            action_type == "NONE"
+            and entry.get("verified") is True
+            and entry.get("window_review_completed") is True
+            and entry.get("identity_continuity_review") is True
+            and bool(entry.get("evidence"))
+            and entry.get("adjustment_required") is False
+        )
+        if not valid:
+            result["status"] = "UNRESOLVED"
+            result["diagnostics"].append("CORPORATE_ACTION_NO_ACTION_EVIDENCE_INVALID")
+            return result
+        result.update(
+            guard_passed=True,
+            adjustment_authorized=True,
+            adjustment_factor=1.0,
+        )
+        return result
+
+    if status == "VERIFIED_ACTION":
+        n = safe_float(entry.get("ratio_numerator"))
+        d = safe_float(entry.get("ratio_denominator"))
+        valid = (
+            action_type in CA_SHARE_TYPES
+            and entry.get("verified") is True
+            and bool(entry.get("effective_date"))
+            and bool(entry.get("evidence"))
+            and n is not None and n > 0
+            and d is not None and d > 0
+        )
+        if not valid:
+            result["status"] = "UNRESOLVED"
+            result["diagnostics"].append("CORPORATE_ACTION_VERIFIED_ACTION_INVALID")
+            return result
+        result.update(
+            guard_passed=True,
+            adjustment_authorized=True,
+            adjustment_factor=n / d,
+        )
+        return result
+
+    if status == "UNRESOLVED":
+        result["diagnostics"].append("CORPORATE_ACTION_UNRESOLVED")
+    else:
+        result["diagnostics"].append("CORPORATE_ACTION_SOURCE_REVIEW_REQUIRED")
+    return result
+
+
+# ============================================================
 # ASSET RESULT
 # ============================================================
 
 def build_asset_result(
     ticker: str,
     config: dict[str, Any],
+    corporate_action_registry: dict[str, Any],
     asset_periods: dict[
         str,
         dict[
@@ -2053,6 +2162,30 @@ def build_asset_result(
             None,
 
         "previous_shares":
+            None,
+
+        "raw_current_shares":
+            None,
+
+        "raw_previous_shares":
+            None,
+
+        "raw_holdings_change_pct":
+            None,
+
+        "adjusted_current_shares":
+            None,
+
+        "adjusted_previous_shares":
+            None,
+
+        "adjusted_holdings_change_pct":
+            None,
+
+        "corporate_action_adjustment_factor":
+            None,
+
+        "corporate_action":
             None,
 
         "current_total_shares":
@@ -2274,6 +2407,12 @@ def build_asset_result(
                     6
                 ),
 
+            "raw_current_shares":
+                round(comparable_current_shares, 6),
+
+            "raw_previous_shares":
+                round(comparable_previous_shares, 6),
+
             "current_total_shares":
                 round(
                     current_total_shares,
@@ -2340,69 +2479,58 @@ def build_asset_result(
 
         return result
 
-    change_pct = (
-        (
-            comparable_current_shares
-            -
-            comparable_previous_shares
+    raw_change_pct = (
+        (comparable_current_shares - comparable_previous_shares)
+        / comparable_previous_shares
+        * 100.0
+    )
+    result["raw_holdings_change_pct"] = round(raw_change_pct, 6)
+
+    corporate_action = get_corporate_action_for_window(
+        corporate_action_registry,
+        ticker,
+        previous_period,
+        current_period,
+    )
+    result["corporate_action"] = corporate_action
+    factor = corporate_action.get("adjustment_factor")
+    result["corporate_action_adjustment_factor"] = factor
+
+    if corporate_action.get("guard_passed") and factor is not None:
+        adjusted_previous = comparable_previous_shares * factor
+        adjusted_current = comparable_current_shares
+
+        if adjusted_previous <= 0:
+            result["diagnostics"].append("INVALID_ADJUSTED_PREVIOUS_SHARES")
+            return result
+
+        adjusted_change_pct = (
+            (adjusted_current - adjusted_previous)
+            / adjusted_previous
+            * 100.0
         )
-        /
-        comparable_previous_shares
-        *
-        100.0
-    )
+        result["adjusted_previous_shares"] = round(adjusted_previous, 6)
+        result["adjusted_current_shares"] = round(adjusted_current, 6)
+        result["adjusted_holdings_change_pct"] = round(adjusted_change_pct, 6)
 
-    result[
-        "value"
-    ] = round(
-        change_pct,
-        6
-    )
-
-    result[
-        "data_status"
-    ] = "AVAILABLE"
-
-    result[
-        "status"
-    ] = "AVAILABLE"
-
-    # Deliberadamente ainda nao homologado.
-    result[
-        "quality_status"
-    ] = "NOT_HOMOLOGATED"
-
-    result[
-        "analytically_usable"
-    ] = False
-
-    result[
-        "provenance"
-    ][
-        "status"
-    ] = "VERIFIED"
-
-    result[
-        "provenance"
-    ][
-        "market_date"
-    ] = current_period
-
-    result[
-        "provenance"
-    ][
-        "previous_market_date"
-    ] = previous_period
-
-    result[
-        "provenance"
-    ][
-        "cusip"
-    ] = normalize_cusip(
-        config.get(
-            "cusip"
+        # value passa a ser a metrica ajustada. Raw permanece preservado.
+        result["value"] = round(adjusted_change_pct, 6)
+        result["data_status"] = "AVAILABLE"
+        result["status"] = "AVAILABLE"
+        result["provenance"]["status"] = "VERIFIED"
+    else:
+        result["value"] = None
+        result["data_status"] = "UNAVAILABLE"
+        result["status"] = "UNAVAILABLE"
+        result["diagnostics"].append(
+            "CORPORATE_ACTION_GUARD_BLOCKED_ADJUSTED_METRIC"
         )
-    )
+
+    result["quality_status"] = "NOT_HOMOLOGATED"
+    result["analytically_usable"] = False
+    result["provenance"]["market_date"] = current_period
+    result["provenance"]["previous_market_date"] = previous_period
+    result["provenance"]["cusip"] = normalize_cusip(config.get("cusip"))
 
     if incomplete_current > 0:
 
@@ -2548,6 +2676,7 @@ def collect(
     output_path: Path,
     cache_dir: Path,
     dataset_count: int,
+    corporate_action_registry_path: Path,
 ) -> dict[str, Any]:
 
     universe = load_universe(
@@ -2556,6 +2685,10 @@ def collect(
 
     cusip_map = build_cusip_map(
         universe
+    )
+
+    corporate_action_registry = load_corporate_action_registry(
+        corporate_action_registry_path
     )
 
     session = build_session()
@@ -2838,6 +2971,7 @@ def collect(
         ] = build_asset_result(
             ticker,
             config,
+            corporate_action_registry,
             asset_manager_positions.get(
                 ticker,
                 {}
@@ -2911,7 +3045,7 @@ def collect(
                 "VERIFIED_CUSIP_ONLY",
 
             "amendment_policy":
-                "STATE_MACHINE_V3_4A_5",
+                "STATE_MACHINE_V3_4A_5_PLUS_CORPORATE_ACTION_GUARD_V3_4B_1",
 
             "original_policy":
                 "INITIAL_STATE",
@@ -2930,6 +3064,18 @@ def collect(
 
             "restatement_completeness_policy":
                 "FULL_REPLACEMENT_RESTORES_COMPLETE",
+
+            "corporate_action_policy":
+                "FAIL_CLOSED_EVIDENCE_REGISTRY",
+
+            "corporate_action_registry":
+                str(corporate_action_registry_path),
+
+            "raw_metric_preserved":
+                True,
+
+            "published_metric_basis":
+                "ADJUSTED_HOLDINGS_CHANGE_PCT",
 
             "quality_thresholds":
                 "NOT_YET_HOMOLOGATED",
@@ -2966,7 +3112,7 @@ def parse_args() -> argparse.Namespace:
         description=(
             "Radar Institucional V3 - "
             "SEC 13F Institutional Holdings "
-            "Collector V3.4A.5"
+            "Collector V3.4B.2"
         )
     )
 
@@ -3006,6 +3152,13 @@ def parse_args() -> argparse.Namespace:
             "Quantidade dos datasets SEC "
             "mais recentes a processar."
         ),
+    )
+
+    parser.add_argument(
+        "--corporate-action-registry",
+        type=Path,
+        default=DEFAULT_CORPORATE_ACTION_REGISTRY,
+        help="Evidence Registry homologado do Corporate Action Guard.",
     )
 
     return parser.parse_args()
@@ -3052,6 +3205,18 @@ def print_asset_result(
     )
 
     print(
+        f"       raw={result.get('raw_holdings_change_pct')}% "
+        f"adjusted={result.get('adjusted_holdings_change_pct')}% "
+        f"factor={result.get('corporate_action_adjustment_factor')}"
+    )
+
+    ca = result.get("corporate_action") or {}
+    print(
+        f"       corporate action status={ca.get('status')} "
+        f"guard={'PASS' if ca.get('guard_passed') else 'BLOCK'}"
+    )
+
+    print(
         f"       managers "
         f"current="
         f"{result['current_managers']} "
@@ -3089,7 +3254,7 @@ def print_baseline_comparison(
     print()
 
     print(
-        "COMPARACAO V3.4A.2 x V3.4A.5"
+        f"COMPARACAO V3.4A.2 x V{COLLECTOR_VERSION}"
     )
 
     print(
@@ -3168,7 +3333,7 @@ def main() -> int:
 
     print(
         f"VERSION {COLLECTOR_VERSION} "
-        "- AMENDMENT RECONSTRUCTION CORRECTION"
+        "- CORPORATE ACTION GUARD INTEGRATION"
     )
 
     print(
@@ -3189,6 +3354,9 @@ def main() -> int:
 
             dataset_count=
                 args.datasets,
+
+            corporate_action_registry_path=
+                args.corporate_action_registry,
         )
 
     except Exception as exc:
