@@ -1,0 +1,92 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "3.4C.0",
+  "policy_name": "INSTITUTIONAL_HOLDINGS_QUALITY_GATE",
+  "description": "Politica homologavel de qualidade para a metrica institutional_holdings_change_pct. Define controles bloqueantes, cobertura minima e tamanho minimo da amostra antes da implementacao do Quality Gate no collector.",
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed_on_blocking_control": true,
+    "missing_is_not_neutral": true,
+    "do_not_invent_data": true,
+    "data_availability_is_not_quality": true,
+    "partial_data_may_be_analytically_usable": true,
+    "collector_does_not_assign_numeric_confidence": true
+  },
+  "metric": {
+    "name": "institutional_holdings_change_pct",
+    "calculation_basis": "ADJUSTED_HOLDINGS_CHANGE_PCT",
+    "raw_metric_preserved": true,
+    "comparison_scope": "COMPARABLE_MANAGERS",
+    "source": "SEC",
+    "source_type": "FORM_13F_DATA_SET",
+    "required_source_tier": "TIER_1"
+  },
+  "thresholds": {
+    "minimum_comparable_managers": 20,
+    "manager_coverage": {
+      "verified_minimum": 0.8,
+      "partial_minimum": 0.6
+    }
+  },
+  "blocking_controls": {
+    "require_cusip": true,
+    "require_two_periods": true,
+    "require_comparable_managers": true,
+    "require_positive_previous_shares": true,
+    "require_zero_incomplete_comparable_states": true,
+    "require_corporate_action_guard_pass": true,
+    "require_adjusted_metric": true,
+    "require_sec_tier_1_provenance": true,
+    "require_data_status_available": true
+  },
+  "quality_statuses": {
+    "VERIFIED": {
+      "analytically_usable": true,
+      "requirements": {
+        "blocking_controls": "PASS",
+        "minimum_comparable_managers": 20,
+        "manager_coverage_gte": 0.8
+      }
+    },
+    "PARTIAL": {
+      "analytically_usable": true,
+      "requirements": {
+        "blocking_controls": "PASS",
+        "minimum_comparable_managers": 20,
+        "manager_coverage_gte": 0.6,
+        "manager_coverage_lt": 0.8
+      }
+    },
+    "INSUFFICIENT_COVERAGE": {
+      "analytically_usable": false,
+      "requirements": {
+        "blocking_controls": "PASS",
+        "condition": "manager_coverage < 0.60 OR comparable_managers < 20"
+      }
+    },
+    "BLOCKED": {
+      "analytically_usable": false,
+      "requirements": {
+        "condition": "ANY_BLOCKING_CONTROL_FAILED"
+      }
+    }
+  },
+  "evaluation_order": [
+    "BLOCKING_CONTROLS",
+    "MINIMUM_COMPARABLE_MANAGERS",
+    "MANAGER_COVERAGE",
+    "QUALITY_STATUS",
+    "ANALYTICALLY_USABLE"
+  ],
+  "confidence_engine_boundary": {
+    "numeric_confidence_assigned_by_collector": false,
+    "future_confidence_inputs": [
+      "source_tier",
+      "manager_coverage",
+      "comparable_managers",
+      "freshness",
+      "corporate_action_verification",
+      "state_integrity"
+    ]
+  }
+}
