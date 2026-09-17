@@ -1,0 +1,327 @@
+{
+  "policy_id": "RADAR_INSTITUCIONAL_V3_SHORT_INTEREST_POSITIVE_OFFICIAL_WINDOW_REVIEW",
+  "version": "3.4D.2-B.2C.7A",
+  "status": "ACTIVE",
+
+  "purpose": {
+    "objective": "Define the minimum positive authoritative evidence required to conclude that no share-adjusting corporate action affected comparability between two consecutive Short Interest settlement snapshots.",
+    "scope": "Short Interest corporate action reconciliation only.",
+    "out_of_scope": [
+      "SIGNAL_GENERATION",
+      "CONFIDENCE_SCORING",
+      "RADAR_SCORE",
+      "DECISION_GENERATION",
+      "PORTFOLIO_DECISION",
+      "RADAR_PUBLICATION"
+    ]
+  },
+
+  "principles": {
+    "fail_closed": true,
+    "absence_of_evidence_is_not_no_action": true,
+    "zero_sec_matches_is_not_no_action": true,
+    "resolver_status_resolved_is_not_no_action": true,
+    "positive_official_review_required": true,
+    "authoritative_source_required": true,
+    "identity_continuity_required": true,
+    "economic_window_must_be_explicit": true,
+    "raw_evidence_must_be_preserved": true,
+    "no_inference_from_price_volume_or_short_interest": true,
+    "missing_is_not_zero": true,
+    "missing_is_not_neutral": true
+  },
+
+  "economic_window": {
+    "basis": "SETTLEMENT_DATE",
+    "previous_boundary": "EXCLUSIVE",
+    "current_boundary": "INCLUSIVE",
+    "definition": "effective_date > previous_settlement_date AND effective_date <= current_settlement_date",
+    "previous_settlement_date_required": true,
+    "current_settlement_date_required": true,
+    "current_must_be_after_previous": true
+  },
+
+  "identity_requirements": {
+    "required": true,
+    "ticker_only_prohibited": true,
+    "required_fields": [
+      "ticker",
+      "listing_exchange",
+      "security_identity"
+    ],
+    "recommended_fields": [
+      "cusip",
+      "sec_cik"
+    ],
+    "continuity_statuses": [
+      "VERIFIED",
+      "UNRESOLVED",
+      "CONFLICT"
+    ],
+    "usable_status": "VERIFIED"
+  },
+
+  "authoritative_sources": {
+    "minimum_tier": "TIER_1",
+    "allowed_primary_source_types": [
+      "SEC_FILING",
+      "OFFICIAL_EXCHANGE_NOTICE",
+      "ISSUER_INVESTOR_RELATIONS",
+      "FINRA_OFFICIAL"
+    ],
+    "supporting_only_source_types": [
+      "REUTERS",
+      "TRADINGVIEW",
+      "INVESTING",
+      "YAHOO_FINANCE",
+      "OTHER_TIER_2",
+      "OTHER_TIER_3"
+    ],
+    "supporting_sources_can_prove_no_action": false,
+    "supporting_sources_can_override_tier_1_conflict": false
+  },
+
+  "review_requirements": {
+    "official_window_review_completed": {
+      "required": true,
+      "expected_value": true
+    },
+
+    "authoritative_source_review_present": {
+      "required": true,
+      "expected_value": true
+    },
+
+    "economic_window_reviewed": {
+      "required": true,
+      "expected_value": true
+    },
+
+    "identity_continuity_verified": {
+      "required": true,
+      "expected_value": true
+    },
+
+    "no_qualified_action_in_economic_window": {
+      "required": true,
+      "expected_value": true
+    },
+
+    "no_unresolved_action_candidate_affecting_window": {
+      "required": true,
+      "expected_value": true
+    },
+
+    "no_authoritative_evidence_conflict": {
+      "required": true,
+      "expected_value": true
+    }
+  },
+
+  "positive_no_action_evidence": {
+    "minimum_authoritative_reviews": 1,
+
+    "review_must": [
+      "IDENTIFY_AUTHORITATIVE_SOURCE",
+      "IDENTIFY_REVIEW_SCOPE",
+      "IDENTIFY_PREVIOUS_SETTLEMENT_DATE",
+      "IDENTIFY_CURRENT_SETTLEMENT_DATE",
+      "CONFIRM_ECONOMIC_WINDOW_REVIEW",
+      "PRESERVE_REVIEW_EVIDENCE",
+      "PRESERVE_REVIEW_TIMESTAMP"
+    ],
+
+    "review_record_required_fields": [
+      "source_id",
+      "source_type",
+      "source_tier",
+      "review_scope",
+      "previous_settlement_date",
+      "current_settlement_date",
+      "reviewed_at",
+      "result"
+    ],
+
+    "allowed_review_results": [
+      "NO_RELEVANT_ACTION_FOUND",
+      "RELEVANT_ACTION_FOUND",
+      "UNRESOLVED",
+      "SOURCE_UNAVAILABLE",
+      "CONFLICT"
+    ],
+
+    "result_that_supports_no_action": "NO_RELEVANT_ACTION_FOUND"
+  },
+
+  "share_adjusting_actions": {
+    "action_classes": [
+      "STOCK_SPLIT",
+      "REVERSE_STOCK_SPLIT",
+      "SHARE_RECLASSIFICATION",
+      "SECURITY_IDENTITY_CHANGE",
+      "CUSIP_CHANGE",
+      "OTHER_SHARE_BASIS_CHANGE"
+    ],
+
+    "qualified_action_found": {
+      "no_action_permitted": false,
+      "route_to_corporate_action_reconciliation": true
+    },
+
+    "unresolved_candidate_found": {
+      "no_action_permitted": false,
+      "review_status": "UNRESOLVED"
+    }
+  },
+
+  "sec_resolver_relationship": {
+    "resolver_is_evidence_input": true,
+    "resolver_is_not_positive_no_action_proof": true,
+
+    "zero_raw_matches": {
+      "sufficient_for_no_action": false
+    },
+
+    "zero_qualified_evidence": {
+      "sufficient_for_no_action": false
+    },
+
+    "resolved_without_qualified_evidence": {
+      "sufficient_for_no_action": false
+    },
+
+    "qualified_action_in_window": {
+      "positive_no_action_review_permitted": false
+    },
+
+    "unresolved_candidate_in_window": {
+      "positive_no_action_review_permitted": false
+    }
+  },
+
+  "decision_logic": {
+    "NO_ACTION_PROVEN": {
+      "requirements": {
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": true,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "minimum_authoritative_reviews_satisfied": true
+      },
+
+      "output": {
+        "review_status": "NO_ACTION_PROVEN",
+        "corporate_action_status": "NO_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": true
+      }
+    },
+
+    "ACTION_FOUND": {
+      "trigger": "QUALIFIED_SHARE_ADJUSTING_ACTION_IN_ECONOMIC_WINDOW",
+      "output": {
+        "review_status": "ACTION_FOUND",
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": false
+      }
+    },
+
+    "UNRESOLVED": {
+      "triggers": [
+        "MISSING_REQUIRED_REVIEW",
+        "MISSING_AUTHORITATIVE_SOURCE",
+        "IDENTITY_NOT_VERIFIED",
+        "ECONOMIC_WINDOW_NOT_REVIEWED",
+        "UNRESOLVED_ACTION_CANDIDATE",
+        "AUTHORITATIVE_EVIDENCE_CONFLICT",
+        "SOURCE_UNAVAILABLE",
+        "INSUFFICIENT_POSITIVE_EVIDENCE"
+      ],
+
+      "output": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    }
+  },
+
+  "output_contract": {
+    "required_fields": [
+      "ticker",
+      "previous_settlement_date",
+      "current_settlement_date",
+      "economic_window",
+      "identity_continuity_status",
+      "official_window_review_completed",
+      "authoritative_source_review_present",
+      "economic_window_reviewed",
+      "no_qualified_action_in_economic_window",
+      "no_unresolved_action_candidate_affecting_window",
+      "no_authoritative_evidence_conflict",
+      "minimum_authoritative_reviews_satisfied",
+      "review_status",
+      "corporate_action_status",
+      "reconciliation_eligible",
+      "analytically_usable",
+      "authoritative_reviews",
+      "evidence_summary",
+      "diagnostics"
+    ],
+
+    "economic_window_fields": [
+      "previous_exclusive",
+      "current_inclusive"
+    ],
+
+    "authoritative_review_fields": [
+      "source_id",
+      "source_type",
+      "source_tier",
+      "review_scope",
+      "previous_settlement_date",
+      "current_settlement_date",
+      "reviewed_at",
+      "result"
+    ]
+  },
+
+  "downstream_permissions": {
+    "NO_ACTION_PROVEN": {
+      "may_enter_corporate_action_reconciler": true,
+      "may_be_used_for_short_interest_comparability": true
+    },
+
+    "ACTION_FOUND": {
+      "may_enter_corporate_action_reconciler": true,
+      "requires_action_reconciliation": true,
+      "may_be_used_before_reconciliation": false
+    },
+
+    "UNRESOLVED": {
+      "may_enter_corporate_action_reconciler": false,
+      "may_be_used_for_short_interest_comparability": false
+    }
+  },
+
+  "prohibited_behaviors": [
+    "DECLARE_NO_ACTION_FROM_ZERO_SEC_MATCHES_ONLY",
+    "DECLARE_NO_ACTION_FROM_ZERO_QUALIFIED_EVIDENCE_ONLY",
+    "DECLARE_NO_ACTION_FROM_RESOLVER_RESOLVED_STATUS_ONLY",
+    "DECLARE_NO_ACTION_FROM_PRICE_BEHAVIOR",
+    "DECLARE_NO_ACTION_FROM_VOLUME_BEHAVIOR",
+    "DECLARE_NO_ACTION_FROM_SHORT_INTEREST_BEHAVIOR",
+    "DECLARE_NO_ACTION_FROM_TICKER_ONLY_IDENTITY",
+    "USE_TIER_2_OR_TIER_3_AS_SOLE_NO_ACTION_PROOF",
+    "IGNORE_AUTHORITATIVE_EVIDENCE_CONFLICT",
+    "IGNORE_UNRESOLVED_ACTION_CANDIDATE",
+    "ASSUME_MISSING_REVIEW_MEANS_NO_ACTION",
+    "WRITE_DIRECTLY_TO_RADAR_SCORE",
+    "WRITE_DIRECTLY_TO_DECISION_CENTER"
+  ]
+}

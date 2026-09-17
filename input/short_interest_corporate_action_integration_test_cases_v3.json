@@ -1,0 +1,350 @@
+{
+  "contract_version": "3.4D.2-B.2C.7C.2",
+  "description": "Controlled synthetic regression cases for the Short Interest Corporate Action Integration Adapter.",
+  "cases": [
+    {
+      "case": "NO_ACTION_PROVEN_READY",
+      "ticker": "TEST1",
+      "identity": {
+        "ticker": "TEST1",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 1",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "NO_ACTION_PROVEN",
+        "corporate_action_status": "NO_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": true,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "minimum_authoritative_reviews_satisfied": true,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": null,
+      "source_adjustment": {
+        "status": "NOT_ADJUSTED"
+      },
+      "expected": {
+        "integration_status": "READY_FOR_RECONCILIATION",
+        "route": "NO_ACTION",
+        "reconciler_input_status": "NO_ACTION_PROVEN",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "ACTION_FOUND_COMPLETE_SPLIT_READY",
+      "ticker": "TEST2",
+      "identity": {
+        "ticker": "TEST2",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 2",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "ACTION_FOUND",
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": false,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": false,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": {
+        "action_type": "STOCK_SPLIT",
+        "effective_date": "2026-08-20",
+        "ratio_numerator": 2.0,
+        "ratio_denominator": 1.0,
+        "source_id": "TEST_SEC",
+        "source_type": "SEC_FILING",
+        "source_tier": "TIER_1",
+        "identity_status": "VERIFIED",
+        "evidence_status": "VERIFIED"
+      },
+      "source_adjustment": {
+        "status": "NOT_ADJUSTED"
+      },
+      "expected": {
+        "integration_status": "READY_FOR_RECONCILIATION",
+        "route": "VERIFIED_ACTION",
+        "reconciler_input_status": "VERIFIED_ACTION",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "ACTION_FOUND_INCOMPLETE_BLOCKED",
+      "ticker": "TEST3",
+      "identity": {
+        "ticker": "TEST3",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 3",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "ACTION_FOUND",
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": false,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": false,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": {
+        "action_type": "STOCK_SPLIT",
+        "effective_date": "2026-08-20",
+        "ratio_numerator": 2.0,
+        "source_id": "TEST_SEC",
+        "source_type": "SEC_FILING",
+        "source_tier": "TIER_1",
+        "identity_status": "VERIFIED",
+        "evidence_status": "VERIFIED"
+      },
+      "source_adjustment": {
+        "status": "NOT_ADJUSTED"
+      },
+      "expected": {
+        "integration_status": "BLOCKED",
+        "route": "NONE",
+        "reconciler_input_status": "UNRESOLVED",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "UNRESOLVED_BLOCKED",
+      "ticker": "TEST4",
+      "identity": {
+        "ticker": "TEST4",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 4",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false,
+        "official_window_review_completed": false,
+        "authoritative_source_review_present": false,
+        "economic_window_reviewed": false,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": false,
+        "no_unresolved_action_candidate_affecting_window": false,
+        "no_authoritative_evidence_conflict": true,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": null,
+      "source_adjustment": {
+        "status": "UNRESOLVED"
+      },
+      "expected": {
+        "integration_status": "BLOCKED",
+        "route": "NONE",
+        "reconciler_input_status": "UNRESOLVED",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "IDENTITY_MISMATCH_BLOCKED",
+      "ticker": "TEST5",
+      "identity": {
+        "ticker": "TEST5",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 5",
+        "continuity_status": "CONFLICT"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "NO_ACTION_PROVEN",
+        "corporate_action_status": "NO_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": false,
+        "no_qualified_action_in_economic_window": true,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "minimum_authoritative_reviews_satisfied": true,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": null,
+      "source_adjustment": {
+        "status": "NOT_ADJUSTED"
+      },
+      "expected": {
+        "integration_status": "BLOCKED",
+        "route": "NONE",
+        "reconciler_input_status": "UNRESOLVED",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "SETTLEMENT_WINDOW_MISMATCH_BLOCKED",
+      "ticker": "TEST6",
+      "identity": {
+        "ticker": "TEST6",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 6",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "NO_ACTION_PROVEN",
+        "corporate_action_status": "NO_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": true,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "minimum_authoritative_reviews_satisfied": true,
+        "previous_settlement_date": "2026-07-31",
+        "current_settlement_date": "2026-08-14"
+      },
+      "action_evidence": null,
+      "source_adjustment": {
+        "status": "NOT_ADJUSTED"
+      },
+      "expected": {
+        "integration_status": "BLOCKED",
+        "route": "NONE",
+        "reconciler_input_status": "UNRESOLVED",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "AUTHORITATIVE_CONFLICT_BLOCKED",
+      "ticker": "TEST7",
+      "identity": {
+        "ticker": "TEST7",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 7",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "ACTION_FOUND",
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": false,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": false,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": false,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": {
+        "action_type": "STOCK_SPLIT",
+        "effective_date": "2026-08-20",
+        "ratio_numerator": 2.0,
+        "ratio_denominator": 1.0,
+        "source_id": "TEST_SEC",
+        "source_type": "SEC_FILING",
+        "source_tier": "TIER_1",
+        "identity_status": "VERIFIED",
+        "evidence_status": "VERIFIED"
+      },
+      "source_adjustment": {
+        "status": "NOT_ADJUSTED"
+      },
+      "expected": {
+        "integration_status": "BLOCKED",
+        "route": "NONE",
+        "reconciler_input_status": "UNRESOLVED",
+        "final_short_interest_analytically_usable": false
+      }
+    },
+    {
+      "case": "SOURCE_ALREADY_ADJUSTED_READY",
+      "ticker": "TEST8",
+      "identity": {
+        "ticker": "TEST8",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 8",
+        "continuity_status": "VERIFIED"
+      },
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+      "review": {
+        "review_status": "ACTION_FOUND",
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": false,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": false,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "previous_settlement_date": "2026-08-14",
+        "current_settlement_date": "2026-08-31"
+      },
+      "action_evidence": {
+        "action_type": "REVERSE_STOCK_SPLIT",
+        "effective_date": "2026-08-22",
+        "ratio_numerator": 1.0,
+        "ratio_denominator": 10.0,
+        "source_id": "TEST_SEC",
+        "source_type": "SEC_FILING",
+        "source_tier": "TIER_1",
+        "identity_status": "VERIFIED",
+        "evidence_status": "VERIFIED"
+      },
+      "source_adjustment": {
+        "status": "SOURCE_ALREADY_ADJUSTED",
+        "source_id": "TEST_FINRA",
+        "source_type": "FINRA_OFFICIAL",
+        "source_tier": "TIER_1",
+        "statement": "Synthetic official statement confirming historical quantities are already adjusted.",
+        "scope": "PREVIOUS_AND_CURRENT_SHORT_INTEREST_COMPARABILITY",
+        "evidence_status": "VERIFIED"
+      },
+      "expected": {
+        "integration_status": "READY_FOR_RECONCILIATION",
+        "route": "VERIFIED_ACTION",
+        "reconciler_input_status": "VERIFIED_ACTION",
+        "final_short_interest_analytically_usable": false
+      }
+    }
+  ]
+}

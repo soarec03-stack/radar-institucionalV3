@@ -1,0 +1,349 @@
+{
+  "contract_version": "3.4D.2-B.2C.7B",
+  "description": "Controlled synthetic regression cases for Positive Official Window Review.",
+
+  "cases": [
+    {
+      "case": "NO_ACTION_PROVEN",
+      "ticker": "TEST1",
+
+      "identity": {
+        "ticker": "TEST1",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 1",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 0,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_EXCHANGE",
+          "source_type": "OFFICIAL_EXCHANGE_NOTICE",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "NO_RELEVANT_ACTION_FOUND"
+        }
+      ],
+
+      "expected": {
+        "review_status": "NO_ACTION_PROVEN",
+        "corporate_action_status": "NO_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "economic_window_reviewed": true,
+        "identity_continuity_verified": true,
+        "no_qualified_action_in_economic_window": true,
+        "no_unresolved_action_candidate_affecting_window": true,
+        "no_authoritative_evidence_conflict": true,
+        "minimum_authoritative_reviews_satisfied": true
+      }
+    },
+
+    {
+      "case": "ZERO_SEC_MATCHES_WITHOUT_POSITIVE_REVIEW",
+      "ticker": "TEST2",
+
+      "identity": {
+        "ticker": "TEST2",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 2",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 0,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [],
+
+      "expected": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    },
+
+    {
+      "case": "ACTION_FOUND",
+      "ticker": "TEST3",
+
+      "identity": {
+        "ticker": "TEST3",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 3",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 1,
+        "qualified_evidence_count": 1,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_SEC",
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "RELEVANT_ACTION_FOUND"
+        }
+      ],
+
+      "expected": {
+        "review_status": "ACTION_FOUND",
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_eligible": true,
+        "analytically_usable": false
+      }
+    },
+
+    {
+      "case": "UNRESOLVED_ACTION_CANDIDATE",
+      "ticker": "TEST4",
+
+      "identity": {
+        "ticker": "TEST4",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 4",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "UNRESOLVED",
+        "raw_match_count": 1,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 1
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_SEC",
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "UNRESOLVED"
+        }
+      ],
+
+      "expected": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    },
+
+    {
+      "case": "IDENTITY_NOT_VERIFIED",
+      "ticker": "TEST5",
+
+      "identity": {
+        "ticker": "TEST5",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 5",
+        "continuity_status": "CONFLICT"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 0,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_EXCHANGE",
+          "source_type": "OFFICIAL_EXCHANGE_NOTICE",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "NO_RELEVANT_ACTION_FOUND"
+        }
+      ],
+
+      "expected": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    },
+
+    {
+      "case": "AUTHORITATIVE_CONFLICT",
+      "ticker": "TEST6",
+
+      "identity": {
+        "ticker": "TEST6",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 6",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 0,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_SEC",
+          "source_type": "SEC_FILING",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "NO_RELEVANT_ACTION_FOUND"
+        },
+        {
+          "source_id": "TEST_EXCHANGE",
+          "source_type": "OFFICIAL_EXCHANGE_NOTICE",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:05:00-03:00",
+          "result": "RELEVANT_ACTION_FOUND"
+        }
+      ],
+
+      "expected": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    },
+
+    {
+      "case": "TIER_2_ONLY_CANNOT_PROVE_NO_ACTION",
+      "ticker": "TEST7",
+
+      "identity": {
+        "ticker": "TEST7",
+        "listing_exchange": "NASDAQ",
+        "security_identity": "TEST SECURITY 7",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 0,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_TIER_2",
+          "source_type": "REUTERS",
+          "source_tier": "TIER_2",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-08-14",
+          "current_settlement_date": "2026-08-31",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "NO_RELEVANT_ACTION_FOUND"
+        }
+      ],
+
+      "expected": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    },
+
+    {
+      "case": "REVIEW_WINDOW_MISMATCH",
+      "ticker": "TEST8",
+
+      "identity": {
+        "ticker": "TEST8",
+        "listing_exchange": "NYSE",
+        "security_identity": "TEST SECURITY 8",
+        "continuity_status": "VERIFIED"
+      },
+
+      "previous_settlement_date": "2026-08-14",
+      "current_settlement_date": "2026-08-31",
+
+      "sec_resolver": {
+        "status": "RESOLVED",
+        "raw_match_count": 0,
+        "qualified_evidence_count": 0,
+        "unresolved_candidate_count": 0
+      },
+
+      "authoritative_reviews": [
+        {
+          "source_id": "TEST_EXCHANGE",
+          "source_type": "OFFICIAL_EXCHANGE_NOTICE",
+          "source_tier": "TIER_1",
+          "review_scope": "SHARE_ADJUSTING_CORPORATE_ACTIONS",
+          "previous_settlement_date": "2026-07-31",
+          "current_settlement_date": "2026-08-14",
+          "reviewed_at": "2026-09-17T18:00:00-03:00",
+          "result": "NO_RELEVANT_ACTION_FOUND"
+        }
+      ],
+
+      "expected": {
+        "review_status": "UNRESOLVED",
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_eligible": false,
+        "analytically_usable": false
+      }
+    }
+  ]
+}
