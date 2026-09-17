@@ -1,0 +1,477 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "3.4D.2-B.2C.1",
+  "domain": "SHORT_INTEREST_CORPORATE_ACTION_RECONCILIATION",
+  "description": "Contrato formal para reconciliacao de corporate actions aplicaveis a comparacoes de Short Interest entre dois settlement dates oficiais consecutivos.",
+
+  "principles": {
+    "fail_closed": true,
+    "absence_of_evidence_is_not_no_action": true,
+    "do_not_infer_action_from_short_interest_change": true,
+    "do_not_infer_action_from_price_change": true,
+    "do_not_infer_action_from_volume_change": true,
+    "verified_action_required_for_adjustment": true,
+    "preserve_raw_values": true,
+    "preserve_source_values": true,
+    "preserve_evidence": true,
+    "effective_date_has_temporal_precedence": true,
+    "filing_date_is_discovery_metadata": true,
+    "prevent_double_adjustment": true,
+    "identity_continuity_required": true,
+    "official_source_required_for_final_reconciliation": true,
+    "missing_is_not_zero": true,
+    "missing_is_not_neutral": true
+  },
+
+  "inputs": {
+    "master_asset_universe": {
+      "required": true,
+      "purpose": "Identidade canonica do ativo.",
+      "required_fields": [
+        "ticker",
+        "issuer_name",
+        "listing.exchange",
+        "identifiers.sec_cik"
+      ]
+    },
+
+    "short_interest_collection": {
+      "required": true,
+      "purpose": "Fatos brutos oficiais de Short Interest e settlement dates.",
+      "required_fields": [
+        "ticker",
+        "previous_settlement_snapshot.settlement_date",
+        "metric.settlement_date",
+        "previous_settlement_snapshot.short_interest_shares",
+        "metric.short_interest_shares"
+      ]
+    },
+
+    "corporate_action_evidence": {
+      "required": true,
+      "purpose": "Evidencias oficiais coletadas pelo SEC Corporate Action Evidence Resolver.",
+      "required_fields": [
+        "ticker",
+        "resolver_status",
+        "settlement_window.previous_settlement_date",
+        "settlement_window.current_settlement_date",
+        "reconciliation_status",
+        "analytically_conclusive",
+        "candidate_filings"
+      ]
+    },
+
+    "short_interest_policy": {
+      "required": true,
+      "purpose": "Politica principal do dominio Short Interest."
+    },
+
+    "base_corporate_action_policy": {
+      "required": true,
+      "purpose": "Principios gerais homologados para Corporate Actions."
+    }
+  },
+
+  "authoritative_sources": {
+    "minimum_tier": "TIER_1",
+
+    "allowed": [
+      "SEC_FILING",
+      "OFFICIAL_EXCHANGE_NOTICE",
+      "ISSUER_INVESTOR_RELATIONS",
+      "FINRA"
+    ],
+
+    "supporting_only": [
+      "REUTERS",
+      "TRADINGVIEW",
+      "INVESTING",
+      "YAHOO_FINANCE"
+    ],
+
+    "rules": {
+      "supporting_source_cannot_authorize_no_action": true,
+      "supporting_source_cannot_authorize_adjustment": true,
+      "supporting_source_cannot_override_tier_1": true
+    }
+  },
+
+  "settlement_window": {
+    "previous_endpoint_inclusive_for_identity_review": true,
+    "current_endpoint_inclusive_for_identity_review": true,
+
+    "economic_action_window": {
+      "start_rule": "effective_date > previous_settlement_date",
+      "end_rule": "effective_date <= current_settlement_date"
+    },
+
+    "rules": {
+      "filing_date_does_not_define_economic_applicability": true,
+      "effective_date_defines_economic_applicability_when_verified": true,
+      "unknown_effective_date_cannot_authorize_adjustment": true
+    }
+  },
+
+  "reconciliation_statuses": {
+    "NOT_CHECKED": {
+      "terminal": false,
+      "analytically_usable": false,
+      "description": "Reconciliacao ainda nao executada."
+    },
+
+    "NO_ACTION": {
+      "terminal": true,
+      "analytically_usable": true,
+      "description": "Revisao oficial da janela concluida com identidade continua e evidencia positiva suficiente de que nenhuma corporate action aplicavel exige reconciliacao dos dois snapshots."
+    },
+
+    "SOURCE_ADJUSTED": {
+      "terminal": true,
+      "analytically_usable": true,
+      "description": "Corporate action aplicavel foi verificada e existe evidencia oficial de que a fonte dos dados ja fornece os snapshots em base comparavel, impedindo ajuste duplicado."
+    },
+
+    "VERIFIED_ACTION": {
+      "terminal": true,
+      "analytically_usable": true,
+      "description": "Corporate action aplicavel foi verificada e os parametros necessarios para reconciliacao deterministica estao disponiveis."
+    },
+
+    "UNRESOLVED": {
+      "terminal": true,
+      "analytically_usable": false,
+      "description": "Existe incerteza material, evidencia insuficiente, conflito ou impossibilidade de determinar comparabilidade com seguranca."
+    }
+  },
+
+  "no_action_requirements": {
+    "all_required": true,
+
+    "requirements": [
+      "evidence_resolver_completed",
+      "settlement_window_matches_collection",
+      "master_identity_matches_collection",
+      "identity_continuity_verified",
+      "official_window_review_completed",
+      "authoritative_source_review_present",
+      "no_qualified_action_in_economic_window",
+      "no_unresolved_action_candidate_affecting_window",
+      "no_conflicting_authoritative_evidence"
+    ],
+
+    "explicit_rules": {
+      "zero_text_matches_is_sufficient": false,
+      "zero_qualified_evidence_is_sufficient": false,
+      "resolver_status_resolved_is_sufficient": false,
+      "absence_of_sec_match_is_sufficient": false,
+      "positive_window_review_required": true
+    }
+  },
+
+  "verified_action_requirements": {
+    "all_required": true,
+
+    "requirements": [
+      "authoritative_action_evidence",
+      "verified_action_type",
+      "verified_effective_date",
+      "effective_date_in_economic_window",
+      "identity_continuity_reconciled",
+      "no_conflicting_authoritative_evidence"
+    ],
+
+    "share_adjusting_action": {
+      "supported_action_types": [
+        "STOCK_SPLIT",
+        "REVERSE_STOCK_SPLIT"
+      ],
+
+      "additional_requirements": [
+        "verified_ratio_numerator",
+        "verified_ratio_denominator"
+      ]
+    },
+
+    "identity_action": {
+      "supported_action_types": [
+        "CUSIP_CHANGE",
+        "RECLASSIFICATION"
+      ],
+
+      "additional_requirements": [
+        "post_action_identity_verified"
+      ]
+    }
+  },
+
+  "source_adjusted_requirements": {
+    "all_required": true,
+
+    "requirements": [
+      "verified_action",
+      "authoritative_source_adjustment_statement",
+      "source_adjustment_scope_matches_metric",
+      "source_adjustment_scope_matches_settlement_window",
+      "identity_continuity_reconciled",
+      "no_conflicting_authoritative_evidence"
+    ],
+
+    "rules": {
+      "assume_source_adjusted": false,
+      "infer_source_adjusted_from_numeric_continuity": false,
+      "infer_source_adjusted_from_finra_cross_check": false,
+      "double_adjustment_prohibited": true
+    }
+  },
+
+  "adjustment_policy": {
+    "default_adjustment_authorized": false,
+"adjustment_direction": {
+  "target_basis": "CURRENT_SETTLEMENT_BASIS",
+  "snapshot_to_adjust": "PREVIOUS_SETTLEMENT",
+  "current_snapshot_must_remain_raw": true,
+  "previous_raw_must_be_preserved": true,
+  "current_raw_must_be_preserved": true,
+  "formula": "previous_adjusted = previous_raw * (ratio_numerator / ratio_denominator)",
+  "percentage_change_formula": "((current_raw - previous_adjusted) / previous_adjusted) * 100",
+  "rules": {
+    "apply_only_when_adjustment_authorized": true,
+    "apply_only_when_effective_date_in_economic_window": true,
+    "do_not_adjust_current_snapshot": true,
+    "do_not_overwrite_previous_raw": true,
+    "do_not_overwrite_current_raw": true,
+    "previous_adjusted_must_be_separate_field": true,
+    "recalculate_change_after_adjustment": true,
+    "previous_adjusted_zero_blocks_percentage_change": true
+  }
+},
+
+    "supported_deterministic_actions": [
+      "STOCK_SPLIT",
+      "REVERSE_STOCK_SPLIT"
+    ],
+
+    "authorization_requirements": [
+      "reconciliation_status_is_verified_action",
+      "action_type_supported",
+      "effective_date_verified",
+      "effective_date_in_economic_window",
+      "ratio_verified",
+      "source_not_already_adjusted",
+      "identity_continuity_reconciled"
+    ],
+
+    "rules": {
+      "no_action_authorizes_adjustment": false,
+      "source_adjusted_authorizes_additional_adjustment": false,
+      "unresolved_authorizes_adjustment": false,
+      "not_checked_authorizes_adjustment": false
+    }
+  },
+
+  "identity_continuity": {
+    "required": true,
+
+    "minimum_identity_fields": [
+      "ticker",
+      "issuer_name",
+      "listing_exchange"
+    ],
+
+    "controlled_identifiers": [
+      "cusip",
+      "sec_cik"
+    ],
+
+    "rules": {
+      "ticker_only_is_sufficient": false,
+      "cusip_change_is_automatic_failure": false,
+      "cusip_change_requires_reconciliation": true,
+      "issuer_change_requires_reconciliation": true,
+      "security_class_change_requires_reconciliation": true,
+      "unresolved_identity_change_blocks_analytical_use": true
+    }
+  },
+
+  "conflict_policy": {
+    "authoritative_conflict_status": "UNRESOLVED",
+
+    "conflicts": [
+      "different_action_types_for_same_event",
+      "different_effective_dates_for_same_event",
+      "different_split_ratios_for_same_event",
+      "source_adjusted_status_conflict",
+      "identity_continuity_conflict",
+      "settlement_window_conflict"
+    ],
+
+    "rules": {
+      "do_not_choose_source_silently": true,
+      "do_not_average_conflicting_values": true,
+      "do_not_use_supporting_source_to_break_tier_1_conflict": true
+    }
+  },
+
+  "unresolved_conditions": [
+    "evidence_resolver_partial_or_blocked",
+    "settlement_window_mismatch",
+    "master_identity_mismatch",
+    "identity_continuity_not_verified",
+    "official_window_review_not_completed",
+    "insufficient_authoritative_evidence_for_no_action",
+    "qualified_action_missing_required_parameters",
+    "effective_date_unresolved_for_potentially_applicable_action",
+    "source_adjustment_status_unresolved",
+    "conflicting_authoritative_evidence"
+  ],
+
+  "output_contract": {
+    "required_fields": [
+      "ticker",
+      "previous_settlement_date",
+      "current_settlement_date",
+      "corporate_action_status",
+      "reconciliation_status",
+      "identity_continuity_status",
+      "source_adjustment_status",
+      "adjustment_status",
+      "adjustment_authorized",
+      "adjustment_factor",
+      "analytically_usable",
+      "reason",
+      "evidence_summary",
+      "diagnostics"
+    ],
+
+    "corporate_action_status_allowed": [
+      "NOT_CHECKED",
+      "NO_ACTION",
+      "VERIFIED_ACTION",
+      "UNRESOLVED"
+    ],
+
+    "identity_continuity_status_allowed": [
+      "NOT_CHECKED",
+      "VERIFIED",
+      "UNRESOLVED",
+      "CONFLICT"
+    ],
+
+    "source_adjustment_status_allowed": [
+      "NOT_CHECKED",
+      "NOT_APPLICABLE",
+      "NOT_ADJUSTED",
+      "SOURCE_ADJUSTED",
+      "UNRESOLVED"
+    ],
+
+    "adjustment_status_allowed": [
+      "NOT_CHECKED",
+      "NOT_REQUIRED",
+      "REQUIRED",
+      "SOURCE_ALREADY_ADJUSTED",
+      "BLOCKED"
+    ],
+
+    "rules": {
+      "adjustment_factor_null_unless_authorized": true,
+      "analytically_usable_false_for_not_checked": true,
+      "analytically_usable_false_for_unresolved": true,
+      "raw_values_must_be_preserved": true,
+      "evidence_traceability_required": true
+    }
+  },
+
+  "decision_matrix": [
+    {
+      "case": "NO_ACTION_PROVEN",
+      "reconciliation_status": "NO_ACTION",
+      "adjustment_status": "NOT_REQUIRED",
+      "adjustment_authorized": false,
+      "adjustment_factor": null,
+      "analytically_usable": true
+    },
+    {
+      "case": "VERIFIED_ACTION_ADJUSTMENT_REQUIRED",
+      "reconciliation_status": "VERIFIED_ACTION",
+      "adjustment_status": "REQUIRED",
+      "adjustment_authorized": true,
+      "adjustment_factor": "DERIVED_FROM_VERIFIED_ACTION",
+      "analytically_usable": true
+    },
+    {
+      "case": "VERIFIED_ACTION_SOURCE_ALREADY_ADJUSTED",
+      "reconciliation_status": "SOURCE_ADJUSTED",
+      "adjustment_status": "SOURCE_ALREADY_ADJUSTED",
+      "adjustment_authorized": false,
+      "adjustment_factor": null,
+      "analytically_usable": true
+    },
+    {
+      "case": "INSUFFICIENT_EVIDENCE",
+      "reconciliation_status": "UNRESOLVED",
+      "adjustment_status": "BLOCKED",
+      "adjustment_authorized": false,
+      "adjustment_factor": null,
+      "analytically_usable": false
+    },
+    {
+      "case": "IDENTITY_CONFLICT",
+      "reconciliation_status": "UNRESOLVED",
+      "adjustment_status": "BLOCKED",
+      "adjustment_authorized": false,
+      "adjustment_factor": null,
+      "analytically_usable": false
+    },
+    {
+      "case": "AUTHORITATIVE_EVIDENCE_CONFLICT",
+      "reconciliation_status": "UNRESOLVED",
+      "adjustment_status": "BLOCKED",
+      "adjustment_authorized": false,
+      "adjustment_factor": null,
+      "analytically_usable": false
+    }
+  ],
+
+  "downstream_permissions": {
+    "collector_may_assign_signal": false,
+    "reconciler_may_assign_signal": false,
+    "reconciler_may_assign_numeric_confidence": false,
+    "reconciler_may_assign_radar_score": false,
+    "reconciler_may_assign_decision": false,
+
+    "analytical_metric_release": {
+      "allowed_statuses": [
+        "NO_ACTION",
+        "SOURCE_ADJUSTED",
+        "VERIFIED_ACTION"
+      ],
+
+      "blocked_statuses": [
+        "NOT_CHECKED",
+        "UNRESOLVED"
+      ]
+    }
+  },
+
+  "test_contract": {
+    "required_scenarios": [
+      "NO_ACTION_PROVEN",
+      "VERIFIED_ACTION_ADJUSTMENT_REQUIRED",
+      "VERIFIED_ACTION_SOURCE_ALREADY_ADJUSTED",
+      "UNRESOLVED_INSUFFICIENT_EVIDENCE",
+      "UNRESOLVED_IDENTITY_CONFLICT",
+      "UNRESOLVED_CONFLICTING_AUTHORITATIVE_EVIDENCE"
+    ],
+
+    "tests_must_not": [
+      "access_network",
+      "modify_official_registry",
+      "modify_radar",
+      "modify_signal",
+      "modify_confidence",
+      "modify_score",
+      "modify_decision"
+    ]
+  }
+}

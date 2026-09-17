@@ -1,0 +1,294 @@
+{
+  "schema_version": "3.0",
+  "test_contract_version": "3.4D.2-B.2C.1",
+  "domain": "SHORT_INTEREST_CORPORATE_ACTION_RECONCILIATION_TEST_CASES",
+  "description": "Fixtures sinteticos e deterministas para validar o reconciliador B.2C sem rede e sem modificar dados oficiais.",
+
+  "common": {
+    "previous_settlement_date": "2026-08-14",
+    "current_settlement_date": "2026-08-31",
+    "ticker": "TEST",
+    "issuer_name": "Test Corporation",
+    "listing_exchange": "NASDAQ",
+    "cusip": "000000001",
+    "sec_cik": "0000000001"
+  },
+
+  "cases": [
+    {
+      "case": "NO_ACTION_PROVEN",
+
+      "identity": {
+        "master_matches_collection": true,
+        "identity_continuity_verified": true,
+        "identity_conflict": false
+      },
+
+      "evidence": {
+        "resolver_status": "RESOLVED",
+        "settlement_window_matches_collection": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "qualified_actions": [],
+        "unresolved_action_candidates": [],
+        "authoritative_conflict": false
+      },
+
+      "source_adjustment": {
+        "official_statement_present": false,
+        "scope_matches_metric": false,
+        "scope_matches_settlement_window": false
+      },
+
+      "expected": {
+        "corporate_action_status": "NO_ACTION",
+        "reconciliation_status": "NO_ACTION",
+        "identity_continuity_status": "VERIFIED",
+        "source_adjustment_status": "NOT_APPLICABLE",
+        "adjustment_status": "NOT_REQUIRED",
+        "adjustment_authorized": false,
+        "adjustment_factor": null,
+        "analytically_usable": true,
+        "reason": "NO_APPLICABLE_CORPORATE_ACTION_CONFIRMED"
+      }
+    },
+
+    {
+      "case": "VERIFIED_ACTION_ADJUSTMENT_REQUIRED",
+
+      "identity": {
+        "master_matches_collection": true,
+        "identity_continuity_verified": true,
+        "identity_conflict": false
+      },
+
+      "evidence": {
+        "resolver_status": "RESOLVED",
+        "settlement_window_matches_collection": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "qualified_actions": [
+          {
+            "action_type": "STOCK_SPLIT",
+            "effective_date": "2026-08-20",
+            "ratio_numerator": 2,
+            "ratio_denominator": 1,
+            "source_type": "SEC_FILING",
+            "source_tier": "TIER_1",
+            "verified": true
+          }
+        ],
+        "unresolved_action_candidates": [],
+        "authoritative_conflict": false
+      },
+
+      "source_adjustment": {
+        "official_statement_present": false,
+        "scope_matches_metric": false,
+        "scope_matches_settlement_window": false
+      },
+      "short_interest": {
+        "previous_raw": 100.0,
+        "current_raw": 220.0
+      },
+      "expected": {
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_status": "VERIFIED_ACTION",
+        "identity_continuity_status": "VERIFIED",
+        "source_adjustment_status": "NOT_ADJUSTED",
+        "adjustment_status": "REQUIRED",
+        "adjustment_authorized": true,
+        "adjustment_factor": 2.0,
+        "previous_raw": 100.0,
+        "previous_adjusted": 200.0,
+        "current_raw": 220.0,
+        "adjusted_change_pct": 10.0,
+        "analytically_usable": true,
+        "reason": "VERIFIED_ACTION_REQUIRES_DETERMINISTIC_ADJUSTMENT"
+      }
+    },
+
+    {
+      "case": "VERIFIED_ACTION_SOURCE_ALREADY_ADJUSTED",
+
+      "identity": {
+        "master_matches_collection": true,
+        "identity_continuity_verified": true,
+        "identity_conflict": false
+      },
+
+      "evidence": {
+        "resolver_status": "RESOLVED",
+        "settlement_window_matches_collection": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "qualified_actions": [
+          {
+            "action_type": "REVERSE_STOCK_SPLIT",
+            "effective_date": "2026-08-20",
+            "ratio_numerator": 1,
+            "ratio_denominator": 10,
+            "source_type": "SEC_FILING",
+            "source_tier": "TIER_1",
+            "verified": true
+          }
+        ],
+        "unresolved_action_candidates": [],
+        "authoritative_conflict": false
+      },
+
+      "source_adjustment": {
+        "official_statement_present": true,
+        "source_type": "FINRA",
+        "source_tier": "TIER_1",
+        "scope_matches_metric": true,
+        "scope_matches_settlement_window": true
+      },
+
+      "expected": {
+        "corporate_action_status": "VERIFIED_ACTION",
+        "reconciliation_status": "SOURCE_ADJUSTED",
+        "identity_continuity_status": "VERIFIED",
+        "source_adjustment_status": "SOURCE_ADJUSTED",
+        "adjustment_status": "SOURCE_ALREADY_ADJUSTED",
+        "adjustment_authorized": false,
+        "adjustment_factor": null,
+        "analytically_usable": true,
+        "reason": "VERIFIED_ACTION_ALREADY_ADJUSTED_BY_AUTHORITATIVE_SOURCE"
+      }
+    },
+
+    {
+      "case": "UNRESOLVED_INSUFFICIENT_EVIDENCE",
+
+      "identity": {
+        "master_matches_collection": true,
+        "identity_continuity_verified": true,
+        "identity_conflict": false
+      },
+
+      "evidence": {
+        "resolver_status": "RESOLVED",
+        "settlement_window_matches_collection": true,
+        "official_window_review_completed": false,
+        "authoritative_source_review_present": false,
+        "qualified_actions": [],
+        "unresolved_action_candidates": [],
+        "authoritative_conflict": false
+      },
+
+      "source_adjustment": {
+        "official_statement_present": false,
+        "scope_matches_metric": false,
+        "scope_matches_settlement_window": false
+      },
+
+      "expected": {
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_status": "UNRESOLVED",
+        "identity_continuity_status": "VERIFIED",
+        "source_adjustment_status": "UNRESOLVED",
+        "adjustment_status": "BLOCKED",
+        "adjustment_authorized": false,
+        "adjustment_factor": null,
+        "analytically_usable": false,
+        "reason": "INSUFFICIENT_AUTHORITATIVE_EVIDENCE"
+      }
+    },
+
+    {
+      "case": "UNRESOLVED_IDENTITY_CONFLICT",
+
+      "identity": {
+        "master_matches_collection": false,
+        "identity_continuity_verified": false,
+        "identity_conflict": true
+      },
+
+      "evidence": {
+        "resolver_status": "RESOLVED",
+        "settlement_window_matches_collection": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "qualified_actions": [],
+        "unresolved_action_candidates": [],
+        "authoritative_conflict": false
+      },
+
+      "source_adjustment": {
+        "official_statement_present": false,
+        "scope_matches_metric": false,
+        "scope_matches_settlement_window": false
+      },
+
+      "expected": {
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_status": "UNRESOLVED",
+        "identity_continuity_status": "CONFLICT",
+        "source_adjustment_status": "UNRESOLVED",
+        "adjustment_status": "BLOCKED",
+        "adjustment_authorized": false,
+        "adjustment_factor": null,
+        "analytically_usable": false,
+        "reason": "IDENTITY_CONTINUITY_CONFLICT"
+      }
+    },
+
+    {
+      "case": "UNRESOLVED_CONFLICTING_AUTHORITATIVE_EVIDENCE",
+
+      "identity": {
+        "master_matches_collection": true,
+        "identity_continuity_verified": true,
+        "identity_conflict": false
+      },
+
+      "evidence": {
+        "resolver_status": "RESOLVED",
+        "settlement_window_matches_collection": true,
+        "official_window_review_completed": true,
+        "authoritative_source_review_present": true,
+        "qualified_actions": [
+          {
+            "action_type": "STOCK_SPLIT",
+            "effective_date": "2026-08-20",
+            "ratio_numerator": 2,
+            "ratio_denominator": 1,
+            "source_type": "SEC_FILING",
+            "source_tier": "TIER_1",
+            "verified": true
+          },
+          {
+            "action_type": "STOCK_SPLIT",
+            "effective_date": "2026-08-20",
+            "ratio_numerator": 3,
+            "ratio_denominator": 1,
+            "source_type": "OFFICIAL_EXCHANGE_NOTICE",
+            "source_tier": "TIER_1",
+            "verified": true
+          }
+        ],
+        "unresolved_action_candidates": [],
+        "authoritative_conflict": true
+      },
+
+      "source_adjustment": {
+        "official_statement_present": false,
+        "scope_matches_metric": false,
+        "scope_matches_settlement_window": false
+      },
+      
+      "expected": {
+        "corporate_action_status": "UNRESOLVED",
+        "reconciliation_status": "UNRESOLVED",
+        "identity_continuity_status": "VERIFIED",
+        "source_adjustment_status": "UNRESOLVED",
+        "adjustment_status": "BLOCKED",
+        "adjustment_authorized": false,
+        "adjustment_factor": null,
+        "analytically_usable": false,
+        "reason": "CONFLICTING_AUTHORITATIVE_EVIDENCE"
+      }
+    }
+  ]
+}
