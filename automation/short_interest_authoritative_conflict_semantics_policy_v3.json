@@ -1,0 +1,48 @@
+{
+  "policy_version": "3.4D.2-B.2C.8D.2",
+  "domain": "SHORT_INTEREST_AUTHORITATIVE_CONFLICT_SEMANTICS",
+  "description": "Semantic interpretation of authoritative corporate-action evidence conflict state without modifying homologated upstream contracts.",
+  "principles": {
+    "fail_closed": true,
+    "preserve_upstream_raw": true,
+    "do_not_infer_no_conflict_from_missing_evidence": true,
+    "do_not_infer_conflict_from_boolean_false_alone": true,
+    "explicit_conflict_diagnostic_has_precedence": true,
+    "semantic_layer_must_not_change_reconciliation_eligibility": true
+  },
+  "statuses": [
+    "VERIFIED_NO_CONFLICT",
+    "CONFLICT_DETECTED",
+    "NOT_ESTABLISHED"
+  ],
+  "classification": {
+    "CONFLICT_DETECTED": {
+      "requires_diagnostic": "AUTHORITATIVE_EVIDENCE_CONFLICT",
+      "meaning": "An authoritative evidence conflict was explicitly detected by the homologated review engine.",
+      "reconciliation_allowed": false
+    },
+    "VERIFIED_NO_CONFLICT": {
+      "requires_no_authoritative_evidence_conflict": true,
+      "forbidden_diagnostic": "AUTHORITATIVE_EVIDENCE_CONFLICT",
+      "meaning": "The homologated review result explicitly established no authoritative evidence conflict.",
+      "reconciliation_allowed": "UNCHANGED_FROM_UPSTREAM"
+    },
+    "NOT_ESTABLISHED": {
+      "meaning": "The absence of authoritative conflict has not been established and no explicit authoritative conflict was detected.",
+      "reconciliation_allowed": false
+    }
+  },
+  "precedence": [
+    "CONFLICT_DETECTED",
+    "VERIFIED_NO_CONFLICT",
+    "NOT_ESTABLISHED"
+  ],
+  "invariants": [
+    "MISSING_AUTHORITATIVE_SOURCE_NEVER_MEANS_CONFLICT_DETECTED",
+    "MISSING_AUTHORITATIVE_SOURCE_NEVER_MEANS_VERIFIED_NO_CONFLICT",
+    "BOOLEAN_FALSE_ALONE_NEVER_MEANS_CONFLICT_DETECTED",
+    "CONFLICT_DETECTED_REQUIRES_EXPLICIT_UPSTREAM_CONFLICT_DIAGNOSTIC",
+    "NOT_ESTABLISHED_REMAINS_FAIL_CLOSED",
+    "RAW_REVIEW_MUST_NOT_BE_MUTATED"
+  ]
+}
