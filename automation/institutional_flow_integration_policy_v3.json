@@ -1,0 +1,218 @@
+﻿{
+  "policy_name": "INSTITUTIONAL_FLOW_INTEGRATION",
+  "policy_version": "3.4D.2-B.2D.1",
+  "domain": "institutional_flow",
+
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed": true,
+    "missing_is_not_neutral": true,
+    "missing_is_not_zero": true,
+    "do_not_invent_metrics": true,
+    "availability_is_not_quality": true,
+    "upstream_blocked_cannot_be_upgraded": true,
+    "preserve_source_metric": true,
+    "preserve_quality_status": true,
+    "preserve_provenance": true,
+    "integration_does_not_recalculate_source_metrics": true,
+    "integration_does_not_assign_numeric_confidence": true,
+    "integration_does_not_calculate_signal": true,
+    "integration_does_not_calculate_radar_score": true,
+    "integration_does_not_make_decisions": true
+  },
+
+  "signal_compatibility": {
+    "signal_policy": "signal_policy_v3.json",
+    "minimum_weighted_metric_coverage": 0.6,
+    "minimum_independent_institutional_dimensions": 2,
+    "output_data_point": "data_points.institutional_flow",
+    "output_value_object": "data_points.institutional_flow.value",
+    "signal_engine_remains_authoritative_for_normalized_score": true
+  },
+
+  "metrics": {
+    "institutional_flow_pct": {
+      "signal_weight": 0.4,
+      "classification": "INSTITUTIONAL_PRIMARY",
+      "institutional_dimension": "INSTITUTIONAL_HOLDINGS",
+      "counts_as_independent_institutional_dimension": true,
+
+      "source_metric": "institutional_holdings_change_pct",
+      "source_contract": "INSTITUTIONAL_HOLDINGS_QUALITY_GATE",
+      "source": "SEC",
+      "source_type": "FORM_13F_DATA_SET",
+      "required_source_tier": "TIER_1",
+
+      "mapping": {
+        "source_key": "institutional_holdings_change_pct",
+        "signal_key": "institutional_flow_pct",
+        "mapping_type": "EXPLICIT_ALIAS",
+        "recalculation_allowed": false
+      },
+
+      "allowed_quality_states": [
+        {
+          "quality_status": "VERIFIED",
+          "analytically_usable": true
+        },
+        {
+          "quality_status": "PARTIAL",
+          "analytically_usable": true
+        }
+      ],
+
+      "blocked_quality_states": [
+        "INSUFFICIENT_COVERAGE",
+        "BLOCKED"
+      ]
+    },
+
+    "short_interest_change_pct": {
+      "signal_weight": 0.2,
+      "classification": "INSTITUTIONAL_PRIMARY",
+      "institutional_dimension": "SHORT_INTEREST",
+      "counts_as_independent_institutional_dimension": true,
+
+      "source_metric": "short_interest_change_pct",
+      "source_contract": "SHORT_INTEREST_QUALITY_GATE",
+      "source": "FINRA",
+      "source_type": "CONSOLIDATED_SHORT_INTEREST",
+      "required_source_tier": "TIER_1",
+
+      "mapping": {
+        "source_key": "short_interest_change_pct",
+        "signal_key": "short_interest_change_pct",
+        "mapping_type": "DIRECT",
+        "recalculation_allowed": false
+      },
+
+      "allowed_quality_states": [
+        {
+          "quality_status": "VERIFIED",
+          "analytically_usable": true
+        }
+      ],
+
+      "blocked_quality_states": [
+        "BLOCKED",
+        "UNAVAILABLE"
+      ]
+    },
+
+    "volume_ratio": {
+      "signal_weight": 0.2,
+      "classification": "SUPPORTING_MARKET_ACTIVITY",
+      "institutional_dimension": null,
+      "counts_as_independent_institutional_dimension": false,
+
+      "source_contract": "MARKET_VOLUME_METRIC",
+
+      "mapping": {
+        "source_key": "volume_ratio",
+        "signal_key": "volume_ratio",
+        "mapping_type": "DIRECT",
+        "recalculation_allowed": false
+      },
+
+      "institutional_eligibility_rule": {
+        "may_contribute_to_weighted_metric_coverage": true,
+        "may_unlock_institutional_dimension_requirement": false
+      }
+    },
+
+    "call_put_ratio": {
+      "signal_weight": 0.2,
+      "classification": "INSTITUTIONAL_DERIVATIVES",
+      "institutional_dimension": "OPTIONS_POSITIONING",
+      "counts_as_independent_institutional_dimension": true,
+
+      "source_contract": "OPTIONS_QUALITY_GATE_NOT_YET_HOMOLOGATED",
+
+      "mapping": {
+        "source_key": "call_put_ratio",
+        "signal_key": "call_put_ratio",
+        "mapping_type": "DIRECT",
+        "recalculation_allowed": false
+      },
+
+      "integration_status": "NOT_YET_HOMOLOGATED",
+      "may_be_integrated": false,
+      "may_contribute_to_weighted_metric_coverage": false,
+      "may_count_as_independent_institutional_dimension": false
+    }
+  },
+
+  "eligibility": {
+    "required_conditions": {
+      "minimum_weighted_metric_coverage": 0.6,
+      "minimum_independent_institutional_dimensions": 2
+    },
+
+    "weighted_metric_coverage_formula": "sum(signal_weight of integrated eligible metrics)",
+
+    "institutional_dimension_count_formula": "count(distinct institutional_dimension where counts_as_independent_institutional_dimension=true and metric is eligible and integrated)",
+
+    "rules": {
+      "metric_must_pass_its_upstream_quality_contract": true,
+      "blocked_metric_is_omitted_not_zeroed": true,
+      "unavailable_metric_is_omitted_not_zeroed": true,
+      "partial_metric_may_be_used_only_when_explicitly_allowed": true,
+      "supporting_market_activity_does_not_create_institutional_dimension": true,
+      "not_homologated_metric_cannot_contribute": true
+    },
+
+    "statuses": {
+      "ELIGIBLE": {
+        "analytically_usable": true,
+        "publish_to_signal_input": true
+      },
+      "INSUFFICIENT_INSTITUTIONAL_DIMENSIONS": {
+        "analytically_usable": false,
+        "publish_to_signal_input": false
+      },
+      "INSUFFICIENT_WEIGHTED_COVERAGE": {
+        "analytically_usable": false,
+        "publish_to_signal_input": false
+      },
+      "UNAVAILABLE": {
+        "analytically_usable": false,
+        "publish_to_signal_input": false
+      },
+      "BLOCKED": {
+        "analytically_usable": false,
+        "publish_to_signal_input": false
+      }
+    }
+  },
+
+  "decision_order": [
+    "VALIDATE_INPUT_CONTRACTS",
+    "VALIDATE_ASSET_IDENTITY",
+    "EVALUATE_UPSTREAM_QUALITY",
+    "SELECT_ELIGIBLE_METRICS",
+    "COUNT_INDEPENDENT_INSTITUTIONAL_DIMENSIONS",
+    "CALCULATE_WEIGHTED_METRIC_COVERAGE",
+    "EVALUATE_INTEGRATION_ELIGIBILITY",
+    "BUILD_INSTITUTIONAL_FLOW_DATA_POINT"
+  ],
+
+  "output_contract": {
+    "required_fields": [
+      "ticker",
+      "integration_status",
+      "analytically_usable",
+      "weighted_metric_coverage",
+      "institutional_dimension_count",
+      "integrated_metrics",
+      "excluded_metrics",
+      "diagnostics"
+    ],
+
+    "data_point_rules": {
+      "write_only_when_eligible": true,
+      "value_contains_only_eligible_metrics": true,
+      "normalized_score_must_not_be_created_by_integration_layer": true,
+      "source_metrics_must_not_be_recalculated": true
+    }
+  }
+}
