@@ -1,0 +1,59 @@
+{
+  "policy_version": "3.4D.2-B.2C.8E",
+  "domain": "SHORT_INTEREST_REAL_RECONCILER_BOUNDARY",
+  "description": "Fail-closed production boundary controlling whether a real Short Interest Corporate Action case may invoke the homologated reconciler.",
+
+  "principles": {
+    "fail_closed": true,
+    "blocked_never_invokes_reconciler": true,
+    "semantic_conflict_status_does_not_override_adapter": true,
+    "verified_no_conflict_does_not_authorize_alone": true,
+    "not_established_blocks": true,
+    "conflict_detected_blocks": true,
+    "identity_must_match_exactly": true,
+    "settlement_window_must_match_exactly": true,
+    "preserve_upstream_raw": true,
+    "no_network_collection": true,
+    "no_corporate_action_inference": true,
+    "no_signal_generation": true,
+    "no_confidence_generation": true,
+    "no_score_generation": true,
+    "no_decision_generation": true,
+    "no_radar_mutation": true
+  },
+
+  "required_adapter_state_for_invocation": {
+    "integration_status": "READY_FOR_RECONCILIATION",
+    "route": "RECONCILER",
+    "reconciler_input_status": "READY",
+    "reconciler_invoked_before_boundary": false
+  },
+
+  "allowed_semantic_status_for_invocation": [
+    "VERIFIED_NO_CONFLICT"
+  ],
+
+  "blocking_semantic_statuses": [
+    "NOT_ESTABLISHED",
+    "CONFLICT_DETECTED"
+  ],
+
+  "boundary_statuses": [
+    "BLOCKED",
+    "READY_FOR_RECONCILER",
+    "RECONCILED"
+  ],
+
+  "invariants": [
+    "ADAPTER_BLOCKED_NEVER_REACHES_RECONCILER",
+    "ROUTE_NONE_NEVER_REACHES_RECONCILER",
+    "UNRESOLVED_RECONCILER_INPUT_NEVER_REACHES_RECONCILER",
+    "NOT_ESTABLISHED_NEVER_REACHES_RECONCILER",
+    "CONFLICT_DETECTED_NEVER_REACHES_RECONCILER",
+    "VERIFIED_NO_CONFLICT_ALONE_NEVER_AUTHORIZES_RECONCILIATION",
+    "RECONCILER_INVOCATION_REQUIRES_ALL_BOUNDARY_CONDITIONS",
+    "RAW_ADAPTER_RESULT_MUST_BE_PRESERVED",
+    "RAW_REVIEW_RESULT_MUST_BE_PRESERVED",
+    "BLOCKED_RESULT_MUST_REMAIN_ANALYTICALLY_UNUSABLE"
+  ]
+}
