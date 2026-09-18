@@ -1,0 +1,149 @@
+{
+  "schema_version": "3.0",
+  "policy_version": "3.4D.2-B.2C.8F.1",
+  "policy_name": "SHORT_INTEREST_QUALITY_GATE",
+  "description": "Quality Gate homologavel para short_interest_change_pct apos Corporate Action Reconciliation. Avalia integridade, proveniencia oficial, identidade, janela, reconciliacao e disponibilidade sem recalcular a metrica.",
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed_on_blocking_control": true,
+    "missing_is_not_neutral": true,
+    "missing_is_not_zero": true,
+    "do_not_invent_data": true,
+    "data_availability_is_not_quality": true,
+    "upstream_blocked_cannot_be_upgraded": true,
+    "upstream_unavailable_cannot_be_upgraded": true,
+    "quality_gate_does_not_reconcile": true,
+    "quality_gate_does_not_collect": true,
+    "quality_gate_does_not_assign_numeric_confidence": true,
+    "quality_gate_does_not_generate_signal": true,
+    "quality_gate_does_not_generate_score": true,
+    "quality_gate_does_not_generate_decision": true
+  },
+  "metric": {
+    "name": "short_interest_change_pct",
+    "calculation_basis": "CORPORATE_ACTION_RECONCILED_SHORT_INTEREST_CHANGE_PCT",
+    "raw_metric_preserved": true,
+    "previous_snapshot_preserved": true,
+    "current_snapshot_preserved": true,
+    "source": "FINRA",
+    "source_type": "CONSOLIDATED_SHORT_INTEREST",
+    "required_source_tier": "TIER_1"
+  },
+  "blocking_controls": {
+    "require_boundary_reconciled": true,
+    "require_reconciler_invoked": true,
+    "require_reconciler_analytically_usable": true,
+    "require_verified_identity_continuity": true,
+    "require_exact_settlement_window": true,
+    "require_two_distinct_settlement_dates": true,
+    "require_positive_previous_short_interest": true,
+    "require_nonnegative_current_short_interest": true,
+    "require_tier_1_short_interest_provenance": true,
+    "require_corporate_action_reconciliation_resolved": true,
+    "require_adjustment_integrity": true,
+    "require_raw_values_preserved": true,
+    "require_metric_available": true
+  },
+  "metric_selection": {
+  "NO_ACTION": {
+    "source": "NORMALIZED_FINRA_FACT",
+    "field": "collector_calculated_change_pct",
+    "requires_reconciler_adjusted_metric": false
+  },
+  "VERIFIED_ACTION": {
+    "source": "RECONCILER",
+    "field": "adjusted_change_pct",
+    "requires_reconciler_adjusted_metric": true
+  },
+  "SOURCE_ADJUSTED": {
+    "source": null,
+    "field": null,
+    "requires_explicit_adjusted_metric_contract": true,
+    "quality_gate_status": "BLOCKED"
+  }
+},
+ "allowed_reconciliation_statuses": [
+  "NO_ACTION",
+  "VERIFIED_ACTION"
+],
+"deferred_reconciliation_statuses": [
+  "SOURCE_ADJUSTED"
+],
+  "blocked_reconciliation_statuses": [
+    "NOT_CHECKED",
+    "UNRESOLVED"
+  ],
+  "quality_statuses": {
+    "VERIFIED": {
+      "analytically_usable": true,
+      "requirements": {
+        "blocking_controls": "PASS",
+        "metric_available": true,
+        "source_tier": "TIER_1",
+        "identity_continuity_status": "VERIFIED",
+        "corporate_action_reconciliation": "RESOLVED"
+      }
+    },
+    "BLOCKED": {
+      "analytically_usable": false,
+      "requirements": {
+        "condition": "ANY_BLOCKING_CONTROL_FAILED_OR_UPSTREAM_BLOCKED"
+      }
+    },
+    "UNAVAILABLE": {
+      "analytically_usable": false,
+      "requirements": {
+        "condition": "REQUIRED_SHORT_INTEREST_FACT_NOT_AVAILABLE"
+      }
+    }
+  },
+  "status_precedence": [
+    "UNAVAILABLE",
+    "BLOCKED",
+    "VERIFIED"
+  ],
+  "evaluation_order": [
+    "UPSTREAM_AVAILABILITY",
+    "UPSTREAM_BOUNDARY_STATUS",
+    "SOURCE_PROVENANCE",
+    "IDENTITY_CONTINUITY",
+    "SETTLEMENT_WINDOW",
+    "RAW_VALUE_INTEGRITY",
+    "CORPORATE_ACTION_RECONCILIATION",
+    "ADJUSTMENT_INTEGRITY",
+    "METRIC_AVAILABILITY",
+    "QUALITY_STATUS",
+    "ANALYTICALLY_USABLE"
+  ],
+  "invariants": {
+    "blocked_boundary_never_becomes_usable": true,
+    "unavailable_fact_never_becomes_usable": true,
+    "verified_requires_all_blocking_controls_pass": true,
+    "verified_requires_tier_1_source": true,
+    "verified_requires_resolved_corporate_action_reconciliation": true,
+    "verified_requires_exact_identity_and_window": true,
+    "verified_requires_metric": true,
+    "quality_gate_must_not_modify_raw_inputs": true,
+    "quality_gate_must_not_invoke_reconciler": true
+  },
+  "confidence_engine_boundary": {
+    "numeric_confidence_assigned_by_quality_gate": false,
+    "future_confidence_inputs": [
+      "source_tier",
+      "settlement_freshness",
+      "identity_integrity",
+      "corporate_action_verification",
+      "reconciliation_integrity",
+      "state_integrity"
+    ]
+  },
+  "downstream_boundary": {
+    "verified_may_proceed_to_institutional_flow": true,
+    "blocked_may_proceed_to_institutional_flow": false,
+    "unavailable_may_proceed_to_institutional_flow": false,
+    "quality_status_is_not_confidence": true,
+    "quality_status_is_not_signal": true,
+    "quality_status_is_not_score": true,
+    "quality_status_is_not_decision": true
+  }
+}
