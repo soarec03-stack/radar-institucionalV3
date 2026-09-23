@@ -1,0 +1,383 @@
+{
+  "policy_version": "3.4D.2-B.2E.1",
+  "policy_name": "Institutional Flow Signal Integration Policy V3",
+  "domain": "institutional_flow",
+  "purpose": "Define the fail-closed integration boundary between the homologated B.2D Institutional Flow Composer and the existing Metrics Loader and Signal Engine, ensuring that only Composer-authorized institutional-flow metrics can reach signal calculation.",
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed": true,
+    "missing_is_not_neutral": true,
+    "missing_is_not_zero": true,
+    "do_not_invent_metrics": true,
+    "availability_is_not_eligibility": true,
+    "upstream_blocked_cannot_be_upgraded": true,
+    "composer_is_authoritative_for_institutional_eligibility": true,
+    "integration_does_not_recalculate_source_metrics": true,
+    "integration_does_not_recalculate_composer_eligibility": true,
+    "integration_does_not_assign_numeric_confidence": true,
+    "integration_does_not_calculate_normalized_score": true,
+    "integration_does_not_calculate_radar_score": true,
+    "integration_does_not_make_decisions": true,
+    "metrics_loader_remains_authoritative_for_data_point_construction": true,
+    "signal_engine_remains_authoritative_for_normalized_score": true,
+    "preserve_provenance": true,
+    "preserve_auditability": true
+  },
+  "upstream_contract": {
+    "producer": "INSTITUTIONAL_FLOW_COMPOSER",
+    "stage": "B.2D",
+    "required_asset_fields": [
+      "ticker",
+      "integration_status",
+      "analytically_usable",
+      "weighted_metric_coverage",
+      "institutional_dimension_count",
+      "integrated_metrics",
+      "excluded_metrics",
+      "data_point"
+    ],
+    "authoritative_fields": {
+      "eligibility": "integration_status",
+      "analytical_usability": "analytically_usable",
+      "signal_payload": "data_point"
+    },
+    "eligible_status": "ELIGIBLE",
+    "non_eligible_statuses": [
+      "INSUFFICIENT_INSTITUTIONAL_DIMENSIONS",
+      "INSUFFICIENT_WEIGHTED_COVERAGE",
+      "UNAVAILABLE",
+      "BLOCKED"
+    ],
+    "eligibility_rule": {
+      "all_required": [
+        {
+          "field": "integration_status",
+          "operator": "EQUALS",
+          "value": "ELIGIBLE"
+        },
+        {
+          "field": "analytically_usable",
+          "operator": "EQUALS",
+          "value": true
+        },
+        {
+          "field": "data_point",
+          "operator": "IS_NON_NULL_OBJECT"
+        }
+      ]
+    },
+    "non_eligible_rule": {
+      "publish_metrics": false,
+      "recover_metrics_from_audit_paths": false,
+      "convert_missing_to_zero": false,
+      "convert_missing_to_neutral": false
+    }
+  },
+  "authoritative_boundary": {
+    "composer_authority": {
+      "controls": [
+        "institutional_metric_eligibility",
+        "weighted_metric_coverage",
+        "institutional_dimension_count",
+        "analytically_usable",
+        "integrated_metric_selection"
+      ],
+      "must_not_be_recalculated_downstream": true
+    },
+    "adapter_authority": {
+      "controls": [
+        "boundary_validation",
+        "eligible_payload_translation",
+        "non_eligible_payload_suppression",
+        "contract_compatibility_validation"
+      ]
+    },
+    "metrics_loader_authority": {
+      "controls": [
+        "clean_metrics",
+        "build_provenance",
+        "build_confidence",
+        "data_point_construction"
+      ]
+    },
+    "signal_engine_authority": {
+      "controls": [
+        "metric_transformation",
+        "weighted_domain_score",
+        "signal_metric_coverage",
+        "normalized_score"
+      ]
+    }
+  },
+  "signal_contract": {
+    "domain": "institutional_flow",
+    "metrics_loader_domain": "institutional_flow",
+    "data_point_path": "assets[].data_points.institutional_flow",
+    "value_path": "assets[].data_points.institutional_flow.value",
+    "engine_output_key": "normalized_score",
+    "minimum_metric_coverage_is_owned_by_signal_engine": true,
+    "allowed_metrics": {
+      "institutional_flow_pct": {
+        "type": "number",
+        "unit": "%",
+        "signal_weight": 0.4,
+        "transform": "higher_better",
+        "bad": -5,
+        "good": 5
+      },
+      "volume_ratio": {
+        "type": "number",
+        "unit": "x",
+        "minimum": 0,
+        "signal_weight": 0.2,
+        "transform": "higher_better",
+        "bad": 0.5,
+        "good": 2.0
+      },
+      "short_interest_change_pct": {
+        "type": "number",
+        "unit": "%",
+        "signal_weight": 0.2,
+        "transform": "lower_better",
+        "bad": 10,
+        "good": -10
+      },
+      "call_put_ratio": {
+        "type": "number",
+        "unit": "x",
+        "minimum": 0,
+        "signal_weight": 0.2,
+        "transform": "higher_better",
+        "bad": 0.5,
+        "good": 2.0
+      }
+    },
+    "unknown_metrics": {
+      "allowed": false,
+      "behavior": "BLOCK"
+    },
+    "normalized_score": {
+      "produced_by": "SIGNAL_ENGINE",
+      "adapter_must_not_produce": true,
+      "adapter_must_not_copy_from_upstream": true
+    }
+  },
+  "metric_semantics": {
+    "institutional_flow_pct": {
+      "source_metric": "institutional_holdings_change_pct",
+      "mapping_type": "EXPLICIT_ALIAS",
+      "source_domain": "INSTITUTIONAL_HOLDINGS",
+      "institutional_classification": "INSTITUTIONAL_PRIMARY",
+      "institutional_dimension": "INSTITUTIONAL_HOLDINGS",
+      "counts_as_independent_institutional_dimension": true,
+      "adapter_must_not_recalculate": true
+    },
+    "short_interest_change_pct": {
+      "source_metric": "short_interest_change_pct",
+      "mapping_type": "DIRECT",
+      "source_domain": "SHORT_INTEREST",
+      "institutional_classification": "INSTITUTIONAL_PRIMARY",
+      "institutional_dimension": "SHORT_INTEREST",
+      "counts_as_independent_institutional_dimension": true,
+      "adapter_must_not_recalculate": true
+    },
+    "volume_ratio": {
+      "source_metric": "volume_ratio",
+      "mapping_type": "DIRECT",
+      "source_domain": "TECHNICAL",
+      "institutional_classification": "SUPPORTING_MARKET_ACTIVITY",
+      "institutional_dimension": null,
+      "counts_as_independent_institutional_dimension": false,
+      "adapter_must_not_recalculate": true
+    },
+    "call_put_ratio": {
+      "source_metric": "call_put_ratio",
+      "mapping_type": "DIRECT",
+      "source_domain": "OPTIONS",
+      "institutional_classification": "INSTITUTIONAL_DERIVATIVES",
+      "institutional_dimension": "OPTIONS_POSITIONING",
+      "counts_as_independent_institutional_dimension": true,
+      "upstream_integration_status": "NOT_YET_HOMOLOGATED",
+      "adapter_must_not_enable_if_not_integrated_by_composer": true,
+      "adapter_must_not_recalculate": true
+    }
+  },
+  "publication_rules": {
+    "eligible_asset": {
+      "required_conditions": [
+        "integration_status == ELIGIBLE",
+        "analytically_usable == true",
+        "data_point is a non-null object"
+      ],
+      "action": "BUILD_METRICS_LOADER_PAYLOAD"
+    },
+    "non_eligible_asset": {
+      "action": "SUPPRESS_INSTITUTIONAL_FLOW_METRICS",
+      "create_empty_metrics_block": false,
+      "create_empty_data_point": false,
+      "publish_partial_composer_metrics": false,
+      "recover_blocked_metrics": false
+    }
+  },
+  "forbidden_recovery_paths": [
+    "raw_inputs",
+    "raw_normalized_asset",
+    "raw_boundary_asset",
+    "raw_review_asset",
+    "raw_adapter_asset",
+    "technical_metrics",
+    "raw_upstream",
+    "excluded_metrics"
+  ],
+  "forbidden_behaviors": [
+    "RECALCULATE_COMPOSER_ELIGIBILITY",
+    "RECALCULATE_WEIGHTED_METRIC_COVERAGE_FOR_ELIGIBILITY",
+    "RECALCULATE_INSTITUTIONAL_DIMENSION_COUNT",
+    "RECOVER_BLOCKED_SHORT_INTEREST_METRIC",
+    "RECOVER_EXCLUDED_METRIC",
+    "USE_RAW_AUDIT_VALUE_AS_SIGNAL_INPUT",
+    "CONVERT_UNAVAILABLE_TO_ZERO",
+    "CONVERT_UNAVAILABLE_TO_NEUTRAL",
+    "CREATE_EMPTY_INSTITUTIONAL_FLOW_DATA_POINT",
+    "CALCULATE_NORMALIZED_SCORE",
+    "ASSIGN_NUMERIC_CONFIDENCE",
+    "CALCULATE_RADAR_SCORE",
+    "MAKE_INVESTMENT_DECISION"
+  ],
+  "adapter_output_contract": {
+    "root": {
+      "required_fields": [
+        "integration_version",
+        "domain",
+        "assets",
+        "summary"
+      ]
+    },
+    "asset": {
+      "required_fields": [
+        "ticker",
+        "boundary_status",
+        "upstream_integration_status",
+        "upstream_analytically_usable",
+        "metrics_published",
+        "diagnostics"
+      ],
+      "boundary_statuses": [
+        "READY",
+        "SUPPRESSED",
+        "BLOCKED"
+      ]
+    },
+    "ready_asset": {
+      "boundary_status": "READY",
+      "metrics_published": true,
+      "requires_metrics_loader_payload": true
+    },
+    "suppressed_asset": {
+      "boundary_status": "SUPPRESSED",
+      "metrics_published": false,
+      "requires_metrics_loader_payload": false
+    },
+    "blocked_asset": {
+      "boundary_status": "BLOCKED",
+      "metrics_published": false,
+      "requires_metrics_loader_payload": false
+    }
+  },
+  "metrics_loader_payload_contract": {
+    "asset_shape": {
+      "ticker": "STRING",
+      "institutional_flow": {
+        "metrics": "OBJECT",
+        "source": "OBJECT"
+      }
+    },
+    "metrics": {
+      "must_be_non_empty": true,
+      "allowed_keys": [
+        "institutional_flow_pct",
+        "volume_ratio",
+        "short_interest_change_pct",
+        "call_put_ratio"
+      ],
+      "normalized_score_forbidden": true
+    },
+    "source": {
+      "must_preserve_upstream_provenance": true,
+      "must_not_invent_source": true
+    }
+  },
+  "decision_order": [
+    "VALIDATE_POLICY",
+    "VALIDATE_COMPOSER_ROOT_CONTRACT",
+    "VALIDATE_ASSET_IDENTITY",
+    "VALIDATE_COMPOSER_ASSET_CONTRACT",
+    "EVALUATE_COMPOSER_ELIGIBILITY",
+    "SUPPRESS_NON_ELIGIBLE_ASSET",
+    "VALIDATE_ELIGIBLE_DATA_POINT",
+    "VALIDATE_ALLOWED_METRICS",
+    "VALIDATE_METRIC_TYPES_AND_BOUNDS",
+    "VALIDATE_PROVENANCE",
+    "BUILD_METRICS_LOADER_PAYLOAD",
+    "EMIT_AUDIT_RESULT"
+  ],
+  "fail_closed_rules": {
+    "unknown_integration_status": "BLOCK",
+    "missing_ticker": "BLOCK",
+    "identity_mismatch": "BLOCK",
+    "missing_analytically_usable": "BLOCK",
+    "eligible_with_analytically_usable_false": "BLOCK",
+    "eligible_with_null_data_point": "BLOCK",
+    "eligible_with_empty_metrics": "BLOCK",
+    "eligible_with_unknown_metric": "BLOCK",
+    "eligible_with_invalid_metric_type": "BLOCK",
+    "eligible_with_invalid_metric_bounds": "BLOCK",
+    "missing_required_provenance": "BLOCK",
+    "non_eligible_with_non_null_data_point": "BLOCK",
+    "normalized_score_received_from_upstream": "BLOCK"
+  },
+  "current_real_pipeline_expectation": {
+    "as_of": "2026-09-22",
+    "expected_assets": {
+      "CRSP": {
+        "composer_status": "INSUFFICIENT_INSTITUTIONAL_DIMENSIONS",
+        "composer_analytically_usable": false,
+        "composer_data_point": null,
+        "expected_boundary_status": "SUPPRESSED",
+        "expected_metrics_published": false
+      },
+      "ETON": {
+        "composer_status": "INSUFFICIENT_INSTITUTIONAL_DIMENSIONS",
+        "composer_analytically_usable": false,
+        "composer_data_point": null,
+        "expected_boundary_status": "SUPPRESSED",
+        "expected_metrics_published": false
+      },
+      "VRT": {
+        "composer_status": "INSUFFICIENT_INSTITUTIONAL_DIMENSIONS",
+        "composer_analytically_usable": false,
+        "composer_data_point": null,
+        "expected_boundary_status": "SUPPRESSED",
+        "expected_metrics_published": false
+      }
+    }
+  },
+  "regression_requirements": {
+    "negative_cases": [
+      "NON_ELIGIBLE_60_PERCENT_ONE_INSTITUTIONAL_DIMENSION",
+      "BLOCKED_SHORT_INTEREST_RAW_VALUE_PRESENT",
+      "ELIGIBLE_FALSE_ANALYTICALLY_USABLE",
+      "ELIGIBLE_NULL_DATA_POINT",
+      "NON_ELIGIBLE_NON_NULL_DATA_POINT",
+      "UNKNOWN_METRIC",
+      "NORMALIZED_SCORE_IN_UPSTREAM_PAYLOAD",
+      "INVALID_VOLUME_RATIO_NEGATIVE",
+      "MISSING_PROVENANCE",
+      "IDENTITY_MISMATCH"
+    ],
+    "positive_cases": [
+      "ELIGIBLE_HOLDINGS_SHORT_INTEREST_VOLUME",
+      "ELIGIBLE_ALLOWED_METRICS_WITH_VALID_PROVENANCE"
+    ]
+  }
+}
