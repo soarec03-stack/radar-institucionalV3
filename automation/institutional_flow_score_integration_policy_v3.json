@@ -1,0 +1,129 @@
+{
+  "policy_version": "3.4D.2-B.2F.1",
+  "engine": "institutional_flow_score_integration",
+  "description": "Contrato da fronteira entre Institutional Flow, Confidence Engine, Signal Engine e Radar Score V3.",
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed": true,
+    "missing_is_not_neutral": true,
+    "missing_is_not_zero_signal": true,
+    "do_not_invent_metrics": true,
+    "do_not_invent_confidence": true,
+    "do_not_invent_signal": true,
+    "preserve_upstream_authority": true
+  },
+  "authorities": {
+    "institutional_eligibility": "institutional_flow_composer_v3",
+    "signal_boundary": "institutional_flow_signal_integration_adapter_v3",
+    "data_point_construction": "metrics_loader_v3",
+    "confidence": "confidence_engine_v3",
+    "normalized_signal": "signal_engine_v3",
+    "radar_score": "score_engine_v3"
+  },
+  "component": {
+    "name": "institutional_flow",
+    "source_path": "data_points.institutional_flow",
+    "signal_key": "normalized_score",
+    "max_points": 15.0
+  },
+  "confidence_contract": {
+    "source": "data_points.institutional_flow.confidence.score",
+    "minimum_usable_confidence": 0.6,
+    "minimum_inclusive": true,
+    "maximum_confidence": 1.0,
+    "below_minimum_behavior": {
+      "available": false,
+      "points": 0.0,
+      "include_max_points_in_available_score": false
+    },
+    "at_or_above_minimum_behavior": {
+      "available": true,
+      "include_max_points_in_available_score": true,
+      "apply_numeric_confidence_multiplier": true
+    },
+    "zero_or_unavailable_behavior": {
+      "available": false,
+      "points": 0.0,
+      "include_max_points_in_available_score": false
+    }
+  },
+  "score_contract": {
+    "formula": "(normalized_score / 100.0) * max_points * confidence_score",
+    "signal_min": 0.0,
+    "signal_max": 100.0,
+    "points_min": 0.0,
+    "points_max": 15.0,
+    "confidence_adjustment_required": true
+  },
+  "missing_component_contract": {
+    "data_point_absent": {
+      "available": false,
+      "points": 0.0,
+      "signal": null,
+      "include_max_points_in_available_score": false
+    },
+    "normalized_score_absent": {
+      "available": false,
+      "points": 0.0,
+      "include_max_points_in_available_score": false
+    },
+    "confidence_absent": {
+      "available": false,
+      "points": 0.0,
+      "include_max_points_in_available_score": false
+    }
+  },
+  "coverage_contract": {
+    "total_radar_score_weight": 100.0,
+    "institutional_flow_weight": 15.0,
+    "available_component_adds_full_max_points": true,
+    "unavailable_component_adds_zero_to_available_score": true,
+    "confidence_reduces_points_not_component_weight_when_usable": true
+  },
+  "forbidden_behaviors": [
+    "Treat confidence below 0.60 as analytically available.",
+    "Award Institutional Flow points when confidence is below 0.60.",
+    "Add 15 Institutional Flow points to available_score when confidence is below 0.60.",
+    "Treat missing Institutional Flow as a neutral signal.",
+    "Treat missing Institutional Flow as normalized_score zero.",
+    "Invent normalized_score when Signal Engine did not produce one.",
+    "Recalculate Institutional Flow metrics inside Score Engine.",
+    "Recalculate Institutional Flow confidence inside Score Engine.",
+    "Recover blocked or suppressed upstream Institutional Flow facts.",
+    "Exceed 15 points for Institutional Flow."
+  ],
+  "boundary_cases": {
+    "confidence_0_00": {
+      "expected_available": false,
+      "expected_points_for_signal_100": 0.0
+    },
+    "confidence_0_40": {
+      "expected_available": false,
+      "expected_points_for_signal_100": 0.0
+    },
+    "confidence_0_59": {
+      "expected_available": false,
+      "expected_points_for_signal_100": 0.0
+    },
+    "confidence_0_60": {
+      "expected_available": true,
+      "expected_points_for_signal_100": 9.0
+    },
+    "confidence_0_85": {
+      "expected_available": true,
+      "expected_points_for_signal_100": 12.75
+    },
+    "confidence_1_00": {
+      "expected_available": true,
+      "expected_points_for_signal_100": 15.0
+    }
+  },
+  "regression_requirements": {
+    "below_threshold_must_be_unavailable": true,
+    "threshold_is_inclusive": true,
+    "maximum_points_must_be_enforced": true,
+    "missing_component_must_reduce_available_score": true,
+    "confidence_must_not_change_available_score_when_usable": true,
+    "signal_engine_remains_normalized_score_authority": true
+  }
+}

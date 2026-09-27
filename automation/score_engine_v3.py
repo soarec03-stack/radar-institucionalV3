@@ -157,6 +157,31 @@ def resolve_confidence_multiplier(data_point, policy):
     return clamp(fallback, 0.0, 1.0)
 
 
+def get_minimum_usable_confidence(policy):
+    confidence_policy = policy.get("confidence_adjustment", {})
+
+    if not isinstance(confidence_policy, dict):
+        confidence_policy = {}
+
+    enabled = confidence_policy.get("enabled", True)
+
+    if enabled is False:
+        return 0.0
+
+    raw_minimum = confidence_policy.get(
+        "minimum_usable_confidence",
+        0.60,
+    )
+
+    try:
+        minimum = float(raw_minimum)
+    except (TypeError, ValueError):
+        minimum = 0.60
+
+    return clamp(minimum, 0.0, 1.0)
+
+
+
 def extract_signal(data_point, signal_keys):
     if not isinstance(data_point, dict):
         return None, "data point ausente."
@@ -279,16 +304,21 @@ def calculate_component(asset, component_name, policy):
         }
 
     confidence_multiplier = resolve_confidence_multiplier(source_obj, policy)
+    minimum_usable_confidence = get_minimum_usable_confidence(policy)
 
-    if confidence_multiplier <= 0:
+    if confidence_multiplier < minimum_usable_confidence:
         return {
             "name": component_name,
             "points": 0.0,
             "max_points": max_points,
             "signal": round(signal, 4),
-            "confidence_multiplier": confidence_multiplier,
+            "confidence_multiplier": round(confidence_multiplier, 4),
             "available": False,
-            "reason": "Sinal disponível, porém confidence indisponível ou igual a zero.",
+            "reason": (
+                "Sinal disponível, porém confidence abaixo do mínimo "
+                f"utilizável ({confidence_multiplier:.4f} < "
+                f"{minimum_usable_confidence:.4f})."
+            ),
         }
 
     raw_points = (signal / 100.0) * max_points
