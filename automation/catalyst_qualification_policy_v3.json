@@ -1,0 +1,206 @@
+{
+  "policy_name": "CATALYST_QUALIFICATION_POLICY",
+  "policy_version": "3.4I.5-B.2I.5",
+  "domain": "catalysts",
+  "purpose": "Define source-domain authorization and deterministic qualification gates for structurally valid Catalyst Event V3 records.",
+  "principles": {
+    "fail_closed": true,
+    "registered_does_not_mean_authorized": true,
+    "source_tier_alone_is_not_authorization": true,
+    "source_domain_support_required": true,
+    "event_type_authorization_required": true,
+    "upstream_invalid_event_cannot_be_upgraded": true,
+    "missing_confirmation_is_not_confirmation": true,
+    "missing_reason_is_not_justification": true,
+    "qualification_does_not_calculate_signal": true,
+    "qualification_does_not_calculate_radar_score": true
+  },
+  "authorities": {
+    "event_policy": "catalyst_intelligence_policy_v3.json",
+    "event_contract": "catalyst_event_contract_v3.json",
+    "event_validator": "catalyst_event_validator_v3.py",
+    "asset_universe": "asset_universe_v3.json",
+    "source_registry": "source_registry_v3.json"
+  },
+  "source_authorization": {
+    "SEC": {
+      "allowed_event_types": [
+        "EARNINGS",
+        "GUIDANCE",
+        "REGULATORY",
+        "M_AND_A",
+        "CAPITAL_ALLOCATION",
+        "FINANCING",
+        "LEGAL",
+        "MANAGEMENT",
+        "OPERATIONS",
+        "CORPORATE_ACTION"
+      ]
+    },
+    "COMPANY_IR": {
+      "allowed_event_types": [
+        "EARNINGS",
+        "GUIDANCE",
+        "REGULATORY",
+        "CLINICAL",
+        "PRODUCT",
+        "CONTRACT",
+        "PARTNERSHIP",
+        "M_AND_A",
+        "CAPITAL_ALLOCATION",
+        "FINANCING",
+        "LEGAL",
+        "MANAGEMENT",
+        "OPERATIONS",
+        "CORPORATE_ACTION"
+      ]
+    },
+    "REUTERS": {
+      "allowed_event_types": [
+        "EARNINGS",
+        "GUIDANCE",
+        "REGULATORY",
+        "CLINICAL",
+        "PRODUCT",
+        "CONTRACT",
+        "PARTNERSHIP",
+        "M_AND_A",
+        "CAPITAL_ALLOCATION",
+        "FINANCING",
+        "LEGAL",
+        "MANAGEMENT",
+        "OPERATIONS",
+        "CORPORATE_ACTION"
+      ]
+    },
+    "B3": {
+      "allowed_event_types": [
+        "CORPORATE_ACTION"
+      ],
+      "market_scope_required": true
+    }
+  },
+  "explicitly_not_authorized": [
+    "FED",
+    "FRED",
+    "CME",
+    "US_TREASURY",
+    "INVESTING",
+    "TRADINGVIEW",
+    "YAHOO_FINANCE",
+    "USER_PORTFOLIO",
+    "RADAR_UNIVERSE"
+  ],
+  "direction_qualification": {
+    "eligible": [
+      "POSITIVE",
+      "NEGATIVE",
+      "NEUTRAL"
+    ],
+    "blocked": [
+      "UNCERTAIN"
+    ],
+    "reason_required_for": [
+      "POSITIVE",
+      "NEGATIVE",
+      "NEUTRAL"
+    ]
+  },
+  "materiality_qualification": {
+    "eligible": [
+      "MEDIUM",
+      "HIGH",
+      "CRITICAL"
+    ],
+    "suppressed": [
+      "LOW"
+    ],
+    "reason_required_for_eligible": true
+  },
+  "status_qualification": {
+    "eligible": [
+      "SCHEDULED",
+      "CONFIRMED",
+      "COMPLETED"
+    ],
+    "suppressed": [
+      "CANCELLED"
+    ],
+    "blocked": [
+      "UNVERIFIED"
+    ]
+  },
+  "temporal_qualification": {
+    "future_scheduled_maximum_days": 90,
+    "completed_default_maximum_age_days": 30,
+    "completed_event_type_overrides": {
+      "REGULATORY": 60,
+      "CLINICAL": 60,
+      "M_AND_A": 60,
+      "CORPORATE_ACTION": 60
+    },
+    "future_non_scheduled_event": "BLOCKED",
+    "future_scheduled_beyond_horizon": "SUPPRESSED",
+    "stale_completed_event": "SUPPRESSED"
+  },
+  "tier_qualification": {
+    "TIER_1": {
+      "confirmation_required": false
+    },
+    "TIER_2": {
+      "confirmation_required": false
+    },
+    "TIER_3": {
+      "confirmation_required": true
+    },
+    "TIER_4": {
+      "score_eligible": false
+    }
+  },
+  "confirmation": {
+    "independent_source_required_when_policy_demands": true,
+    "secondary_source_must_be_registered": true,
+    "secondary_source_must_differ_from_primary": true,
+    "secondary_source_must_be_authorized_for_event_type": true,
+    "same_event_key_required": true,
+    "multiple_sources_do_not_create_multiple_events": true
+  },
+  "deduplication": {
+    "identity_fields": [
+      "ticker",
+      "event_type",
+      "event_date",
+      "event_key"
+    ],
+    "duplicate_event_action": "SUPPRESSED",
+    "duplicate_source_is_confirmation_not_new_catalyst": true
+  },
+  "outcomes": {
+    "ELIGIBLE": {
+      "may_enter_metrics_composer": true
+    },
+    "SUPPRESSED": {
+      "may_enter_metrics_composer": false
+    },
+    "BLOCKED": {
+      "may_enter_metrics_composer": false
+    },
+    "UNAVAILABLE": {
+      "may_enter_metrics_composer": false
+    }
+  },
+  "forbidden_behaviors": [
+    "AUTHORIZE_SOURCE_BY_TIER_ONLY",
+    "AUTHORIZE_SOURCE_BECAUSE_REGISTERED",
+    "USE_USER_PORTFOLIO_AS_CORPORATE_EVENT_EVIDENCE",
+    "USE_RADAR_UNIVERSE_AS_CORPORATE_EVENT_EVIDENCE",
+    "USE_YAHOO_FINANCE_AS_CATALYST_AUTHORITY",
+    "UPGRADE_INVALID_EVENT",
+    "UPGRADE_UNVERIFIED_EVENT",
+    "SCORE_LOW_MATERIALITY_EVENT",
+    "SCORE_UNCERTAIN_DIRECTION",
+    "DOUBLE_COUNT_DUPLICATE_EVENT",
+    "CALCULATE_NORMALIZED_SCORE",
+    "CALCULATE_RADAR_POINTS"
+  ]
+}

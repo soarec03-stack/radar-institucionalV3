@@ -8,7 +8,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_RADAR = BASE_DIR / "radar_v3.json"
 DEFAULT_METRICS = BASE_DIR / "input" / "metrics_input_v3.json"
 
-DOMAINS = ("fundamentals", "technical", "institutional_flow", "macro")
+DOMAINS = (
+    "fundamentals",
+    "technical",
+    "institutional_flow",
+    "catalysts",
+    "macro",
+)
 
 
 def load_json(path):

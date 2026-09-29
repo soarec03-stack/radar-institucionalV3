@@ -1,0 +1,133 @@
+{
+  "policy_name": "CATALYST_METRICS_COMPOSER_POLICY",
+  "policy_version": "3.4I.6A-B.2I.6A",
+  "domain": "catalysts",
+  "purpose": "Define deterministic translation from ELIGIBLE Catalyst Events into the existing structured catalyst metrics contract.",
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed": true,
+    "eligible_events_only": true,
+    "do_not_invent_probability": true,
+    "do_not_invent_source_quality": true,
+    "do_not_requalify_events": true,
+    "do_not_calculate_normalized_score": true,
+    "do_not_calculate_confidence": true,
+    "do_not_calculate_radar_points": true,
+    "signal_engine_remains_authoritative": true
+  },
+  "input": {
+    "required_qualification_status": "ELIGIBLE",
+    "event_contract": "catalyst_event_contract_v3.json",
+    "qualification_policy": "catalyst_qualification_policy_v3.json"
+  },
+  "output": {
+    "target_domain": "catalysts",
+    "metrics_structure": {
+      "items": {
+        "type": "array",
+        "minimum_items": 1
+      }
+    },
+    "item_fields": [
+      "description",
+      "signed_impact",
+      "probability",
+      "source_quality",
+      "horizon_days"
+    ]
+  },
+  "signed_impact": {
+    "range": [-100, 100],
+    "direction_factor": {
+      "POSITIVE": 1,
+      "NEUTRAL": 0,
+      "NEGATIVE": -1
+    },
+    "materiality_source": "catalyst_intelligence_policy_v3.json.materiality.levels",
+    "formula": "direction_factor * materiality_weight * 100",
+    "examples": {
+      "POSITIVE_MEDIUM": 50,
+      "POSITIVE_HIGH": 75,
+      "POSITIVE_CRITICAL": 100,
+      "NEUTRAL_MEDIUM": 0,
+      "NEUTRAL_HIGH": 0,
+      "NEUTRAL_CRITICAL": 0,
+      "NEGATIVE_MEDIUM": -50,
+      "NEGATIVE_HIGH": -75,
+      "NEGATIVE_CRITICAL": -100
+    }
+  },
+  "probability": {
+    "range": [0, 1],
+    "semantics": "Probability that the catalyst event itself occurs, not confidence in the source and not materiality.",
+    "by_event_status": {
+      "COMPLETED": {
+        "value": 1.0,
+        "derivation": "EVENT_ALREADY_OCCURRED"
+      },
+      "CONFIRMED": {
+        "value": 1.0,
+        "derivation": "EVENT_CONFIRMED_AS_FACT"
+      },
+      "SCHEDULED": {
+        "value": null,
+        "derivation": "OBSERVABLE_EVENT_PROBABILITY_REQUIRED",
+        "missing_action": "SUPPRESS_FROM_METRICS"
+      }
+    },
+    "forbidden": [
+      "DERIVE_FROM_SOURCE_TIER",
+      "DERIVE_FROM_MATERIALITY",
+      "DERIVE_FROM_DIRECTION",
+      "ASSIGN_DEFAULT_TO_SCHEDULED"
+    ]
+  },
+  "source_quality": {
+    "range": [0, 1],
+    "registry": "source_registry_v3.json",
+    "field": "authority_score",
+    "primary_source_only": true,
+    "missing_action": "SUPPRESS_FROM_METRICS",
+    "do_not_use_confidence_engine_score": true
+  },
+  "horizon_days": {
+    "minimum": 0,
+    "reference": "qualification_reference_date",
+    "rules": {
+      "SCHEDULED": "max(0, event_date - reference_date)",
+      "CONFIRMED": 0,
+      "COMPLETED": 0
+    },
+    "signal_engine_decay_authority": "signal_policy_v3.json.domains.catalysts.horizon_decay_days"
+  },
+  "description": {
+    "source": "event.title",
+    "fallback": "event.evidence.fact",
+    "must_not_invent_text": true
+  },
+  "aggregation": {
+    "one_eligible_event_produces_one_item": true,
+    "do_not_preaggregate_signed_impact": true,
+    "do_not_average_events": true,
+    "do_not_apply_time_decay": true,
+    "do_not_apply_source_quality_weight": true,
+    "signal_engine_performs_weighting": true
+  },
+  "boundary": {
+    "composer_statuses": [
+      "READY",
+      "SUPPRESSED",
+      "BLOCKED"
+    ],
+    "READY": "At least one fully derivable structured item exists.",
+    "SUPPRESSED": "No item is emitted because an otherwise eligible event lacks a derivable required metric.",
+    "BLOCKED": "Input violates the qualification/composer contract."
+  },
+  "forbidden_outputs": [
+    "normalized_score",
+    "confidence_score",
+    "radar_score",
+    "radar_points",
+    "decision"
+  ]
+}

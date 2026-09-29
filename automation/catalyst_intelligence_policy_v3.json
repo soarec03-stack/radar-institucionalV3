@@ -1,0 +1,250 @@
+{
+  "policy_name": "CATALYST_INTELLIGENCE_POLICY",
+  "policy_version": "3.4I.1-B.2I.1",
+  "domain": "catalysts",
+  "purpose": "Define authoritative eligibility, source quality, temporal validity, materiality and directional semantics for asset-specific catalyst events before they may influence the Radar Score.",
+  "principles": {
+    "policy_before_code": true,
+    "fail_closed": true,
+    "missing_is_not_neutral": true,
+    "missing_is_not_zero": true,
+    "do_not_invent_events": true,
+    "do_not_infer_unverified_facts": true,
+    "headline_alone_is_not_sufficient": true,
+    "narrative_alone_is_not_a_metric": true,
+    "asset_specific_evidence_required": true,
+    "source_provenance_required": true,
+    "event_date_required": true,
+    "future_event_must_be_explicitly_scheduled": true,
+    "duplicate_events_must_not_double_count": true,
+    "rumor_must_not_be_treated_as_verified_fact": true
+  },
+  "authorities": {
+    "asset_identity": "asset_universe_v3.json",
+    "source_registry": "source_registry_v3.json",
+    "metrics_contract": "metrics_contract_v3.json",
+    "signal_policy": "signal_policy_v3.json",
+    "score_policy": "score_policy_v3.json",
+    "confidence_engine": "confidence_engine_v3.py",
+    "signal_engine": "signal_engine_v3.py",
+    "score_engine": "score_engine_v3.py"
+  },
+  "event_types": {
+    "EARNINGS": {
+      "enabled": true,
+      "default_materiality": "HIGH"
+    },
+    "GUIDANCE": {
+      "enabled": true,
+      "default_materiality": "HIGH"
+    },
+    "REGULATORY": {
+      "enabled": true,
+      "default_materiality": "HIGH"
+    },
+    "CLINICAL": {
+      "enabled": true,
+      "default_materiality": "HIGH"
+    },
+    "PRODUCT": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "CONTRACT": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "PARTNERSHIP": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "M_AND_A": {
+      "enabled": true,
+      "default_materiality": "HIGH"
+    },
+    "CAPITAL_ALLOCATION": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "FINANCING": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "LEGAL": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "MANAGEMENT": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "OPERATIONS": {
+      "enabled": true,
+      "default_materiality": "MEDIUM"
+    },
+    "CORPORATE_ACTION": {
+      "enabled": true,
+      "default_materiality": "HIGH"
+    },
+    "OTHER": {
+      "enabled": false,
+      "default_materiality": "LOW"
+    }
+  },
+  "direction": {
+    "allowed": [
+      "POSITIVE",
+      "NEGATIVE",
+      "NEUTRAL",
+      "UNCERTAIN"
+    ],
+    "score_eligible": [
+      "POSITIVE",
+      "NEGATIVE",
+      "NEUTRAL"
+    ],
+    "uncertain_is_score_eligible": false,
+    "direction_must_be_evidence_based": true
+  },
+  "materiality": {
+    "levels": {
+      "LOW": {
+        "weight": 0.25
+      },
+      "MEDIUM": {
+        "weight": 0.5
+      },
+      "HIGH": {
+        "weight": 0.75
+      },
+      "CRITICAL": {
+        "weight": 1.0
+      }
+    },
+    "minimum_score_eligible": "MEDIUM",
+    "materiality_must_be_justified": true,
+    "default_materiality_is_not_final_materiality": true
+  },
+  "event_status": {
+    "allowed": [
+      "SCHEDULED",
+      "CONFIRMED",
+      "COMPLETED",
+      "CANCELLED",
+      "UNVERIFIED"
+    ],
+    "score_eligible": [
+      "SCHEDULED",
+      "CONFIRMED",
+      "COMPLETED"
+    ],
+    "cancelled_is_score_eligible": false,
+    "unverified_is_score_eligible": false
+  },
+  "source_policy": {
+    "allowed_registry_tiers": [
+      "TIER_1",
+      "TIER_2",
+      "TIER_3"
+    ],
+    "tier_1": {
+      "score_eligible": true,
+      "independent_confirmation_required": false
+    },
+    "tier_2": {
+      "score_eligible": true,
+      "independent_confirmation_required": false
+    },
+    "tier_3": {
+      "score_eligible": true,
+      "independent_confirmation_required": true
+    },
+    "tier_4": {
+      "score_eligible": false,
+      "independent_confirmation_required": true
+    },
+    "unknown_source": {
+      "score_eligible": false
+    }
+  },
+  "freshness": {
+    "reference": "event_date",
+    "future_scheduled_events": {
+      "maximum_days_ahead": 90
+    },
+    "completed_events": {
+      "maximum_age_days": 30
+    },
+    "event_type_overrides": {
+      "REGULATORY": {
+        "maximum_age_days": 60
+      },
+      "CLINICAL": {
+        "maximum_age_days": 60
+      },
+      "M_AND_A": {
+        "maximum_age_days": 60
+      },
+      "CORPORATE_ACTION": {
+        "maximum_age_days": 60
+      }
+    },
+    "stale_event_is_score_eligible": false
+  },
+  "deduplication": {
+    "enabled": true,
+    "same_event_must_not_double_count": true,
+    "identity_fields": [
+      "ticker",
+      "event_type",
+      "event_date",
+      "event_key"
+    ],
+    "multiple_sources_for_same_event_are_confirmation_not_new_events": true
+  },
+  "eligibility": {
+    "required_fields": [
+      "event_id",
+      "ticker",
+      "event_type",
+      "event_status",
+      "event_date",
+      "direction",
+      "materiality",
+      "title",
+      "evidence",
+      "source"
+    ],
+    "minimum_materiality": "MEDIUM",
+    "require_known_asset": true,
+    "require_registered_source": true,
+    "require_usable_source_quality": true,
+    "require_temporal_validity": true,
+    "require_direction_eligibility": true,
+    "require_event_status_eligibility": true
+  },
+  "output": {
+    "eligible_status": "ELIGIBLE",
+    "suppressed_status": "SUPPRESSED",
+    "blocked_status": "BLOCKED",
+    "unavailable_status": "UNAVAILABLE",
+    "score_eligible_only_when_status": "ELIGIBLE",
+    "target_domain": "catalysts",
+    "target_data_point": "data_points.catalysts"
+  },
+  "forbidden_behaviors": [
+    "INVENT_CATALYST",
+    "CONVERT_HEADLINE_DIRECTLY_TO_SCORE",
+    "TREAT_RUMOR_AS_VERIFIED_FACT",
+    "USE_UNKNOWN_SOURCE_FOR_SCORE",
+    "DOUBLE_COUNT_SAME_EVENT",
+    "USE_STALE_EVENT_FOR_SCORE",
+    "ASSUME_DIRECTION_WITHOUT_EVIDENCE",
+    "ASSUME_MATERIALITY_WITHOUT_JUSTIFICATION",
+    "CONVERT_MISSING_EVENT_TO_NEUTRAL",
+    "CONVERT_MISSING_EVENT_TO_ZERO",
+    "BYPASS_CONFIDENCE_ENGINE",
+    "BYPASS_SIGNAL_ENGINE",
+    "WRITE_RADAR_SCORE_DIRECTLY"
+  ]
+}

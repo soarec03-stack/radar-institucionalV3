@@ -1,0 +1,281 @@
+{
+  "contract_name": "CATALYST_EVENT_CONTRACT",
+  "contract_version": "3.4I.9B-B.2I.9B",
+  "domain": "catalysts",
+  "description": "Canonical contract for observed or explicitly scheduled asset-specific catalyst events before qualification and scoring.",
+  "event": {
+    "required": [
+      "event_id",
+      "event_key",
+      "ticker",
+      "event_type",
+      "event_status",
+      "event_date",
+      "direction",
+      "materiality",
+      "title",
+      "evidence",
+      "source"
+    ],
+    "fields": {
+      "event_id": {
+        "type": "string",
+        "nullable": false,
+        "description": "Unique immutable identifier for this canonical catalyst event."
+      },
+      "event_key": {
+        "type": "string",
+        "nullable": false,
+        "description": "Stable semantic key used for deduplication of the same underlying event across sources."
+      },
+      "ticker": {
+        "type": "string",
+        "nullable": false,
+        "description": "Canonical asset ticker from asset_universe_v3.json."
+      },
+      "event_type": {
+        "type": "enum",
+        "values": [
+          "EARNINGS",
+          "GUIDANCE",
+          "REGULATORY",
+          "CLINICAL",
+          "PRODUCT",
+          "CONTRACT",
+          "PARTNERSHIP",
+          "M_AND_A",
+          "CAPITAL_ALLOCATION",
+          "FINANCING",
+          "LEGAL",
+          "MANAGEMENT",
+          "OPERATIONS",
+          "CORPORATE_ACTION",
+          "OTHER"
+        ],
+        "nullable": false
+      },
+      "event_status": {
+        "type": "enum",
+        "values": [
+          "SCHEDULED",
+          "CONFIRMED",
+          "COMPLETED",
+          "CANCELLED",
+          "UNVERIFIED"
+        ],
+        "nullable": false
+      },
+      "event_date": {
+        "type": "date",
+        "format": "YYYY-MM-DD",
+        "nullable": false
+      },
+      "announced_at": {
+        "type": "datetime",
+        "nullable": true
+      },
+      "direction": {
+        "type": "enum",
+        "values": [
+          "POSITIVE",
+          "NEGATIVE",
+          "NEUTRAL",
+          "UNCERTAIN"
+        ],
+        "nullable": false
+      },
+      "direction_reason": {
+        "type": "string",
+        "nullable": true
+      },
+      "materiality": {
+        "type": "enum",
+        "values": [
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ],
+        "nullable": false
+      },
+      "materiality_reason": {
+        "type": "string",
+        "nullable": true
+      },
+      "title": {
+        "type": "string",
+        "nullable": false
+      },
+      "summary": {
+        "type": "string",
+        "nullable": true
+      },
+      "evidence": {
+        "type": "object",
+        "nullable": false,
+        "required": [
+          "fact"
+        ],
+        "fields": {
+          "fact": {
+            "type": "string",
+            "nullable": false
+          },
+          "observed_value": {
+            "type": [
+              "number",
+              "string",
+              "boolean",
+              "null"
+            ]
+          },
+          "expected_value": {
+            "type": [
+              "number",
+              "string",
+              "boolean",
+              "null"
+            ]
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "source": {
+        "type": "object",
+        "nullable": false,
+        "required": [
+          "primary_source",
+          "retrieved_at"
+        ],
+        "fields": {
+          "primary_source": {
+            "type": "string",
+            "nullable": false,
+            "description": "Source ID expected to resolve through source_registry_v3.json."
+          },
+          "secondary_source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "retrieved_at": {
+            "type": "datetime",
+            "nullable": false
+          },
+          "market_date": {
+            "type": [
+              "date",
+              "null"
+            ]
+          }
+        }
+      },
+      "quality": {
+        "type": "object",
+        "nullable": true,
+        "description": "Populated by the Catalyst qualification layer, not by raw collectors.",
+        "fields": {
+          "status": {
+            "type": "enum",
+            "values": [
+              "ELIGIBLE",
+              "SUPPRESSED",
+              "BLOCKED",
+              "UNAVAILABLE"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_tier": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fresh": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "duplicate": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      },
+      "probability": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Observable probability that a SCHEDULED catalyst event itself occurs. Optional. It is not source confidence, materiality, or direction and must not be defaulted or inferred by the Catalyst Metrics Composer."
+      },
+      "market_scope": {
+        "type": "string",
+        "nullable": true,
+        "description": "Explicit market scope when required by source qualification policy. Currently used to prove B3 scope for B3-authorized CORPORATE_ACTION events."
+      }
+    }
+  },
+  "separation_of_responsibilities": {
+    "collector": [
+      "OBSERVE_EVENT",
+      "CAPTURE_FACT",
+      "CAPTURE_SOURCE",
+      "CAPTURE_EVENT_DATE"
+    ],
+    "validator": [
+      "VALIDATE_CONTRACT",
+      "VALIDATE_ASSET_IDENTITY",
+      "VALIDATE_SOURCE_IDENTITY"
+    ],
+    "qualification_layer": [
+      "ASSESS_SOURCE_QUALITY",
+      "ASSESS_FRESHNESS",
+      "ASSESS_EVENT_STATUS",
+      "ASSESS_DIRECTION_ELIGIBILITY",
+      "ASSESS_MATERIALITY_ELIGIBILITY",
+      "DEDUPLICATE_EVENT",
+      "ASSIGN_QUALITY_STATUS"
+    ],
+    "metrics_composer": [
+      "CONSUME_ONLY_ELIGIBLE_EVENTS",
+      "BUILD_CATALYST_METRICS"
+    ],
+    "confidence_engine": [
+      "CALCULATE_DATA_POINT_CONFIDENCE"
+    ],
+    "signal_engine": [
+      "CALCULATE_NORMALIZED_CATALYST_SIGNAL"
+    ],
+    "score_engine": [
+      "CALCULATE_CATALYST_RADAR_POINTS"
+    ]
+  },
+  "forbidden_raw_collector_outputs": [
+    "normalized_score",
+    "radar_score",
+    "radar_points",
+    "confidence_score",
+    "decision"
+  ]
+}
