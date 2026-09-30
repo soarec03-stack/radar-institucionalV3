@@ -121,12 +121,17 @@ def resolve_confidence_multiplier(data_point, policy):
         return 0.0
 
     raw_score = confidence.get("score")
-    try:
-        numeric_score = float(raw_score)
-        if 0.0 <= numeric_score <= 1.0:
-            return numeric_score
-    except (TypeError, ValueError):
-        pass
+
+    if isinstance(raw_score, bool):
+        numeric_score = None
+    else:
+        try:
+            numeric_score = float(raw_score)
+        except (TypeError, ValueError):
+            numeric_score = None
+
+    if numeric_score is not None and 0.0 <= numeric_score <= 1.0:
+        return numeric_score
 
     status = str(confidence.get("status", "UNAVAILABLE")).upper()
     confidence_policy = policy.get("confidence_adjustment", {})
@@ -190,6 +195,9 @@ def extract_signal(data_point, signal_keys):
     if value is None:
         return None, "data point sem value."
 
+    if isinstance(value, bool):
+        return None, "value booleano não é sinal numérico válido."
+
     if isinstance(value, (int, float)):
         signal = float(value)
         if 0.0 <= signal <= 100.0:
@@ -202,6 +210,8 @@ def extract_signal(data_point, signal_keys):
     for key in signal_keys:
         raw = value.get(key)
         if raw is None:
+            continue
+        if isinstance(raw, bool):
             continue
         try:
             signal = float(raw)
@@ -222,11 +232,18 @@ def extract_risk_signal(source_obj):
       1) source_path = risk.score  -> source_obj é número
       2) source_path = risk        -> source_obj é dict com score
     """
+    if isinstance(source_obj, bool):
+        return None, "risk.score booleano é inválido."
+
     if isinstance(source_obj, (int, float)):
         risk_score = float(source_obj)
 
     elif isinstance(source_obj, dict):
         raw = source_obj.get("score")
+
+        if isinstance(raw, bool):
+            return None, "risk.score booleano é inválido."
+
         try:
             risk_score = float(raw)
         except (TypeError, ValueError):

@@ -1,0 +1,123 @@
+{
+  "policy_name": "RADAR_INSTITUCIONAL_ASSET_RISK_POLICY_V3",
+  "policy_version": "3.4J.3B-B.2J.3B",
+  "enabled": true,
+  "semantics": {
+    "risk_score_range": [0, 100],
+    "zero_means": "MINIMUM_MEASURED_RISK",
+    "hundred_means": "MAXIMUM_MEASURED_RISK",
+    "higher_is_riskier": true,
+    "missing_is_not_neutral": true
+  },
+  "components": {
+    "realized_volatility": {
+      "metric": "realized_volatility_20d_pct",
+      "enabled": true,
+      "weight": 0.40,
+      "normalization": {
+        "mode": "PIECEWISE_LINEAR",
+        "points": [
+          [10, 0],
+          [20, 20],
+          [30, 40],
+          [45, 60],
+          [65, 80],
+          [90, 100]
+        ],
+        "below_first": 0,
+        "above_last": 100
+      }
+    },
+    "max_drawdown": {
+      "metric": "max_drawdown_60d_pct",
+      "enabled": true,
+      "weight": 0.35,
+      "normalization": {
+        "mode": "PIECEWISE_LINEAR",
+        "points": [
+          [5, 0],
+          [10, 20],
+          [20, 40],
+          [30, 60],
+          [45, 80],
+          [60, 100]
+        ],
+        "below_first": 0,
+        "above_last": 100
+      }
+    },
+    "downside_return": {
+      "metric": "downside_return_20d_pct",
+      "enabled": true,
+      "weight": 0.25,
+      "normalization": {
+        "mode": "PIECEWISE_LINEAR",
+        "points": [
+          [0, 0],
+          [5, 20],
+          [10, 40],
+          [15, 60],
+          [25, 80],
+          [40, 100]
+        ],
+        "below_first": 0,
+        "above_last": 100
+      }
+    }
+  },
+  "aggregation": {
+    "mode": "WEIGHTED_AVAILABLE_COMPONENTS",
+    "minimum_metric_coverage": 0.6666666667,
+    "coverage_basis": "ENABLED_COMPONENT_COUNT",
+    "renormalize_available_weights": true,
+    "insufficient_data_action": "UNAVAILABLE",
+    "do_not_impute_missing_metrics": true
+  },
+  "levels": [
+    {
+      "minimum": 0,
+      "maximum": 19.999999,
+      "label": "LOW"
+    },
+    {
+      "minimum": 20,
+      "maximum": 39.999999,
+      "label": "MODERATE"
+    },
+    {
+      "minimum": 40,
+      "maximum": 59.999999,
+      "label": "HIGH"
+    },
+    {
+      "minimum": 60,
+      "maximum": 79.999999,
+      "label": "VERY_HIGH"
+    },
+    {
+      "minimum": 80,
+      "maximum": 100,
+      "label": "CRITICAL"
+    }
+  ],
+  "publication": {
+    "require_publication_eligible_source": true,
+    "research_only_allowed_for_methodology_testing": true,
+    "research_only_can_publish": false
+  },
+  "output": {
+    "schema_target": "asset.risk",
+    "fields": [
+      "score",
+      "level",
+      "drivers"
+    ],
+    "levels": [
+      "LOW",
+      "MODERATE",
+      "HIGH",
+      "VERY_HIGH",
+      "CRITICAL"
+    ]
+  }
+}

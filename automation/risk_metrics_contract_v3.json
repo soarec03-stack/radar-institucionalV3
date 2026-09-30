@@ -1,0 +1,124 @@
+{
+  "contract_name": "RADAR_INSTITUCIONAL_RISK_METRICS_V3",
+  "contract_version": "3.4J.4A-B.2J.4A",
+  "purpose": "Contrato de metricas quantitativas observaveis ou deterministicamente derivadas para o Asset Risk Engine V3.",
+  "principles": {
+    "no_invented_metrics": true,
+    "missing_metric": null,
+    "missing_is_not_neutral": true,
+    "risk_score_is_engine_output": true,
+    "research_only_source_cannot_authorize_publication": true,
+    "deterministic_derivation_required": true,
+    "insufficient_observations_produce_null": true
+  },
+  "market_data_input": {
+    "required_field": "Close",
+    "frequency": "1d",
+    "ordering": "ASCENDING_BY_MARKET_DATE",
+    "valid_observation": {
+      "type": "number",
+      "strictly_positive": true
+    },
+    "missing_close_policy": "DROP_BEFORE_CALCULATION",
+    "duplicate_market_date_policy": "REJECT",
+    "minimum_history_observations": 60
+  },
+  "metrics": {
+    "realized_volatility_20d_pct": {
+      "type": "number",
+      "minimum": 0,
+      "unit": "%",
+      "direction": "HIGHER_IS_RISKIER",
+      "derivation": "STD_DAILY_RETURNS_20D_ANNUALIZED_SQRT_252",
+      "window": {
+        "return_observations": 20,
+        "close_observations_required": 21
+      },
+      "daily_return_formula": "close_t / close_t_minus_1 - 1",
+      "standard_deviation": {
+        "mode": "SAMPLE",
+        "ddof": 1
+      },
+      "annualization": {
+        "trading_periods_per_year": 252,
+        "factor": "SQRT_252"
+      },
+      "output_formula": "sample_std(last_20_daily_returns, ddof=1) * sqrt(252) * 100",
+      "rounding": {
+        "calculation": "NO_INTERMEDIATE_ROUNDING",
+        "output_decimals": 6
+      },
+      "insufficient_data_output": null
+    },
+    "max_drawdown_60d_pct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "unit": "%",
+      "direction": "HIGHER_IS_RISKIER",
+      "derivation": "ABS_MAX_PEAK_TO_TROUGH_DRAWDOWN_WITHIN_60D_WINDOW",
+      "window": {
+        "close_observations": 60,
+        "scope": "LAST_60_VALID_CLOSE_OBSERVATIONS",
+        "peak_scope": "WITHIN_WINDOW_ONLY"
+      },
+      "running_peak_formula": "max(close_window_0_through_t)",
+      "drawdown_formula": "close_t / running_peak_t - 1",
+      "output_formula": "abs(min(drawdown_within_last_60_closes)) * 100",
+      "pre_window_peak_allowed": false,
+      "rounding": {
+        "calculation": "NO_INTERMEDIATE_ROUNDING",
+        "output_decimals": 6
+      },
+      "insufficient_data_output": null
+    },
+    "downside_return_20d_pct": {
+      "type": "number",
+      "minimum": 0,
+      "unit": "%",
+      "direction": "HIGHER_IS_RISKIER",
+      "derivation": "NEGATIVE_PART_OF_20D_CLOSE_TO_CLOSE_RETURN",
+      "window": {
+        "return_sessions": 20,
+        "close_observations_required": 21
+      },
+      "return_formula": "(latest_close / close_20_sessions_ago - 1) * 100",
+      "output_formula": "max(0, -return_20d_pct)",
+      "positive_return_output": 0,
+      "rounding": {
+        "calculation": "NO_INTERMEDIATE_ROUNDING",
+        "output_decimals": 6
+      },
+      "insufficient_data_output": null
+    }
+  },
+  "required_context": {
+    "ticker": {
+      "type": "string"
+    },
+    "market_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "primary_source",
+        "retrieved_at"
+      ]
+    }
+  },
+  "source_governance": {
+    "source_must_be_registered": true,
+    "source_publication_eligibility_evaluated_separately": true,
+    "research_only_source_may_produce_metrics_for_methodology_testing": true,
+    "research_only_source_may_authorize_official_publication": false
+  },
+  "engine_output_forbidden_in_input": [
+    "risk_score",
+    "risk_level",
+    "normalized_risk_score",
+    "radar_points",
+    "decision"
+  ]
+}
