@@ -1,0 +1,235 @@
+{
+  "metrics_version": "3.0",
+  "generated_at": "2026-09-30T22:22:34.337064Z",
+  "market_date": "2025-12-31",
+  "assets": [
+    {
+      "ticker": "VRT",
+      "fundamentals": {
+        "metrics": {
+          "revenue_growth_pct": 27.685414,
+          "eps_growth_pct": 166.40625,
+          "fcf_margin_pct": 18.5124,
+          "debt_to_ebitda": 1.362297,
+          "earnings_revision_pct": null,
+          "valuation_percentile": null
+        },
+        "source": {
+          "primary_source": "SEC",
+          "secondary_source": null,
+          "source_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001674101.json",
+          "retrieved_at": "2026-09-30T22:22:21.697696Z",
+          "market_date": "2025-12-31",
+          "sources_attempted": [
+            "SEC"
+          ]
+        }
+      },
+      "technical": {
+        "metrics": {
+          "price_vs_sma50_pct": -8.197019,
+          "price_vs_sma200_pct": -8.464883,
+          "rsi_14": 42.916195,
+          "macd_histogram_pct": 0.167552,
+          "relative_strength_20d_pct": -6.064295,
+          "volume_ratio": 0.77705,
+          "return_20d_pct": -5.704121,
+          "return_60d_pct": -21.012775
+        },
+        "source": {
+          "primary_source": "YAHOO_FINANCE",
+          "secondary_source": "SPY",
+          "source_url": "https://finance.yahoo.com/quote/VRT/history/",
+          "retrieved_at": "2026-09-30T22:21:38.639228Z",
+          "market_date": "2026-09-30",
+          "sources_attempted": [
+            "YAHOO_FINANCE"
+          ]
+        }
+      },
+      "institutional_flow": {
+        "metrics": {
+          "institutional_flow_pct": null,
+          "volume_ratio": null,
+          "short_interest_change_pct": null,
+          "call_put_ratio": null
+        },
+        "source": {
+          "primary_source": null,
+          "secondary_source": null,
+          "source_url": null,
+          "retrieved_at": null,
+          "market_date": null,
+          "sources_attempted": []
+        }
+      },
+      "macro": {
+        "metrics": {
+          "rates_change_20d_bps": 43.0,
+          "dollar_change_20d_pct": 1.911357,
+          "liquidity_change_20d_pct": 0.155851,
+          "sector_macro_surprise_pct": null
+        },
+        "source": {
+          "primary_source": "FRED",
+          "secondary_source": null,
+          "source_url": "https://fred.stlouisfed.org/",
+          "retrieved_at": "2026-09-30T22:22:34.337064Z",
+          "market_date": "2026-09-23",
+          "sources_attempted": [
+            "FRED"
+          ],
+          "series": [
+            "DGS10",
+            "DTWEXBGS",
+            "WALCL"
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "CRSP",
+      "fundamentals": {
+        "metrics": {
+          "revenue_growth_pct": -90.593343,
+          "eps_growth_pct": null,
+          "fcf_margin_pct": -9855.498575,
+          "debt_to_ebitda": null,
+          "earnings_revision_pct": null,
+          "valuation_percentile": null
+        },
+        "source": {
+          "primary_source": "SEC",
+          "secondary_source": null,
+          "source_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001674416.json",
+          "retrieved_at": "2026-09-30T22:22:21.697696Z",
+          "market_date": "2025-12-31",
+          "sources_attempted": [
+            "SEC"
+          ]
+        }
+      },
+      "technical": {
+        "metrics": {
+          "price_vs_sma50_pct": 2.347782,
+          "price_vs_sma200_pct": 3.798583,
+          "rsi_14": 50.22729,
+          "macd_histogram_pct": -0.135793,
+          "relative_strength_20d_pct": -3.00009,
+          "volume_ratio": 0.719929,
+          "return_20d_pct": -2.639916,
+          "return_60d_pct": -8.968242
+        },
+        "source": {
+          "primary_source": "YAHOO_FINANCE",
+          "secondary_source": "SPY",
+          "source_url": "https://finance.yahoo.com/quote/CRSP/history/",
+          "retrieved_at": "2026-09-30T22:21:38.639228Z",
+          "market_date": "2026-09-30",
+          "sources_attempted": [
+            "YAHOO_FINANCE"
+          ]
+        }
+      },
+      "institutional_flow": {
+        "metrics": {},
+        "source": {}
+      },
+      "macro": {
+        "metrics": {
+          "rates_change_20d_bps": 43.0,
+          "dollar_change_20d_pct": 1.911357,
+          "liquidity_change_20d_pct": 0.155851,
+          "sector_macro_surprise_pct": null
+        },
+        "source": {
+          "primary_source": "FRED",
+          "secondary_source": null,
+          "source_url": "https://fred.stlouisfed.org/",
+          "retrieved_at": "2026-09-30T22:22:34.337064Z",
+          "market_date": "2026-09-23",
+          "sources_attempted": [
+            "FRED"
+          ],
+          "series": [
+            "DGS10",
+            "DTWEXBGS",
+            "WALCL"
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "ETON",
+      "fundamentals": {
+        "metrics": {
+          "revenue_growth_pct": 104.942196,
+          "eps_growth_pct": null,
+          "fcf_margin_pct": 12.746717,
+          "debt_to_ebitda": null,
+          "earnings_revision_pct": null,
+          "valuation_percentile": null
+        },
+        "source": {
+          "primary_source": "SEC",
+          "secondary_source": null,
+          "source_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001710340.json",
+          "retrieved_at": "2026-09-30T22:22:21.697696Z",
+          "market_date": "2025-12-31",
+          "sources_attempted": [
+            "SEC"
+          ]
+        }
+      },
+      "technical": {
+        "metrics": {
+          "price_vs_sma50_pct": -5.032938,
+          "price_vs_sma200_pct": 62.247586,
+          "rsi_14": 40.088164,
+          "macd_histogram_pct": -1.198136,
+          "relative_strength_20d_pct": -15.154148,
+          "volume_ratio": 3.78256,
+          "return_20d_pct": -14.793974,
+          "return_60d_pct": 36.433491
+        },
+        "source": {
+          "primary_source": "YAHOO_FINANCE",
+          "secondary_source": "SPY",
+          "source_url": "https://finance.yahoo.com/quote/ETON/history/",
+          "retrieved_at": "2026-09-30T22:21:38.639228Z",
+          "market_date": "2026-09-30",
+          "sources_attempted": [
+            "YAHOO_FINANCE"
+          ]
+        }
+      },
+      "institutional_flow": {
+        "metrics": {},
+        "source": {}
+      },
+      "macro": {
+        "metrics": {
+          "rates_change_20d_bps": 43.0,
+          "dollar_change_20d_pct": 1.911357,
+          "liquidity_change_20d_pct": 0.155851,
+          "sector_macro_surprise_pct": null
+        },
+        "source": {
+          "primary_source": "FRED",
+          "secondary_source": null,
+          "source_url": "https://fred.stlouisfed.org/",
+          "retrieved_at": "2026-09-30T22:22:34.337064Z",
+          "market_date": "2026-09-23",
+          "sources_attempted": [
+            "FRED"
+          ],
+          "series": [
+            "DGS10",
+            "DTWEXBGS",
+            "WALCL"
+          ]
+        }
+      }
+    }
+  ]
+}
