@@ -133,18 +133,17 @@ def resolve_confidence_multiplier(data_point, policy):
     if numeric_score is not None and 0.0 <= numeric_score <= 1.0:
         return numeric_score
 
-    status = str(confidence.get("status", "UNAVAILABLE")).upper()
-    confidence_policy = policy.get("confidence_adjustment", {})
+    status = str(
+        confidence.get("status", "UNAVAILABLE")
+    ).upper()
+
+    confidence_policy = policy.get(
+        "confidence_adjustment",
+        {},
+    )
+
     if not isinstance(confidence_policy, dict):
         confidence_policy = {}
-
-    status_multipliers = (
-        confidence_policy.get("status_multipliers")
-        or confidence_policy.get("multipliers")
-        or confidence_policy
-    )
-    if not isinstance(status_multipliers, dict):
-        status_multipliers = {}
 
     defaults = {
         "VERIFIED": 1.00,
@@ -153,7 +152,38 @@ def resolve_confidence_multiplier(data_point, policy):
         "UNAVAILABLE": 0.00,
     }
 
-    fallback = status_multipliers.get(status, defaults.get(status, 0.0))
+    flat_policy_keys = {
+        "VERIFIED": "verified_multiplier",
+        "PARTIAL": "partial_multiplier",
+        "LOW": "low_multiplier",
+        "UNAVAILABLE": "unavailable_multiplier",
+    }
+
+    status_multipliers = confidence_policy.get(
+        "status_multipliers"
+    )
+
+    if not isinstance(status_multipliers, dict):
+        status_multipliers = confidence_policy.get(
+            "multipliers"
+        )
+
+    if isinstance(status_multipliers, dict):
+        fallback = status_multipliers.get(
+            status,
+            defaults.get(status, 0.0),
+        )
+    else:
+        policy_key = flat_policy_keys.get(status)
+
+        if policy_key is None:
+            fallback = defaults.get(status, 0.0)
+        else:
+            fallback = confidence_policy.get(
+                policy_key,
+                defaults.get(status, 0.0),
+            )
+
     try:
         fallback = float(fallback)
     except (TypeError, ValueError):
@@ -401,10 +431,15 @@ def calculate_asset_score(asset, policy):
     coverage = available_score / total_weight if total_weight > 0 else 0.0
 
     minimum_reliable = get_coverage_threshold(
-        policy, "minimum_reliable_score", 0.70
+        policy,
+        "minimum_for_reliable_score",
+        0.70,
     )
+
     minimum_publication = get_coverage_threshold(
-        policy, "minimum_publication", 0.85
+        policy,
+        "minimum_for_publication",
+        0.85,
     )
 
     analytically_usable = coverage >= minimum_reliable
