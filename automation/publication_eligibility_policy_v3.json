@@ -1,0 +1,87 @@
+{
+  "policy_version": "3.4L.4C-B.2L.4C",
+  "description": "Publication eligibility policy for Radar Institutional V3 analytical score components.",
+  "mode": "FAIL_CLOSED",
+  "principles": {
+    "never_promote_score_publishable": true,
+    "research_only_is_blocked": true,
+    "unknown_source_is_blocked": true,
+    "unavailable_is_blocked": true,
+    "require_registered_source": true,
+    "require_supported_capability": true
+  },
+  "tier_policy": {
+    "TIER_1": "ALLOW",
+    "TIER_2": "ALLOW",
+    "TIER_3": "BLOCK",
+    "TIER_4": "BLOCK"
+  },
+  "publication_use_policy": {
+    "RESEARCH_ONLY": "BLOCK"
+  },
+  "components": {
+    "fundamental": {
+      "data_path": "data_points.fundamentals",
+      "allowed_supports": [
+        "filings",
+        "financial_statements",
+        "fundamentals"
+      ]
+    },
+    "technical": {
+      "data_path": "data_points.technical",
+      "allowed_supports": [
+        "technical_indicators",
+        "trend",
+        "charts"
+      ]
+    },
+    "momentum": {
+      "data_path": "data_points.technical",
+      "inherits_publication_from": "technical"
+    },
+    "institutional_flow": {
+      "data_path": "data_points.institutional_flow",
+      "allowed_supports": [
+        "institutional_flow",
+        "ownership"
+      ]
+    },
+    "catalysts": {
+      "data_path": "data_points.catalysts",
+      "allowed_supports": [
+        "company_events",
+        "news",
+        "corporate_actions"
+      ]
+    },
+    "macro": {
+      "data_path": "data_points.macro",
+      "allowed_supports": [
+        "macro_series",
+        "macro",
+        "macro_data",
+        "financial_conditions",
+        "economic_calendar"
+      ]
+    },
+    "risk": {
+      "data_path": "risk",
+      "requires_explicit_provenance": true,
+      "source_context": {
+        "transport": "SIDECAR",
+        "required_context": [
+          "ticker",
+          "market_date",
+          "source"
+        ],
+        "source_required_fields": [
+          "primary_source",
+          "retrieved_at"
+        ],
+        "source_must_be_registered": true,
+        "publication_eligibility_evaluated_separately": true
+      }
+    }
+  }
+}

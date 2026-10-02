@@ -1,4 +1,4 @@
-﻿"""
+"""
 Radar Institucional V3
 B.2K.9 — Permanent End-to-End Regression
 
@@ -21,6 +21,7 @@ import copy
 import json
 import math
 import sys
+from datetime import datetime
 from pathlib import Path
 
 
@@ -245,10 +246,23 @@ freshness_hours = quality_policy.get(
     quality_policy.get("freshness", {}),
 )
 
+reference_time_raw = metrics_input.get("generated_at")
+
+if not isinstance(reference_time_raw, str):
+    raise RuntimeError(
+        "B.2K metrics fixture requires generated_at "
+        "for deterministic Confidence Engine execution."
+    )
+
+reference_time = datetime.fromisoformat(
+    reference_time_raw.replace("Z", "+00:00")
+)
+
 confidence_result = apply_confidence_engine(
     radar,
     registry,
     freshness_hours,
+    reference_time=reference_time,
 )
 
 check(

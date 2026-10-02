@@ -33,13 +33,28 @@ def parse_dt(value):
         return None
 
 
-def age_hours(dt):
+def age_hours(dt, reference_time=None):
     if dt is None:
         return None
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    now = datetime.now(timezone.utc)
-    return max(0.0, (now - dt.astimezone(timezone.utc)).total_seconds() / 3600.0)
+
+    now = (
+        reference_time
+        if reference_time is not None
+        else datetime.now(timezone.utc)
+    )
+
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+
+    return max(
+        0.0,
+        (
+            now.astimezone(timezone.utc)
+            - dt.astimezone(timezone.utc)
+        ).total_seconds() / 3600.0,
+    )
 
 
 def source_map(registry):
@@ -110,13 +125,27 @@ def source_agreement_score(provenance, registry):
     return score, f"{count} fonte(s) tentada(s)."
 
 
-def freshness_score(provenance, category, freshness_hours):
+def freshness_score(
+    provenance,
+    category,
+    freshness_hours,
+    reference_time=None,
+):
     retrieved = parse_dt(provenance.get("retrieved_at"))
     if retrieved is None:
         return 0.0, "retrieved_at ausente ou invalido."
 
-    hours = age_hours(retrieved)
-    max_age = float(freshness_hours.get(category, freshness_hours.get("OTHER", 168)))
+    hours = age_hours(
+        retrieved,
+        reference_time=reference_time,
+    )
+
+    max_age = float(
+        freshness_hours.get(
+            category,
+            freshness_hours.get("OTHER", 168),
+        )
+    )
 
     if hours <= max_age:
         score = 1.0
@@ -125,7 +154,10 @@ def freshness_score(provenance, category, freshness_hours):
     else:
         score = 0.0
 
-    return score, f"Idade={hours:.1f}h; limite={max_age:.0f}h."
+    return (
+        score,
+        f"Idade={hours:.1f}h; limite={max_age:.0f}h.",
+    )
 
 
 def verification_score(provenance, registry):
@@ -184,23 +216,77 @@ def datapoint_completeness_score(point):
     return 1.0, "Data point possui valor utilizavel."
 
 
-def weighted_confidence(provenance, category, completeness, registry, freshness_hours):
+def weighted_confidence(
+    provenance,
+    category,
+    completeness,
+    registry,
+    freshness_hours,
+    reference_time=None,
+):
     weights = registry.get("scoring", {})
 
-    sq, sq_reason = source_quality_score(provenance, registry)
-    sa, sa_reason = source_agreement_score(provenance, registry)
-    fr, fr_reason = freshness_score(provenance, category, freshness_hours)
+    sq, sq_reason = source_quality_score(
+        provenance,
+        registry,
+    )
+
+    sa, sa_reason = source_agreement_score(
+        provenance,
+        registry,
+    )
+
+    fr, fr_reason = freshness_score(
+        provenance,
+        category,
+        freshness_hours,
+        reference_time=reference_time,
+    )
+
     co, co_reason = completeness
-    ve, ve_reason = verification_score(provenance, registry)
+
+    ve, ve_reason = verification_score(
+        provenance,
+        registry,
+    )
 
     score = (
-        sq * float(weights.get("source_quality_weight", 0.30))
-        + sa * float(weights.get("source_agreement_weight", 0.25))
-        + fr * float(weights.get("freshness_weight", 0.20))
-        + co * float(weights.get("completeness_weight", 0.15))
-        + ve * float(weights.get("verification_weight", 0.10))
+        sq * float(
+            weights.get(
+                "source_quality_weight",
+                0.30,
+            )
+        )
+        + sa * float(
+            weights.get(
+                "source_agreement_weight",
+                0.25,
+            )
+        )
+        + fr * float(
+            weights.get(
+                "freshness_weight",
+                0.20,
+            )
+        )
+        + co * float(
+            weights.get(
+                "completeness_weight",
+                0.15,
+            )
+        )
+        + ve * float(
+            weights.get(
+                "verification_weight",
+                0.10,
+            )
+        )
     )
-    score = round(max(0.0, min(1.0, score)), 4)
+
+    score = round(
+        max(0.0, min(1.0, score)),
+        4,
+    )
 
     components = {
         "source_quality": round(sq, 4),
@@ -209,6 +295,7 @@ def weighted_confidence(provenance, category, completeness, registry, freshness_
         "completeness": round(co, 4),
         "verification": round(ve, 4),
     }
+
     details = {
         "source_quality": sq_reason,
         "source_agreement": sa_reason,
@@ -216,12 +303,21 @@ def weighted_confidence(provenance, category, completeness, registry, freshness_
         "completeness": co_reason,
         "verification": ve_reason,
     }
+
     return score, components, details
 
 
-def calculate_asset_confidence(asset, registry, freshness_hours):
+def calculate_asset_confidence(
+    asset,
+    registry,
+    freshness_hours,
+    reference_time=None,
+):
     provenance = asset.get("provenance") or {}
-    category = infer_asset_category(asset, registry)
+    category = infer_asset_category(
+        asset,
+        registry,
+    )
 
     score, components, details = weighted_confidence(
         provenance,
@@ -229,6 +325,7 @@ def calculate_asset_confidence(asset, registry, freshness_hours):
         asset_completeness_score(asset),
         registry,
         freshness_hours,
+        reference_time=reference_time,
     )
 
     return {
@@ -247,7 +344,13 @@ def calculate_asset_confidence(asset, registry, freshness_hours):
     }
 
 
-def calculate_datapoint_confidence(point_name, point, registry, freshness_hours):
+def calculate_datapoint_confidence(
+    point_name,
+    point,
+    registry,
+    freshness_hours,
+    reference_time=None,
+):
     value = point.get("value")
     provenance = point.get("provenance") or {}
     prov_status = provenance.get("status")
@@ -261,23 +364,32 @@ def calculate_datapoint_confidence(point_name, point, registry, freshness_hours)
             "completeness": 0.0,
             "verification": 0.0,
         }
+
         return {
             "score": 0.0,
             "status": "UNAVAILABLE",
             "reason": (
-                f"{point_name}: dado indisponivel; confidence fixada em 0.00."
+                f"{point_name}: dado indisponivel; "
+                "confidence fixada em 0.00."
             ),
             "components": zero,
-            "details": {"rule": "UNAVAILABLE_OR_EMPTY_VALUE"},
+            "details": {
+                "rule": "UNAVAILABLE_OR_EMPTY_VALUE"
+            },
         }
 
-    category = DATA_POINT_CATEGORY.get(point_name, "OTHER")
+    category = DATA_POINT_CATEGORY.get(
+        point_name,
+        "OTHER",
+    )
+
     score, components, details = weighted_confidence(
         provenance,
         category,
         datapoint_completeness_score(point),
         registry,
         freshness_hours,
+        reference_time=reference_time,
     )
 
     return {
@@ -296,14 +408,31 @@ def calculate_datapoint_confidence(point_name, point, registry, freshness_hours)
     }
 
 
-def apply_confidence_engine(data, registry, freshness_hours):
+def apply_confidence_engine(
+    data,
+    registry,
+    freshness_hours,
+    reference_time=None,
+):
     changes = []
 
     for asset in data.get("assets", []):
-        ticker = asset.get("ticker", "UNKNOWN")
-        old_confidence = asset.get("confidence")
+        ticker = asset.get(
+            "ticker",
+            "UNKNOWN",
+        )
 
-        asset_calc = calculate_asset_confidence(asset, registry, freshness_hours)
+        old_confidence = asset.get(
+            "confidence"
+        )
+
+        asset_calc = calculate_asset_confidence(
+            asset,
+            registry,
+            freshness_hours,
+            reference_time=reference_time,
+        )
+
         asset["confidence"] = {
             "score": asset_calc["score"],
             "status": asset_calc["status"],
@@ -311,7 +440,10 @@ def apply_confidence_engine(data, registry, freshness_hours):
         }
 
         datapoint_results = {}
-        for point_name, point in (asset.get("data_points") or {}).items():
+
+        for point_name, point in (
+            asset.get("data_points") or {}
+        ).items():
             if not isinstance(point, dict):
                 continue
 
@@ -320,6 +452,7 @@ def apply_confidence_engine(data, registry, freshness_hours):
                 point,
                 registry,
                 freshness_hours,
+                reference_time=reference_time,
             )
 
             point["confidence"] = {
