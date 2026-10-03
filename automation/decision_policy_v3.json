@@ -1,0 +1,313 @@
+﻿{
+  "policy_id": "RADAR_V3_DECISION_POLICY",
+  "policy_version": "3.4D.2D.2",
+  "status": "DRAFT",
+  "scope": "RADAR_INSTITUCIONAL_V3_ONLY",
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "may_modify_v2_1": false,
+    "preserve_existing_v3_decision_center_root": true,
+    "schema_change_required_by_this_policy": false,
+    "public_output_change_required_by_this_policy": false
+  },
+
+  "ownership": {
+    "decision_center_owns_decision_state": true,
+    "decision_center_owns_score": false,
+    "decision_center_owns_risk": false,
+    "decision_center_owns_confidence": false,
+    "decision_center_owns_publication_eligibility": false,
+    "decision_center_owns_domain_signals": false,
+    "decision_center_may_recalculate_upstream_models": false,
+    "decision_center_may_promote_upstream_evidence": false
+  },
+
+  "upstream_consumption": {
+    "score": {
+      "mode": "CONSUME_AS_EVIDENCE",
+      "recalculate": false,
+      "label_is_decision": false,
+      "label_may_directly_select_state": false,
+      "recognized_statuses": [
+        "CALCULATED",
+        "PARTIAL",
+        "INSUFFICIENT_DATA"
+      ],
+      "unknown_status_behavior": "FAIL_CLOSED"
+    },
+
+    "confidence": {
+      "mode": "CONSUME_UPSTREAM_CLASSIFICATION",
+      "recalculate": false,
+      "recognized_statuses": [
+        "VERIFIED",
+        "PARTIAL",
+        "LOW",
+        "UNAVAILABLE"
+      ],
+      "unavailable_is_usable": false,
+      "low_may_be_silently_promoted": false,
+      "unknown_status_behavior": "FAIL_CLOSED"
+    },
+
+    "publication_eligibility": {
+      "mode": "CONSUME_UPSTREAM_GATE",
+      "recalculate": false,
+      "may_override": false,
+      "may_promote_ineligible": false,
+      "ineligible_where_required_blocks_actionable_authority": true,
+      "unknown_status_behavior": "FAIL_CLOSED"
+    },
+
+    "risk": {
+      "mode": "CONSUME_UPSTREAM_LEVEL",
+      "recalculate": false,
+      "recognized_levels": [
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "VERY_HIGH",
+        "CRITICAL"
+      ],
+      "missing_is_low": false,
+      "missing_is_zero": false,
+      "unknown_level_behavior": "FAIL_CLOSED"
+    },
+
+    "signals": {
+      "mode": "CONSUME_UPSTREAM_STATUS",
+      "recalculate": false,
+      "recognized_statuses": [
+        "CALCULATED",
+        "INSUFFICIENT_COVERAGE",
+        "UNAVAILABLE"
+      ],
+      "minimum_metric_coverage_is_owned_upstream": true,
+      "decision_policy_may_define_new_signal_coverage_threshold": false,
+      "unknown_status_behavior": "FAIL_CLOSED"
+    }
+  },
+
+  "threshold_governance": {
+    "reuse_upstream_thresholds": true,
+    "duplicate_upstream_numeric_thresholds": false,
+    "decision_center_may_redefine_signal_coverage_threshold": false,
+    "decision_center_may_redefine_score_coverage_threshold": false,
+    "decision_center_may_redefine_confidence_thresholds": false,
+    "decision_center_may_redefine_risk_level_thresholds": false,
+    "decision_center_may_redefine_publication_source_tiers": false,
+    "decision_specific_rules_must_be_explicit": true
+  },
+
+  "evidence_authority": {
+    "missing_required_evidence": "INSUFFICIENT_EVIDENCE",
+    "unavailable_required_evidence": "INSUFFICIENT_EVIDENCE",
+    "blocked_required_evidence": "INSUFFICIENT_EVIDENCE",
+    "invalid_required_provenance": "INSUFFICIENT_EVIDENCE",
+    "insufficient_required_coverage": "INSUFFICIENT_EVIDENCE",
+    "publication_ineligible_where_required": "INSUFFICIENT_EVIDENCE",
+    "unknown_required_evidence_status": "INSUFFICIENT_EVIDENCE",
+
+    "missing_is_neutral": false,
+    "missing_is_negative": false,
+    "missing_is_positive": false,
+    "missing_is_zero": false,
+
+    "blocked_evidence_may_support_actionable": false,
+    "unavailable_evidence_may_support_actionable": false,
+    "unknown_evidence_may_support_actionable": false
+  },
+
+  "conflict_policy": {
+    "material_conflict_definition": "A conflict explicitly classified as material by an authorized upstream evidence or reconciliation process, or by the future Conflict Resolver operating under its own tested contract.",
+    "decision_policy_invents_conflict_materiality": false,
+    "material_conflict_must_remain_visible": true,
+    "unresolved_material_conflict_state": "THESIS_REVIEW",
+    "high_score_may_hide_material_conflict": false,
+    "score_label_may_resolve_material_conflict": false,
+    "conflict_may_be_silently_discarded": false
+  },
+
+  "risk_policy": {
+    "material_risk_definition": "A risk restriction explicitly classified as material by an authorized upstream risk context or by a future tested Decision Center risk-restriction rule.",
+    "decision_policy_invents_risk_score": false,
+    "decision_policy_recalculates_risk_level": false,
+
+    "level_mapping": {
+      "LOW": "NO_AUTOMATIC_DECISION_STATE",
+      "MODERATE": "NO_AUTOMATIC_DECISION_STATE",
+      "HIGH": "NO_AUTOMATIC_DECISION_STATE",
+      "VERY_HIGH": "NO_AUTOMATIC_DECISION_STATE",
+      "CRITICAL": "NO_AUTOMATIC_DECISION_STATE"
+    },
+
+    "risk_level_alone_selects_risk_review": false,
+    "material_risk_restriction_state": "RISK_REVIEW",
+    "risk_review_is_automatic_rejection": false,
+    "missing_risk_may_be_assumed_safe": false
+  },
+
+  "confirmation_policy": {
+    "required_confirmation_definition": "A confirmation explicitly required by an authorized future decision rule; absence of such a rule must not be invented from score labels or generic market intuition.",
+    "decision_policy_invents_required_confirmation": false,
+    "required_confirmation_missing_state": "WAIT_FOR_CONFIRMATION",
+    "score_label_may_satisfy_confirmation": false,
+    "high_score_may_satisfy_confirmation": false,
+    "missing_confirmation_may_be_assumed_satisfied": false
+  },
+
+  "actionable_authority": {
+    "actionable_is_positive_authority": true,
+    "actionable_is_default_state": false,
+
+    "requires": [
+      "EVIDENCE_GATE_PASSED",
+      "NO_UNRESOLVED_MATERIAL_CONFLICT",
+      "NO_MATERIAL_RISK_RESTRICTION",
+      "NO_REQUIRED_CONFIRMATION_MISSING",
+      "PUBLICATION_REQUIREMENTS_SATISFIED_WHERE_APPLICABLE",
+      "ACTIONABLE_AUTHORITY_EXPLICITLY_ESTABLISHED"
+    ],
+
+    "score_label_alone_establishes_actionable_authority": false,
+    "normalized_score_alone_establishes_actionable_authority": false,
+    "risk_level_alone_establishes_actionable_authority": false,
+    "confidence_status_alone_establishes_actionable_authority": false,
+
+    "actionable_authority_may_be_invented": false,
+
+    "authority_establishment": {
+      "mode": "EXPLICIT_FUTURE_RULE_REQUIRED",
+      "defined_in_this_policy": false,
+      "fallback_when_not_established": "WATCH"
+    }
+  },
+
+  "watch_policy": {
+    "meaning": "Evidence is usable and no higher-priority restrictive state applies, but positive ACTIONABLE authority has not been explicitly established.",
+    "watch_is_neutral": false,
+    "watch_is_hold": false,
+    "watch_is_buy": false,
+    "watch_is_accumulate": false,
+    "watch_is_default_for_missing_evidence": false,
+    "requires_usable_evidence": true,
+    "requires_no_higher_priority_restriction": true,
+    "requires_actionable_authority_not_established": true
+  },
+
+  "state_selection": {
+    "mode": "FAIL_CLOSED_FIRST_MATCH",
+
+    "evaluation_order": [
+      "INSUFFICIENT_EVIDENCE",
+      "THESIS_REVIEW",
+      "RISK_REVIEW",
+      "WAIT_FOR_CONFIRMATION",
+      "WATCH",
+      "ACTIONABLE"
+    ],
+
+    "rules": [
+      {
+        "priority": 1,
+        "state": "INSUFFICIENT_EVIDENCE",
+        "condition": "Any required evidence fails availability, provenance, coverage, publication or recognized-status requirements."
+      },
+      {
+        "priority": 2,
+        "state": "THESIS_REVIEW",
+        "condition": "Evidence is usable and an unresolved material conflict exists."
+      },
+      {
+        "priority": 3,
+        "state": "RISK_REVIEW",
+        "condition": "Evidence is usable and an explicit material risk restriction exists."
+      },
+      {
+        "priority": 4,
+        "state": "WAIT_FOR_CONFIRMATION",
+        "condition": "Evidence is usable and an explicitly required confirmation is missing."
+      },
+      {
+        "priority": 5,
+        "state": "WATCH",
+        "condition": "Evidence is usable, no higher-priority restriction applies, and positive ACTIONABLE authority has not been explicitly established."
+      },
+      {
+        "priority": 6,
+        "state": "ACTIONABLE",
+        "condition": "All mandatory gates pass and positive ACTIONABLE authority has been explicitly established by an authorized rule."
+      }
+    ],
+
+    "unknown_condition_behavior": "INSUFFICIENT_EVIDENCE"
+  },
+
+  "score_label_non_mapping": {
+    "STRONG_BUY": "NO_DIRECT_DECISION_STATE",
+    "BUY": "NO_DIRECT_DECISION_STATE",
+    "WATCH_ACCUMULATE": "NO_DIRECT_DECISION_STATE",
+    "HOLD": "NO_DIRECT_DECISION_STATE",
+    "CAUTION": "NO_DIRECT_DECISION_STATE",
+    "AVOID": "NO_DIRECT_DECISION_STATE"
+  },
+
+  "information_classes": {
+    "upstream_observation": "FACT",
+    "score": "MODEL",
+    "risk": "MODEL",
+    "signal": "MODEL",
+    "conflict_resolution": "INFERENCE",
+    "confirmation_assessment": "INFERENCE",
+    "decision_state": "DECISION",
+
+    "inference_may_be_presented_as_fact": false,
+    "decision_may_be_presented_as_fact": false
+  },
+
+  "phase_boundaries": {
+    "implements_evidence_gate_engine": false,
+    "implements_conflict_resolver": false,
+    "implements_decision_state_engine": false,
+    "writes_decision_center": false,
+    "modifies_generator": false,
+
+    "evidence_gate_implementation_phase": "D.3",
+    "conflict_resolver_implementation_phase": "D.4",
+    "decision_state_engine_phase": "D.5",
+    "generator_integration_phase": "D.7"
+  },
+
+  "prohibited_behaviors": [
+    "MODIFY_V2_1",
+    "MODIFY_SCHEMA_V3_IN_D2D2",
+    "RECALCULATE_SCORE",
+    "RECALCULATE_RISK",
+    "RECALCULATE_CONFIDENCE",
+    "RECALCULATE_PUBLICATION_ELIGIBILITY",
+    "RECALCULATE_DOMAIN_SIGNALS",
+    "DUPLICATE_UPSTREAM_NUMERIC_THRESHOLDS",
+    "TRANSLATE_SCORE_LABEL_DIRECTLY_TO_DECISION_STATE",
+    "TREAT_STRONG_BUY_AS_AUTOMATIC_ACTIONABLE",
+    "TREAT_BUY_AS_AUTOMATIC_ACTIONABLE",
+    "TREAT_HOLD_AS_AUTOMATIC_WATCH",
+    "TREAT_CAUTION_AS_AUTOMATIC_RISK_REVIEW",
+    "TREAT_AVOID_AS_AUTOMATIC_THESIS_REVIEW",
+    "TREAT_MISSING_AS_NEUTRAL",
+    "TREAT_MISSING_AS_WATCH",
+    "TREAT_MISSING_RISK_AS_LOW_RISK",
+    "TREAT_MISSING_RISK_AS_ZERO_RISK",
+    "OVERRIDE_PUBLICATION_ELIGIBILITY",
+    "PROMOTE_PUBLICATION_INELIGIBLE_EVIDENCE",
+    "RESTORE_REMOVED_SCORE_LABEL",
+    "IGNORE_MATERIAL_RISK",
+    "HIDE_MATERIAL_CONFLICT_WITH_HIGH_SCORE",
+    "INVENT_REQUIRED_CONFIRMATION",
+    "INVENT_ACTIONABLE_AUTHORITY",
+    "CREATE_ACTIONABLE_WITHOUT_EVIDENCE_GATE",
+    "CREATE_ACTIONABLE_FROM_BLOCKED_EVIDENCE",
+    "CREATE_ACTIONABLE_FROM_UNAVAILABLE_EVIDENCE",
+    "WRITE_DECISION_CENTER_IN_D2D2"
+  ]
+}

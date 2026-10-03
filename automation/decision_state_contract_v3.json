@@ -1,0 +1,282 @@
+﻿{
+  "contract_id": "RADAR_V3_DECISION_STATE_CONTRACT",
+  "version": "3.4D.2B",
+  "status": "DRAFT",
+  "scope": "RADAR_INSTITUCIONAL_V3_ONLY",
+
+  "purpose": {
+    "description": "Defines the semantic contract and precedence of internal Decision Center states without recalculating or overriding upstream analytical outputs.",
+    "decision_state_is": "An internal decision-intelligence classification derived only after upstream evidence has passed the required governance gates.",
+    "decision_state_is_not": [
+      "A replacement for Radar Score",
+      "A translation of Radar Score labels",
+      "A replacement for Risk",
+      "A replacement for Confidence",
+      "A replacement for Publication Eligibility",
+      "A trading order",
+      "An automatic buy or sell instruction"
+    ]
+  },
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "may_modify_v2_1": false,
+    "preserve_existing_v3_decision_center_root": true,
+    "schema_change_required_by_this_contract": false,
+    "public_output_change_required_by_this_contract": false
+  },
+
+  "states": {
+    "ACTIONABLE": {
+      "authority_rank": 60,
+      "terminal_for_evaluation": true,
+      "meaning": "Evidence has passed all required decision gates and no unresolved blocking condition remains.",
+      "does_not_mean": [
+        "BUY",
+        "SELL",
+        "STRONG_BUY",
+        "automatic execution",
+        "guaranteed positive outcome"
+      ],
+      "requires": [
+        "SUFFICIENT_EVIDENCE",
+        "EVIDENCE_GATE_PASSED",
+        "NO_BLOCKING_PUBLICATION_RESTRICTION",
+        "NO_UNRESOLVED_MATERIAL_CONFLICT",
+        "NO_BLOCKING_RISK_RESTRICTION",
+        "NO_REQUIRED_CONFIRMATION_MISSING"
+      ]
+    },
+
+    "WATCH": {
+      "authority_rank": 50,
+      "terminal_for_evaluation": true,
+      "meaning": "Evidence is valid enough for continued monitoring but does not yet justify actionable authority.",
+      "does_not_mean": [
+        "neutral evidence",
+        "missing evidence",
+        "automatic HOLD",
+        "automatic accumulation"
+      ],
+      "requires": [
+        "USABLE_EVIDENCE",
+        "NO_BLOCKING_CONDITION"
+      ]
+    },
+
+    "WAIT_FOR_CONFIRMATION": {
+      "authority_rank": 40,
+      "terminal_for_evaluation": true,
+      "meaning": "A relevant thesis or signal exists, but a required confirmation is still absent or unresolved.",
+      "does_not_mean": [
+        "missing evidence is positive",
+        "confirmation is optional",
+        "action may proceed before confirmation"
+      ],
+      "requires": [
+        "USABLE_EVIDENCE",
+        "REQUIRED_CONFIRMATION_MISSING"
+      ]
+    },
+
+    "RISK_REVIEW": {
+      "authority_rank": 30,
+      "terminal_for_evaluation": true,
+      "meaning": "Analytical evidence exists, but a material Risk condition restricts decision authority and requires explicit review.",
+      "does_not_mean": [
+        "automatic rejection",
+        "risk may be ignored because score is high",
+        "risk may be overwritten by Decision Center"
+      ],
+      "requires": [
+        "USABLE_EVIDENCE",
+        "MATERIAL_RISK_RESTRICTION"
+      ]
+    },
+
+    "THESIS_REVIEW": {
+      "authority_rank": 20,
+      "terminal_for_evaluation": true,
+      "meaning": "Material evidence conflicts with the current thesis or with other decision-relevant evidence and must remain visible for review.",
+      "does_not_mean": [
+        "conflicting evidence may be discarded",
+        "negative evidence automatically wins",
+        "positive evidence automatically wins"
+      ],
+      "requires": [
+        "USABLE_EVIDENCE",
+        "UNRESOLVED_MATERIAL_CONFLICT"
+      ]
+    },
+
+    "INSUFFICIENT_EVIDENCE": {
+      "authority_rank": 10,
+      "terminal_for_evaluation": true,
+      "meaning": "Evidence is missing, unavailable, blocked, invalid, publication-ineligible where required, or otherwise insufficient for decision authority.",
+      "does_not_mean": [
+        "neutral",
+        "negative",
+        "positive",
+        "HOLD",
+        "AVOID"
+      ],
+      "requires_any": [
+        "MISSING_REQUIRED_EVIDENCE",
+        "UNAVAILABLE_REQUIRED_EVIDENCE",
+        "BLOCKED_REQUIRED_EVIDENCE",
+        "INVALID_REQUIRED_PROVENANCE",
+        "INSUFFICIENT_REQUIRED_COVERAGE",
+        "PUBLICATION_INELIGIBLE_WHERE_REQUIRED",
+        "UNKNOWN_REQUIRED_EVIDENCE_STATUS"
+      ]
+    }
+  },
+
+  "precedence": {
+    "mode": "FAIL_CLOSED_FIRST_MATCH",
+    "evaluation_order": [
+      "INSUFFICIENT_EVIDENCE",
+      "THESIS_REVIEW",
+      "RISK_REVIEW",
+      "WAIT_FOR_CONFIRMATION",
+      "WATCH",
+      "ACTIONABLE"
+    ],
+    "rules": [
+      {
+        "priority": 1,
+        "state": "INSUFFICIENT_EVIDENCE",
+        "when": "Required evidence is missing, unavailable, blocked, invalid, publication-ineligible where required, has insufficient required coverage, or has unknown required status."
+      },
+      {
+        "priority": 2,
+        "state": "THESIS_REVIEW",
+        "when": "Usable evidence contains an unresolved material conflict."
+      },
+      {
+        "priority": 3,
+        "state": "RISK_REVIEW",
+        "when": "Usable evidence contains a material Risk restriction."
+      },
+      {
+        "priority": 4,
+        "state": "WAIT_FOR_CONFIRMATION",
+        "when": "Usable evidence exists but a required confirmation is missing."
+      },
+      {
+        "priority": 5,
+        "state": "WATCH",
+        "when": "Evidence is usable and no blocking condition exists, but actionable authority has not been established."
+      },
+      {
+        "priority": 6,
+        "state": "ACTIONABLE",
+        "when": "All required gates pass and no higher-priority restrictive state applies."
+      }
+    ]
+  },
+
+  "score_semantics": {
+    "radar_score_is_decision": false,
+    "score_label_is_decision": false,
+    "strong_buy_implies_actionable": false,
+    "buy_implies_actionable": false,
+    "watch_accumulate_implies_watch": false,
+    "hold_implies_watch": false,
+    "caution_implies_risk_review": false,
+    "avoid_implies_thesis_review": false,
+    "score_may_be_used_as_evidence": true,
+    "score_must_remain_upstream_owned": true
+  },
+
+  "risk_semantics": {
+    "risk_may_be_ignored": false,
+    "risk_may_be_overridden": false,
+    "missing_risk_is_low_risk": false,
+    "missing_risk_is_zero_risk": false,
+    "material_risk_may_restrict_decision": true,
+    "risk_review_is_automatic_rejection": false
+  },
+
+  "confidence_semantics": {
+    "confidence_may_be_overridden": false,
+    "unavailable_confidence_is_usable": false,
+    "low_confidence_may_be_silently_promoted": false,
+    "missing_confidence_is_neutral": false
+  },
+
+  "publication_semantics": {
+    "publication_eligibility_may_be_overridden": false,
+    "publication_ineligible_may_be_promoted": false,
+    "publication_gate_can_restrict_actionable_authority": true,
+    "decision_center_may_restore_removed_score_label": false
+  },
+
+  "missing_data_semantics": {
+    "missing_is_neutral": false,
+    "missing_is_negative": false,
+    "missing_is_positive": false,
+    "missing_is_zero": false,
+    "missing_may_create_actionable_authority": false,
+    "default_behavior": "RESTRICT_DECISION_AUTHORITY"
+  },
+
+  "conflict_semantics": {
+    "material_conflicts_must_be_preserved": true,
+    "conflicts_may_be_silently_discarded": false,
+    "conflicts_may_be_hidden_by_high_score": false,
+    "unresolved_material_conflict_state": "THESIS_REVIEW"
+  },
+
+  "authority_rules": {
+    "actionable_is_highest_decision_authority": true,
+    "actionable_requires_all_gates_passed": true,
+    "actionable_may_be_inferred_from_score_label_alone": false,
+    "restrictive_states_take_precedence_over_actionable": true,
+    "unknown_condition_behavior": "FAIL_CLOSED"
+  },
+
+  "information_class_rules": {
+    "allowed_classes": [
+      "FACT",
+      "MODEL",
+      "INFERENCE",
+      "DECISION"
+    ],
+    "decision_state_class": "DECISION",
+    "upstream_score_class": "MODEL",
+    "upstream_risk_class": "MODEL",
+    "decision_must_not_be_presented_as_fact": true,
+    "inference_must_not_be_presented_as_fact": true
+  },
+
+  "prohibited_behaviors": [
+    "TRANSLATE_SCORE_LABEL_DIRECTLY_TO_DECISION_STATE",
+    "TREAT_STRONG_BUY_AS_AUTOMATIC_ACTIONABLE",
+    "TREAT_BUY_AS_AUTOMATIC_ACTIONABLE",
+    "TREAT_MISSING_AS_WATCH",
+    "TREAT_MISSING_AS_HOLD",
+    "TREAT_MISSING_RISK_AS_LOW_RISK",
+    "TREAT_MISSING_RISK_AS_ZERO_RISK",
+    "IGNORE_MATERIAL_RISK",
+    "OVERRIDE_RISK",
+    "OVERRIDE_CONFIDENCE",
+    "OVERRIDE_PUBLICATION_ELIGIBILITY",
+    "RESTORE_BLOCKED_SCORE_LABEL",
+    "DISCARD_MATERIAL_CONFLICT",
+    "HIDE_CONFLICT_BECAUSE_SCORE_IS_HIGH",
+    "CREATE_ACTIONABLE_STATE_FROM_BLOCKED_EVIDENCE",
+    "CREATE_ACTIONABLE_STATE_FROM_UNAVAILABLE_EVIDENCE",
+    "CREATE_ACTIONABLE_STATE_WITHOUT_EVIDENCE_GATE",
+    "MODIFY_UPSTREAM_ANALYTICAL_OUTPUTS",
+    "MODIFY_V2_1"
+  ],
+
+  "future_policy_boundary": {
+    "numeric_thresholds_defined_here": false,
+    "component_thresholds_defined_here": false,
+    "portfolio_actions_defined_here": false,
+    "trade_execution_defined_here": false,
+    "thresholds_require_separate_decision_policy": true
+  }
+}
