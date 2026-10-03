@@ -1,0 +1,170 @@
+﻿{
+  "contract_id": "RADAR_V3_DECISION_CENTER_CONTRACT",
+  "version": "3.4D.1",
+  "status": "DRAFT",
+  "scope": "RADAR_INSTITUCIONAL_V3_ONLY",
+
+  "purpose": {
+    "description": "Define the architectural boundaries, evidence semantics and fail-closed requirements of the Radar Institucional V3 Decision Center.",
+    "decision_center_is": "A downstream decision-intelligence layer that consumes eligible analytical evidence.",
+    "decision_center_is_not": [
+      "A replacement for the Radar Score",
+      "A source-data collector",
+      "A provenance engine",
+      "A confidence engine",
+      "A signal engine",
+      "A risk engine",
+      "A publication eligibility engine"
+    ]
+  },
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "may_modify_v2_1": false,
+    "preserve_existing_v3_decision_center_root": true,
+    "existing_public_output_fields": [
+      "action_of_day",
+      "top_opportunities",
+      "top_risks",
+      "recommended_actions"
+    ],
+    "schema_change_required_by_this_contract": false
+  },
+
+  "information_classes": {
+    "FACT": {
+      "description": "Observed or externally sourced information supported by provenance."
+    },
+    "MODEL": {
+      "description": "Output produced by an approved analytical model or engine."
+    },
+    "INFERENCE": {
+      "description": "Interpretation derived from eligible evidence."
+    },
+    "DECISION": {
+      "description": "Decision state or decision-oriented output derived from approved evidence and rules."
+    }
+  },
+
+  "authorized_inputs": [
+    "METRICS",
+    "PROVENANCE",
+    "CONFIDENCE",
+    "SIGNALS",
+    "FUNDAMENTAL",
+    "TECHNICAL",
+    "MOMENTUM",
+    "INSTITUTIONAL",
+    "CATALYSTS",
+    "MACRO",
+    "RISK",
+    "RADAR_SCORE",
+    "COVERAGE",
+    "PUBLICATION_ELIGIBILITY",
+    "PORTFOLIO",
+    "MARKET_REGIME"
+  ],
+
+  "principles": [
+    "NEVER_INVENT_DATA",
+    "MISSING_EVIDENCE_IS_NOT_NEUTRAL",
+    "KEEP_FACT_MODEL_INFERENCE_DECISION_DISTINCT",
+    "RADAR_SCORE_IS_NOT_AUTOMATIC_DECISION",
+    "PRESERVE_CONFLICTING_EVIDENCE",
+    "DO_NOT_IGNORE_RISK",
+    "PUBLICATION_ELIGIBILITY_PARTICIPATES_IN_DECISION_ELIGIBILITY",
+    "INSUFFICIENT_COVERAGE_RESTRICTS_DECISION_AUTHORITY",
+    "DECISIONS_MUST_BE_EXPLAINABLE",
+    "INFERENCES_MUST_BE_TRACEABLE",
+    "DO_NOT_MODIFY_UPSTREAM_ANALYTICAL_OUTPUTS",
+    "FAIL_CLOSED_BY_DEFAULT",
+    "PRESERVE_V2_1",
+    "DOMAIN_ENGINES_MUST_NOT_WRITE_DIRECTLY_TO_DECISION_CENTER",
+    "DO_NOT_PROMOTE_UNAVAILABLE_EVIDENCE",
+    "DO_NOT_OVERRIDE_PUBLICATION_ELIGIBILITY",
+    "DO_NOT_MANUFACTURE_DECISIONS_FROM_BLOCKED_SCORES",
+    "DO_NOT_DISCARD_CONFLICTS_TO_SIMPLIFY_CONCLUSION"
+  ],
+
+  "boundaries": {
+    "upstream_engines_produce_evidence": true,
+    "decision_center_consumes_evidence": true,
+    "decision_center_may_recalculate_radar_score": false,
+    "decision_center_may_override_confidence": false,
+    "decision_center_may_override_risk": false,
+    "decision_center_may_override_publication_eligibility": false,
+    "domain_engines_may_write_decision_center_directly": false,
+    "reconciliation_pipelines_may_write_decision_center_directly": false,
+    "collectors_may_write_decision_center_directly": false
+  },
+
+  "evidence_semantics": {
+    "missing_is_neutral": false,
+    "missing_is_negative": false,
+    "missing_is_positive": false,
+    "unavailable_is_usable": false,
+    "blocked_is_usable": false,
+    "low_confidence_may_be_silently_promoted": false,
+    "conflicting_evidence_must_be_preserved": true
+  },
+
+  "evidence_gate": {
+    "required_before_decision": true,
+    "must_consider": [
+      "CONFIDENCE",
+      "COVERAGE",
+      "PROVENANCE",
+      "PUBLICATION_ELIGIBILITY",
+      "RISK"
+    ],
+    "blocked_evidence_may_generate_actionable_decision": false,
+    "insufficient_evidence_behavior": "FAIL_CLOSED"
+  },
+
+  "traceability": {
+    "decision_requires_supporting_evidence": true,
+    "inference_requires_source_evidence": true,
+    "decision_requires_information_classification": true,
+    "conflicts_must_remain_auditable": true
+  },
+
+  "prohibited_behaviors": [
+    "INVENT_DATA",
+    "TREAT_MISSING_AS_NEUTRAL",
+    "TREAT_MISSING_AS_NEGATIVE",
+    "TREAT_MISSING_AS_POSITIVE",
+    "PROMOTE_UNAVAILABLE_EVIDENCE",
+    "PROMOTE_BLOCKED_EVIDENCE",
+    "OVERRIDE_CONFIDENCE",
+    "OVERRIDE_RISK",
+    "OVERRIDE_PUBLICATION_ELIGIBILITY",
+    "RECALCULATE_RADAR_SCORE",
+    "MANUFACTURE_DECISION_FROM_BLOCKED_SCORE",
+    "DISCARD_CONFLICTING_EVIDENCE",
+    "WRITE_DIRECTLY_FROM_COLLECTOR_TO_DECISION_CENTER",
+    "WRITE_DIRECTLY_FROM_DOMAIN_ENGINE_TO_DECISION_CENTER",
+    "WRITE_DIRECTLY_FROM_RECONCILIATION_TO_DECISION_CENTER",
+    "MODIFY_V2_1"
+  ],
+
+  "fail_closed_rules": {
+    "unknown_evidence_status": "BLOCK",
+    "missing_required_evidence": "RESTRICT_DECISION",
+    "invalid_provenance": "BLOCK_EVIDENCE",
+    "publication_ineligible": "BLOCK_ACTIONABLE_DECISION",
+    "unresolved_evidence_conflict": "PRESERVE_AND_RESTRICT",
+    "unknown_information_class": "BLOCK"
+  },
+
+  "public_output_contract": {
+    "target": "decision_center",
+    "preserve_existing_fields": true,
+    "fields": [
+      "action_of_day",
+      "top_opportunities",
+      "top_risks",
+      "recommended_actions"
+    ],
+    "internal_reasoning_may_not_be_presented_as_fact": true
+  }
+}
