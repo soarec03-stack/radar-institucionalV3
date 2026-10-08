@@ -1,0 +1,88 @@
+{
+    "contract_id":  "RADAR_V3_EVIDENCE_GATE_CONFLICT_RESOLVER_INTERFACE",
+    "contract_version":  "3.4D.3D.4M.2C",
+    "status":  "DRAFT",
+    "scope":  "RADAR_INSTITUCIONAL_V3_ONLY",
+    "interface":  {
+                      "producer":  "EVIDENCE_GATE",
+                      "consumer":  "CONFLICT_RESOLVER",
+                      "input_name":  "evidence_gate_context_by_ticker",
+                      "transport_mode":  "TRANSIENT_READ_ONLY_SIDECAR",
+                      "implementation_phase":  "D.4",
+                      "generator_integration_phase":  "D.7"
+                  },
+    "required_per_ticker_fields":  [
+                                       "ticker",
+                                       "gate_status",
+                                       "evidence_gate_passed",
+                                       "admissible_evidence",
+                                       "restricted_evidence",
+                                       "blocked_evidence",
+                                       "insufficient_evidence",
+                                       "unknown_evidence",
+                                       "reasons"
+                                   ],
+    "evidence_item_required_fields":  [
+                                          "evidence_id",
+                                          "domain",
+                                          "information_class",
+                                          "gate_result",
+                                          "reason_code"
+                                      ],
+    "evidence_item_optional_fields":  [
+                                          "source_reference",
+                                          "upstream_status",
+                                          "publication_status",
+                                          "provenance_status",
+                                          "coverage_status",
+                                          "details"
+                                      ],
+    "gate_status_allowed_values":  [
+                                       "PASSED",
+                                       "RESTRICTED",
+                                       "BLOCKED",
+                                       "INSUFFICIENT",
+                                       "UNKNOWN"
+                                   ],
+    "evidence_gate_result_allowed_values":  [
+                                                "ADMISSIBLE",
+                                                "RESTRICTED",
+                                                "BLOCKED",
+                                                "INSUFFICIENT",
+                                                "UNKNOWN"
+                                            ],
+    "conflict_boundary":  {
+                              "conflict_detection_owned_by":  "D.4_CONFLICT_RESOLVER",
+                              "conflict_materiality_requires_authorized_rule":  true,
+                              "missing_conflict_data_means_no_conflict":  false,
+                              "preserve_all_evidence_buckets":  true,
+                              "preserve_conflicting_evidence":  true,
+                              "preserve_reason_codes":  true,
+                              "preserve_source_references":  true,
+                              "may_promote_restricted_evidence":  false,
+                              "may_promote_blocked_evidence":  false,
+                              "may_invent_provenance":  false
+                          },
+    "decision_boundary":  {
+                              "decision_state_owned_by":  "D.5_DECISION_STATE_ENGINE",
+                              "conflict_resolver_selects_decision_state":  false,
+                              "conflict_resolver_establishes_actionable_authority":  false,
+                              "unresolved_material_conflict_is_downstream_input":  true,
+                              "unresolved_material_conflict_may_be_discarded":  false
+                          },
+    "compatibility":  {
+                          "preserve_v2_1":  true,
+                          "modify_v2_1":  false,
+                          "modify_generator_v3":  false,
+                          "modify_schema_v3":  false,
+                          "modify_evidence_gate_engine":  false,
+                          "modify_public_output":  false,
+                          "write_decision_center":  false
+                      },
+    "phase_boundaries":  {
+                             "defines_interface_contract":  true,
+                             "implements_conflict_resolver":  false,
+                             "implements_decision_state_engine":  false,
+                             "integrates_generator":  false
+                         }
+}
