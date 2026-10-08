@@ -1,0 +1,67 @@
+{
+    "contract_id":  "RADAR_V3_EVIDENCE_GATE_CONTEXT_BRIDGE_IMPLEMENTATION",
+    "contract_version":  "3.4D.3D.4L.3B",
+    "status":  "DRAFT",
+    "scope":  "V3_ONLY",
+    "baseline_commit":  "343324d588f6a00de858557f49b2e8a6242d0246",
+    "implementation":  {
+                           "module":  "automation/evidence_gate_context_bridge_v3.py",
+                           "function":  "build_evidence_gate_runtime_inputs",
+                           "implemented_in_this_step":  false,
+                           "integration_with_generator":  false
+                       },
+    "interface":  {
+                      "arguments":  [
+                                        "radar",
+                                        "publication_context_by_ticker",
+                                        "risk_source_context_by_ticker"
+                                    ],
+                      "required_argument":  "radar",
+                      "optional_arguments":  [
+                                                 "publication_context_by_ticker",
+                                                 "risk_source_context_by_ticker"
+                                             ],
+                      "output_fields":  [
+                                            "radar",
+                                            "publication_context_by_ticker",
+                                            "risk_source_context_by_ticker"
+                                        ],
+                      "output_type":  "TRANSIENT_RUNTIME_CONTEXT"
+                  },
+    "transport_semantics":  {
+                                "radar":  "PRESERVE_UPSTREAM_STATE",
+                                "publication_context":  "TRANSPORT_ONLY",
+                                "risk_source_context":  "TRANSPORT_ONLY",
+                                "missing_optional_context":  "EMPTY_DICT_WITHOUT_SYNTHETIC_TICKERS",
+                                "missing_evidence":  "PRESERVE_ABSENCE",
+                                "invalid_input":  "RAISE_TYPE_ERROR",
+                                "mutate_inputs":  false,
+                                "persist_output":  false,
+                                "recalculate_upstream":  false
+                            },
+    "ownership":  {
+                      "publication_context":  "PUBLICATION_ELIGIBILITY",
+                      "risk_source_context":  "RISK_AND_PUBLICATION_RUNTIME",
+                      "evidence_classification":  "EVIDENCE_GATE",
+                      "conflict_resolution":  "D.4",
+                      "decision_state":  "D.5",
+                      "traceability":  "D.6",
+                      "generator_integration":  "D.7"
+                  },
+    "prohibitions":  [
+                         "MODIFY_V2_1",
+                         "MODIFY_SCHEMA_V3",
+                         "MODIFY_GENERATOR",
+                         "MODIFY_EVIDENCE_GATE_ENGINE",
+                         "RECALCULATE_PUBLICATION_ELIGIBILITY",
+                         "RECALCULATE_RISK",
+                         "RECALCULATE_SCORE",
+                         "RECALCULATE_SIGNALS",
+                         "INVENT_PROVENANCE",
+                         "TRANSLATE_LEGACY_SCORE",
+                         "SYNTHESIZE_MISSING_TICKERS",
+                         "WRITE_DECISION_CENTER",
+                         "SELECT_DECISION_STATE",
+                         "PERSIST_RUNTIME_CONTEXT"
+                     ]
+}
