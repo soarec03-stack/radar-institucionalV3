@@ -1,0 +1,330 @@
+﻿{
+  "contract_id": "RADAR_V3_EVIDENCE_GATE_REQUIREDNESS_CONTRACT",
+  "contract_version": "3.4D.3D.4D",
+  "status": "DRAFT",
+  "scope": "V3_ONLY",
+
+  "purpose": {
+    "defines_evidence_requiredness": true,
+    "defines_evidence_admissibility": false,
+    "defines_numeric_thresholds": false,
+    "duplicates_upstream_thresholds": false,
+    "recalculates_upstream_results": false,
+    "implements_evidence_gate_engine": false,
+    "implements_context_bridge": false,
+    "defines_conflict_resolution": false,
+    "defines_decision_state": false,
+    "defines_actionable_authority": false,
+    "writes_decision_center": false,
+    "modifies_public_output": false
+  },
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "modify_v2_1": false,
+    "modify_schema_v3": false,
+    "modify_generator": false,
+    "modify_existing_decision_center_contract": false,
+    "modify_public_output": false,
+    "modify_b2k_fixtures": false
+  },
+
+  "references": {
+    "evidence_gate_policy_id": "RADAR_V3_EVIDENCE_GATE_POLICY",
+    "evidence_gate_policy_version": "3.4D.3B",
+    "evidence_gate_runtime_contract_id": "RADAR_V3_EVIDENCE_GATE_RUNTIME_CONTRACT",
+    "context_bridge_contract_id": "RADAR_V3_EVIDENCE_GATE_CONTEXT_BRIDGE_CONTRACT",
+    "context_bridge_contract_version": "3.4D.3D.4B"
+  },
+
+  "requiredness_classes": {
+    "REQUIRED": {
+      "meaning": "Evidence must be present in its canonical upstream runtime form for the Evidence Gate to pass.",
+      "missing_result": "INSUFFICIENT",
+      "may_be_imputed": false,
+      "may_be_defaulted": false,
+      "may_be_reconstructed": false,
+      "absence_is_neutral": false,
+      "absence_is_negative": false,
+      "absence_is_positive": false
+    },
+
+    "CONDITIONAL": {
+      "meaning": "Evidence is required only when an explicit canonical upstream condition makes that evidence applicable.",
+      "condition_source": "UPSTREAM_EXPLICIT_CONTEXT_ONLY",
+      "missing_when_condition_applies_result": "INSUFFICIENT",
+      "missing_when_condition_does_not_apply_result": "NOT_REQUIRED",
+      "may_infer_condition_from_missing_data": false,
+      "may_infer_condition_from_score_magnitude": false,
+      "may_infer_condition_from_risk_magnitude": false,
+      "may_infer_condition_from_signal_magnitude": false,
+      "may_be_imputed": false,
+      "may_be_defaulted": false,
+      "may_be_reconstructed": false
+    },
+
+    "OPTIONAL": {
+      "meaning": "Evidence may enrich downstream analysis when present but its absence alone cannot prevent Evidence Gate passage.",
+      "missing_result": "NOT_REQUIRED",
+      "presence_does_not_guarantee_admissibility": true,
+      "may_be_imputed": false,
+      "may_be_defaulted": false,
+      "may_be_reconstructed": false
+    }
+  },
+
+  "required_evidence": {
+    "score": {
+      "requiredness": "REQUIRED",
+      "domain": "RADAR_SCORE",
+      "canonical_runtime_source": "asset.score",
+      "required_runtime_fields": [
+        "status",
+        "analytically_usable",
+        "publishable"
+      ],
+      "missing_result": "INSUFFICIENT",
+      "legacy_shape_is_canonical_runtime_evidence": false,
+      "may_translate_legacy_shape": false,
+      "may_infer_missing_fields": false,
+      "threshold_owner": "SCORE_ENGINE"
+    },
+
+    "coverage": {
+      "requiredness": "REQUIRED",
+      "domain": "COVERAGE",
+      "canonical_runtime_source": "asset.score.coverage",
+      "missing_result": "INSUFFICIENT",
+      "may_calculate_from_components": false,
+      "may_infer_from_score_status": false,
+      "may_define_new_threshold": false,
+      "threshold_owner": "SCORE_ENGINE"
+    },
+
+    "confidence": {
+      "requiredness": "REQUIRED",
+      "domain": "CONFIDENCE",
+      "canonical_runtime_source": "asset.confidence",
+      "required_runtime_fields": [
+        "status"
+      ],
+      "missing_result": "INSUFFICIENT",
+      "may_recalculate": false,
+      "may_infer_status": false,
+      "may_define_new_threshold": false,
+      "threshold_owner": "CONFIDENCE_ENGINE"
+    },
+
+    "risk": {
+      "requiredness": "REQUIRED",
+      "domain": "RISK",
+      "canonical_runtime_source": "asset.risk",
+      "missing_result": "INSUFFICIENT",
+      "missing_is_low_risk": false,
+      "missing_is_zero_risk": false,
+      "may_recalculate": false,
+      "may_infer_from_price": false,
+      "may_define_new_threshold": false,
+      "threshold_owner": "RISK_ENGINE"
+    },
+
+    "domain_signals": {
+      "requiredness": "REQUIRED",
+      "domain": "DOMAIN_SIGNALS",
+      "canonical_runtime_source": "asset.signals",
+      "missing_result": "INSUFFICIENT",
+      "empty_result": "INSUFFICIENT",
+      "may_recalculate": false,
+      "may_infer_from_score": false,
+      "may_infer_from_metrics": false,
+      "may_infer_from_price": false,
+      "may_define_new_threshold": false,
+      "threshold_owner": "SIGNAL_ENGINE"
+    },
+
+    "price_provenance": {
+      "requiredness": "REQUIRED",
+      "domain": "RADAR_SCORE",
+      "canonical_runtime_source": "asset.provenance.price",
+      "missing_result": "INSUFFICIENT",
+      "invalid_result": "BLOCKED",
+      "unknown_result": "UNKNOWN",
+      "may_invent": false,
+      "may_repair": false,
+      "may_infer_from_price_presence": false,
+      "may_infer_from_source_name": false,
+      "threshold_owner": "UPSTREAM_PROVENANCE_POLICY"
+    }
+  },
+
+  "conditional_evidence": {
+    "publication_context": {
+      "requiredness": "CONDITIONAL",
+      "domain": "PUBLICATION_ELIGIBILITY",
+      "canonical_runtime_source": "publication_context_by_ticker[ticker]",
+      "condition": "PUBLICATION_ELIGIBILITY_APPLICABLE_UPSTREAM",
+      "condition_owner": "PUBLICATION_ELIGIBILITY",
+      "condition_must_be_explicit": true,
+      "missing_when_condition_applies_result": "INSUFFICIENT",
+      "missing_when_condition_does_not_apply_result": "NOT_REQUIRED",
+      "may_recalculate_publication_eligibility": false,
+      "may_infer_condition_from_score_publishable": false,
+      "may_assume_eligible_when_missing": false
+    },
+
+    "risk_source_context": {
+      "requiredness": "CONDITIONAL",
+      "domain": "RISK",
+      "canonical_runtime_source": "risk_source_context_by_ticker[ticker]",
+      "condition": "RISK_PUBLICATION_CONTEXT_APPLICABLE_UPSTREAM",
+      "condition_owner": "RISK_AND_PUBLICATION_RUNTIME",
+      "condition_must_be_explicit": true,
+      "missing_when_condition_applies_result": "INSUFFICIENT",
+      "missing_when_condition_does_not_apply_result": "NOT_REQUIRED",
+      "may_rebuild_from_public_risk": false,
+      "may_infer_condition_from_risk_level": false,
+      "may_assume_eligible_when_missing": false
+    }
+  },
+
+  "optional_evidence": {
+    "catalysts": {
+      "requiredness": "OPTIONAL",
+      "domain": "CATALYSTS",
+      "canonical_runtime_source": "asset.catalysts",
+      "absence_alone_blocks_gate": false
+    },
+
+    "institutional_flow": {
+      "requiredness": "OPTIONAL",
+      "domain": "INSTITUTIONAL_FLOW",
+      "canonical_runtime_source": "asset.institutional_flow",
+      "absence_alone_blocks_gate": false
+    },
+
+    "portfolio": {
+      "requiredness": "OPTIONAL",
+      "domain": "PORTFOLIO",
+      "canonical_runtime_source": "radar.portfolio",
+      "absence_alone_blocks_gate": false
+    },
+
+    "market_regime": {
+      "requiredness": "OPTIONAL",
+      "domain": "MARKET_REGIME",
+      "canonical_runtime_source": "radar.market_regime",
+      "absence_alone_blocks_gate": false
+    }
+  },
+
+  "requiredness_semantics": {
+    "required_missing_is_neutral": false,
+    "required_missing_is_negative": false,
+    "required_missing_is_positive": false,
+    "required_missing_is_zero": false,
+    "required_missing_is_admissible": false,
+    "required_missing_result": "INSUFFICIENT",
+
+    "optional_missing_is_failure": false,
+    "optional_missing_is_admissible_evidence": false,
+    "optional_missing_result": "NOT_REQUIRED",
+
+    "conditional_requiredness_must_be_explicit": true,
+    "conditional_requiredness_may_be_inferred_from_magnitude": false,
+    "conditional_requiredness_may_be_inferred_from_absence": false
+  },
+
+  "threshold_governance": {
+    "defines_new_numeric_thresholds": false,
+    "duplicates_score_thresholds": false,
+    "duplicates_confidence_thresholds": false,
+    "duplicates_risk_thresholds": false,
+    "duplicates_signal_thresholds": false,
+    "duplicates_publication_source_tiers": false,
+    "consume_upstream_statuses_only": true
+  },
+
+  "engine_alignment": {
+    "required_baseline_exact": [
+      "score",
+      "coverage",
+      "confidence",
+      "risk",
+      "domain_signals",
+      "price_provenance"
+    ],
+    "must_not_silently_expand_required_baseline": true,
+    "must_not_silently_reduce_required_baseline": true,
+    "engine_change_required_if_contract_changes": true,
+    "contract_change_required_if_engine_requiredness_changes": true
+  },
+
+  "decision_boundary": {
+    "requiredness_result_is_decision_state": false,
+    "requiredness_result_is_actionable_authority": false,
+    "requiredness_alone_may_select_ACTIONABLE": false,
+    "requiredness_alone_may_select_WATCH": false,
+    "requiredness_alone_may_select_WAIT_FOR_CONFIRMATION": false,
+    "requiredness_alone_may_select_RISK_REVIEW": false,
+    "requiredness_alone_may_select_THESIS_REVIEW": false,
+    "requiredness_alone_may_select_INSUFFICIENT_EVIDENCE": false,
+    "decision_state_owner": "D.5",
+    "conflict_resolution_owner": "D.4"
+  },
+
+  "mutation_boundary": {
+    "modify_evidence_gate_engine": false,
+    "modify_evidence_gate_policy": false,
+    "modify_context_bridge_contract": false,
+    "modify_generator": false,
+    "modify_schema_v3": false,
+    "modify_v2_1": false,
+    "rewrite_b2k_fixtures": false,
+    "write_decision_center": false
+  },
+
+  "phase_boundary": {
+    "this_step": "D.3D.4D",
+    "this_step_defines_requiredness_contract_only": true,
+    "adversarial_requiredness_test": "D.3D.4E",
+    "context_bridge_implementation": "AFTER_REQUIREDNESS_HARDENING",
+    "generator_integration": "D.7"
+  },
+
+  "prohibited_behaviors": [
+    "INVENT_REQUIRED_EVIDENCE",
+    "IMPUTE_REQUIRED_EVIDENCE",
+    "DEFAULT_REQUIRED_EVIDENCE",
+    "TRANSLATE_LEGACY_SCORE",
+    "INFER_REQUIRED_SCORE_FIELDS",
+    "CALCULATE_COVERAGE_IN_GATE",
+    "INFER_CONFIDENCE_STATUS",
+    "TREAT_MISSING_RISK_AS_LOW",
+    "TREAT_MISSING_RISK_AS_ZERO",
+    "RECALCULATE_SIGNALS",
+    "INFER_SIGNALS_FROM_SCORE",
+    "INFER_SIGNALS_FROM_METRICS",
+    "INFER_SIGNALS_FROM_PRICE",
+    "INVENT_PROVENANCE",
+    "REPAIR_PROVENANCE",
+    "INFER_PROVENANCE_FROM_PRICE",
+    "INFER_PROVENANCE_FROM_SOURCE_NAME",
+    "ASSUME_PUBLICATION_ELIGIBLE",
+    "RECALCULATE_PUBLICATION_ELIGIBILITY",
+    "REBUILD_RISK_SOURCE_CONTEXT",
+    "INFER_CONDITIONAL_REQUIREDNESS_FROM_MAGNITUDE",
+    "INFER_CONDITIONAL_REQUIREDNESS_FROM_ABSENCE",
+    "PROMOTE_OPTIONAL_EVIDENCE_TO_REQUIRED_SILENTLY",
+    "DEMOTE_REQUIRED_EVIDENCE_TO_OPTIONAL_SILENTLY",
+    "DEFINE_NEW_NUMERIC_THRESHOLDS",
+    "DUPLICATE_UPSTREAM_THRESHOLDS",
+    "SELECT_DECISION_STATE",
+    "ESTABLISH_ACTIONABLE_AUTHORITY",
+    "RESOLVE_CONFLICT",
+    "WRITE_DECISION_CENTER",
+    "MODIFY_GENERATOR",
+    "MODIFY_SCHEMA_V3",
+    "MODIFY_V2_1",
+    "REWRITE_B2K_FIXTURES"
+  ]
+}

@@ -1,0 +1,327 @@
+﻿{
+  "contract_id": "RADAR_V3_EVIDENCE_GATE_CONTEXT_BRIDGE_CONTRACT",
+  "contract_version": "3.4D.3D.4B",
+  "status": "DRAFT",
+  "scope": "V3_ONLY",
+
+  "purpose": {
+    "defines_runtime_context_bridge": true,
+    "implements_runtime_context_bridge": false,
+    "implements_evidence_gate_engine": false,
+    "defines_evidence_admissibility_policy": false,
+    "recalculates_upstream_results": false,
+    "defines_conflict_resolution": false,
+    "defines_decision_state": false,
+    "defines_actionable_authority": false,
+    "writes_decision_center": false,
+    "modifies_public_output": false
+  },
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "modify_v2_1": false,
+    "modify_schema_v3": false,
+    "modify_generator": false,
+    "modify_existing_decision_center_contract": false,
+    "modify_public_output": false,
+    "modify_b2k_fixtures": false
+  },
+
+  "references": {
+    "evidence_gate_policy_id": "RADAR_V3_EVIDENCE_GATE_POLICY",
+    "evidence_gate_policy_version": "3.4D.3B",
+    "evidence_gate_runtime_contract_id": "RADAR_V3_EVIDENCE_GATE_RUNTIME_CONTRACT",
+    "evidence_gate_runtime_contract_version": "3.4D.3D.2"
+  },
+
+  "architectural_role": {
+    "input": "UPSTREAM_RUNTIME_STATE",
+    "output": "EVIDENCE_GATE_RUNTIME_INPUTS",
+    "consumer": "EVIDENCE_GATE",
+    "output_is_transient": true,
+    "output_is_public_schema": false,
+    "may_persist_output": false,
+    "may_write_asset": false,
+    "may_write_radar_root": false,
+    "may_write_decision_center": false
+  },
+
+  "ownership": {
+    "enriched_asset_state": {
+      "owner": "UPSTREAM_PIPELINE",
+      "bridge_role": "TRANSPORT_ONLY",
+      "may_recalculate": false,
+      "may_invent": false,
+      "may_repair": false,
+      "may_promote": false
+    },
+
+    "domain_signals": {
+      "owner": "SIGNAL_ENGINE",
+      "bridge_role": "TRANSPORT_ONLY",
+      "source_runtime_field": "asset.signals",
+      "destination_runtime_field": "asset.signals",
+      "may_recalculate": false,
+      "may_invent": false,
+      "may_repair": false,
+      "may_infer_from_score": false
+    },
+
+    "publication_context": {
+      "owner": "PUBLICATION_ELIGIBILITY",
+      "bridge_role": "TRANSPORT_ONLY",
+      "destination_argument": "publication_context_by_ticker",
+      "may_recalculate": false,
+      "may_invent": false,
+      "may_repair": false,
+      "may_override": false,
+      "may_promote_ineligible": false
+    },
+
+    "risk_source_context": {
+      "owner": "RISK_AND_PUBLICATION_RUNTIME",
+      "bridge_role": "TRANSPORT_ONLY",
+      "destination_argument": "risk_source_context_by_ticker",
+      "may_recalculate": false,
+      "may_invent": false,
+      "may_repair": false,
+      "may_override": false
+    },
+
+    "score": {
+      "owner": "SCORE_ENGINE",
+      "bridge_role": "TRANSPORT_ONLY",
+      "may_recalculate": false,
+      "may_translate_legacy_score": false,
+      "may_invent_status": false,
+      "may_invent_coverage": false,
+      "may_invent_publishable": false
+    },
+
+    "confidence": {
+      "owner": "CONFIDENCE_ENGINE",
+      "bridge_role": "TRANSPORT_ONLY",
+      "may_recalculate": false,
+      "may_invent": false
+    },
+
+    "risk": {
+      "owner": "RISK_ENGINE",
+      "bridge_role": "TRANSPORT_ONLY",
+      "may_recalculate": false,
+      "may_invent": false
+    },
+
+    "provenance": {
+      "owner": "UPSTREAM_PROVENANCE_PIPELINE",
+      "bridge_role": "TRANSPORT_ONLY",
+      "may_recalculate": false,
+      "may_invent": false,
+      "may_repair": false
+    }
+  },
+
+  "bridge_output_contract": {
+    "type": "TRANSIENT_RUNTIME_CONTEXT",
+
+    "required_fields": [
+      "radar",
+      "publication_context_by_ticker",
+      "risk_source_context_by_ticker"
+    ],
+
+    "radar": {
+      "source": "ENRICHED_UPSTREAM_RADAR",
+      "must_preserve_upstream_asset_state": true,
+      "may_mutate_source_radar": false,
+      "may_create_missing_signals": false,
+      "may_translate_legacy_score": false,
+      "may_create_missing_provenance": false
+    },
+
+    "publication_context_by_ticker": {
+      "type": "DICT_BY_TICKER",
+      "source": "PUBLICATION_ELIGIBILITY_RUNTIME",
+      "may_be_empty": true,
+      "missing_context_behavior": "PRESERVE_ABSENCE",
+      "may_synthesize_missing_ticker": false
+    },
+
+    "risk_source_context_by_ticker": {
+      "type": "DICT_BY_TICKER",
+      "source": "RISK_PUBLICATION_RUNTIME_SIDECAR",
+      "may_be_empty": true,
+      "missing_context_behavior": "PRESERVE_ABSENCE",
+      "may_synthesize_missing_ticker": false
+    }
+  },
+
+  "evidence_gate_invocation_contract": {
+    "function": "apply_evidence_gate",
+
+    "arguments": [
+      "radar",
+      "evidence_gate_policy",
+      "publication_context_by_ticker",
+      "risk_source_context_by_ticker"
+    ],
+
+    "argument_mapping": {
+      "radar": "bridge_output.radar",
+      "publication_context_by_ticker": "bridge_output.publication_context_by_ticker",
+      "risk_source_context_by_ticker": "bridge_output.risk_source_context_by_ticker"
+    },
+
+    "bridge_may_change_evidence_gate_api": false,
+    "bridge_may_bypass_evidence_gate": false
+  },
+
+  "absence_semantics": {
+    "missing_signal_context": "PRESERVE_ABSENCE",
+    "missing_publication_context": "PRESERVE_ABSENCE",
+    "missing_risk_source_context": "PRESERVE_ABSENCE",
+    "missing_score_runtime_fields": "PRESERVE_ABSENCE",
+    "missing_provenance": "PRESERVE_ABSENCE",
+
+    "missing_is_neutral": false,
+    "missing_is_negative": false,
+    "missing_is_positive": false,
+    "missing_is_zero": false,
+    "missing_is_admissible": false,
+
+    "bridge_may_fill_missing_with_defaults": false,
+    "bridge_may_fill_missing_with_legacy_values": false,
+    "bridge_may_convert_missing_to_pass": false
+  },
+
+  "legacy_data_boundary": {
+    "legacy_b2k_score_may_be_detected": true,
+    "legacy_b2k_score_may_be_translated": false,
+    "legacy_b2k_score_may_be_promoted": false,
+    "legacy_b2k_missing_signals_may_be_reconstructed": false,
+    "legacy_b2k_missing_publication_context_may_be_reconstructed": false,
+    "legacy_b2k_missing_risk_context_may_be_reconstructed": false,
+    "legacy_fixture_is_not_runtime_authority": true
+  },
+
+  "publication_boundary": {
+    "consume_upstream_publication_context": true,
+    "recalculate_publication_eligibility": false,
+    "override_publication_eligibility": false,
+    "promote_publication_ineligible": false,
+    "infer_publication_eligibility_from_score_publishable": false,
+    "missing_publication_context": "PRESERVE_ABSENCE"
+  },
+
+  "signal_boundary": {
+    "consume_upstream_signals": true,
+    "recalculate_signals": false,
+    "infer_signals_from_score": false,
+    "infer_signals_from_metrics": false,
+    "infer_signals_from_price": false,
+    "missing_signals": "PRESERVE_ABSENCE"
+  },
+
+  "risk_boundary": {
+    "consume_upstream_risk": true,
+    "consume_upstream_risk_source_context": true,
+    "recalculate_risk": false,
+    "rebuild_risk_source_context": false,
+    "infer_risk_source_context_from_public_risk": false,
+    "missing_risk_source_context": "PRESERVE_ABSENCE"
+  },
+
+  "score_boundary": {
+    "consume_upstream_score": true,
+    "recalculate_score": false,
+    "translate_legacy_score": false,
+    "infer_score_status": false,
+    "infer_score_coverage": false,
+    "infer_score_publishable": false,
+    "infer_analytically_usable": false
+  },
+
+  "provenance_boundary": {
+    "consume_upstream_provenance": true,
+    "recalculate_provenance": false,
+    "invent_provenance": false,
+    "repair_provenance": false,
+    "infer_provenance_from_source_name": false,
+    "missing_provenance": "PRESERVE_ABSENCE"
+  },
+
+  "mutation_boundary": {
+    "mutate_input_radar": false,
+    "mutate_asset": false,
+    "mutate_publication_context": false,
+    "mutate_risk_source_context": false,
+    "write_evidence_gate_result": false,
+    "write_decision_center": false,
+    "write_public_output": false,
+    "modify_schema_v3": false,
+    "modify_generator": false,
+    "modify_v2_1": false
+  },
+
+  "decision_boundary": {
+    "may_select_decision_state": false,
+    "may_establish_actionable_authority": false,
+    "may_resolve_conflicts": false,
+    "may_create_buy_signal": false,
+    "may_create_sell_signal": false,
+    "may_create_trade_instruction": false,
+
+    "conflict_resolution_owner": "D.4",
+    "decision_state_owner": "D.5",
+    "traceability_owner": "D.6",
+    "generator_integration_owner": "D.7"
+  },
+
+  "implementation_boundary": {
+    "this_step_defines_contract_only": true,
+    "bridge_implementation_allowed_in_this_step": false,
+    "generator_integration_allowed_in_this_step": false,
+    "schema_change_allowed_in_this_step": false,
+    "fixture_rewrite_allowed_in_this_step": false,
+    "evidence_gate_engine_change_allowed_in_this_step": false
+  },
+
+  "prohibited_behaviors": [
+    "RECALCULATE_SCORE",
+    "TRANSLATE_LEGACY_SCORE",
+    "INVENT_SCORE_STATUS",
+    "INVENT_SCORE_COVERAGE",
+    "INVENT_SCORE_PUBLISHABLE",
+    "RECALCULATE_CONFIDENCE",
+    "RECALCULATE_SIGNALS",
+    "INFER_SIGNALS_FROM_SCORE",
+    "INFER_SIGNALS_FROM_METRICS",
+    "INFER_SIGNALS_FROM_PRICE",
+    "RECALCULATE_RISK",
+    "REBUILD_RISK_SOURCE_CONTEXT",
+    "INFER_RISK_SOURCE_CONTEXT_FROM_PUBLIC_RISK",
+    "RECALCULATE_PUBLICATION_ELIGIBILITY",
+    "OVERRIDE_PUBLICATION_ELIGIBILITY",
+    "PROMOTE_PUBLICATION_INELIGIBLE",
+    "INFER_PUBLICATION_ELIGIBILITY_FROM_SCORE_PUBLISHABLE",
+    "RECALCULATE_PROVENANCE",
+    "INVENT_PROVENANCE",
+    "REPAIR_PROVENANCE",
+    "FILL_MISSING_WITH_DEFAULTS",
+    "FILL_MISSING_WITH_LEGACY_VALUES",
+    "CONVERT_MISSING_TO_PASS",
+    "MUTATE_RADAR",
+    "MUTATE_ASSET",
+    "MUTATE_PUBLICATION_CONTEXT",
+    "MUTATE_RISK_SOURCE_CONTEXT",
+    "WRITE_EVIDENCE_GATE_RESULT",
+    "WRITE_DECISION_CENTER",
+    "SELECT_DECISION_STATE",
+    "ESTABLISH_ACTIONABLE_AUTHORITY",
+    "RESOLVE_CONFLICT",
+    "MODIFY_SCHEMA_V3",
+    "MODIFY_GENERATOR",
+    "MODIFY_V2_1",
+    "REWRITE_B2K_FIXTURES"
+  ]
+}

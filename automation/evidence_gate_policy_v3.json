@@ -1,0 +1,275 @@
+﻿{
+  "policy_id": "RADAR_V3_EVIDENCE_GATE_POLICY",
+  "policy_version": "3.4D.3B",
+  "status": "DRAFT",
+  "scope": "V3_ONLY",
+
+  "purpose": {
+    "defines_evidence_admissibility": true,
+    "defines_decision_state": false,
+    "defines_actionable_authority": false,
+    "resolves_conflicts": false,
+    "recalculates_upstream_models": false,
+    "writes_decision_center": false
+  },
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "modify_v2_1": false,
+    "requires_schema_v3_change": false,
+    "requires_public_output_change": false,
+    "preserve_existing_decision_center_contract": true
+  },
+
+  "information_classes": {
+    "recognized": [
+      "FACT",
+      "MODEL",
+      "INFERENCE"
+    ],
+    "DECISION_is_evidence": false,
+    "unknown_information_class_result": "UNKNOWN"
+  },
+
+  "authorized_domains": [
+    "RADAR_SCORE",
+    "COVERAGE",
+    "CONFIDENCE",
+    "PUBLICATION_ELIGIBILITY",
+    "RISK",
+    "DOMAIN_SIGNALS",
+    "CATALYSTS",
+    "INSTITUTIONAL_FLOW",
+    "PORTFOLIO",
+    "MARKET_REGIME"
+  ],
+
+  "gate_results": {
+    "ADMISSIBLE": {
+      "meaning": "Evidence is recognized, available, authorized and usable for downstream decision analysis.",
+      "may_support_downstream_analysis": true,
+      "may_directly_select_decision_state": false
+    },
+    "RESTRICTED": {
+      "meaning": "Evidence exists and may remain visible, but an explicit upstream restriction limits how it may be used.",
+      "may_support_downstream_analysis": true,
+      "may_establish_actionable_authority": false,
+      "may_directly_select_decision_state": false
+    },
+    "BLOCKED": {
+      "meaning": "Evidence is present but is not authorized to support downstream decision authority.",
+      "may_support_downstream_analysis": false,
+      "may_establish_actionable_authority": false,
+      "may_directly_select_decision_state": false
+    },
+    "INSUFFICIENT": {
+      "meaning": "Required evidence is missing, unavailable or insufficient under upstream-owned requirements.",
+      "may_support_downstream_analysis": false,
+      "may_establish_actionable_authority": false,
+      "may_directly_select_decision_state": false
+    },
+    "UNKNOWN": {
+      "meaning": "Evidence status, class, domain or required gate condition is unknown or unrecognized.",
+      "may_support_downstream_analysis": false,
+      "may_establish_actionable_authority": false,
+      "may_directly_select_decision_state": false
+    }
+  },
+
+  "evaluation_order": [
+    "RECOGNIZE_INFORMATION_CLASS",
+    "RECOGNIZE_EVIDENCE_DOMAIN",
+    "CHECK_REQUIRED_PRESENCE",
+    "CHECK_AVAILABILITY_AND_UPSTREAM_STATUS",
+    "CHECK_PROVENANCE",
+    "CHECK_UPSTREAM_COVERAGE",
+    "CHECK_PUBLICATION_ELIGIBILITY_WHERE_APPLICABLE",
+    "APPLY_EXPLICIT_UPSTREAM_RESTRICTIONS",
+    "CLASSIFY_GATE_RESULT"
+  ],
+
+  "fail_closed": {
+    "enabled": true,
+    "unknown_information_class": "UNKNOWN",
+    "unknown_domain": "UNKNOWN",
+    "unknown_required_status": "UNKNOWN",
+    "missing_required_evidence": "INSUFFICIENT",
+    "unavailable_required_evidence": "INSUFFICIENT",
+    "insufficient_required_coverage": "INSUFFICIENT",
+    "invalid_provenance": "BLOCKED",
+    "blocked_upstream_evidence": "BLOCKED",
+    "publication_ineligible_where_required": "BLOCKED"
+  },
+
+  "missing_semantics": {
+    "missing_is_neutral": false,
+    "missing_is_negative": false,
+    "missing_is_positive": false,
+    "missing_is_zero": false,
+    "missing_is_admissible": false,
+    "missing_required_result": "INSUFFICIENT"
+  },
+
+  "upstream_ownership": {
+    "consume_upstream_results": true,
+    "recalculate_score": false,
+    "recalculate_confidence": false,
+    "recalculate_risk": false,
+    "recalculate_signals": false,
+    "recalculate_publication_eligibility": false,
+    "recalculate_provenance": false,
+    "redefine_upstream_statuses": false,
+    "redefine_upstream_numeric_thresholds": false,
+    "redefine_source_tiers": false
+  },
+
+  "provenance_policy": {
+    "consume_existing_provenance": true,
+    "invent_provenance": false,
+    "repair_invalid_provenance": false,
+    "invalid_required_provenance_result": "BLOCKED",
+    "unknown_required_provenance_result": "UNKNOWN"
+  },
+
+  "publication_policy": {
+    "consume_existing_publication_eligibility": true,
+    "override_publication_eligibility": false,
+    "promote_publication_ineligible_evidence": false,
+    "publication_ineligible_where_required_result": "BLOCKED",
+    "publication_ineligibility_is_automatic_negative_evidence": false
+  },
+
+  "coverage_policy": {
+    "consume_upstream_coverage": true,
+    "define_new_coverage_threshold": false,
+    "duplicate_upstream_coverage_threshold": false,
+    "insufficient_required_coverage_result": "INSUFFICIENT"
+  },
+
+  "confidence_policy": {
+    "consume_upstream_confidence": true,
+    "recognized_statuses": [
+      "VERIFIED",
+      "PARTIAL",
+      "LOW",
+      "UNAVAILABLE"
+    ],
+    "unavailable_required_result": "INSUFFICIENT",
+    "low_confidence_is_automatically_admissible": false,
+    "confidence_may_override_other_gate_failures": false
+  },
+
+  "score_policy": {
+    "consume_upstream_score": true,
+    "recognized_statuses": [
+      "CALCULATED",
+      "PARTIAL",
+      "INSUFFICIENT_DATA"
+    ],
+    "score_label_is_evidence_gate_result": false,
+    "high_score_may_override_gate_failure": false,
+    "score_label_may_override_gate_failure": false
+  },
+
+  "signal_policy": {
+    "consume_upstream_signals": true,
+    "recognized_statuses": [
+      "CALCULATED",
+      "INSUFFICIENT_COVERAGE",
+      "UNAVAILABLE"
+    ],
+    "signal_score_may_override_gate_failure": false
+  },
+
+  "risk_policy": {
+    "consume_upstream_risk": true,
+    "missing_risk_is_low": false,
+    "missing_risk_is_zero": false,
+    "risk_level_alone_is_gate_result": false,
+    "risk_level_may_override_gate_failure": false
+  },
+
+  "conflict_boundary": {
+    "detecting_semantic_conflict_is_d4_responsibility": true,
+    "resolving_conflicts_in_d3": false,
+    "discard_conflicting_evidence": false,
+    "gate_may_preserve_multiple_admissible_conflicting_items": true
+  },
+
+  "decision_boundary": {
+    "gate_result_is_decision_state": false,
+    "gate_may_select_ACTIONABLE": false,
+    "gate_may_select_WATCH": false,
+    "gate_may_select_WAIT_FOR_CONFIRMATION": false,
+    "gate_may_select_RISK_REVIEW": false,
+    "gate_may_select_THESIS_REVIEW": false,
+    "gate_may_select_INSUFFICIENT_EVIDENCE": false,
+    "decision_state_selection_phase": "D.5"
+  },
+
+  "actionable_authority_boundary": {
+    "gate_pass_is_required_for_actionable_authority": true,
+    "gate_pass_alone_establishes_actionable_authority": false,
+    "admissible_evidence_alone_establishes_actionable_authority": false,
+    "actionable_authority_policy_remains_upstream_contract": "RADAR_V3_ACTIONABLE_AUTHORITY_POLICY"
+  },
+
+  "traceability": {
+    "every_gate_result_requires_reason_code": true,
+    "every_gate_result_requires_evidence_domain": true,
+    "every_gate_result_requires_information_class": true,
+    "source_evidence_must_remain_traceable": true,
+    "blocked_evidence_must_not_be_silently_deleted": true,
+    "insufficient_evidence_must_not_be_silently_imputed": true
+  },
+
+  "phase_boundaries": {
+    "implements_evidence_gate_engine": false,
+    "implements_conflict_resolver": false,
+    "implements_decision_state_engine": false,
+    "writes_decision_center": false,
+    "modifies_generator": false,
+    "modifies_schema_v3": false,
+    "modifies_v2_1": false,
+    "evidence_gate_engine_phase": "D.3",
+    "conflict_resolver_phase": "D.4",
+    "decision_state_engine_phase": "D.5",
+    "generator_integration_phase": "D.7"
+  },
+
+  "prohibited_behaviors": [
+    "MODIFY_V2_1",
+    "MODIFY_SCHEMA_V3_IN_D3B",
+    "WRITE_DECISION_CENTER_IN_D3B",
+    "RECALCULATE_SCORE",
+    "RECALCULATE_CONFIDENCE",
+    "RECALCULATE_RISK",
+    "RECALCULATE_SIGNALS",
+    "RECALCULATE_PUBLICATION_ELIGIBILITY",
+    "RECALCULATE_PROVENANCE",
+    "REDEFINE_UPSTREAM_NUMERIC_THRESHOLDS",
+    "REDEFINE_PUBLICATION_SOURCE_TIERS",
+    "PROMOTE_BLOCKED_EVIDENCE",
+    "PROMOTE_UNAVAILABLE_EVIDENCE",
+    "PROMOTE_UNKNOWN_EVIDENCE",
+    "PROMOTE_INVALID_PROVENANCE",
+    "OVERRIDE_PUBLICATION_ELIGIBILITY",
+    "TREAT_MISSING_AS_NEUTRAL",
+    "TREAT_MISSING_AS_ZERO",
+    "TREAT_MISSING_AS_ADMISSIBLE",
+    "TREAT_MISSING_RISK_AS_LOW",
+    "TREAT_MISSING_RISK_AS_ZERO",
+    "USE_HIGH_SCORE_TO_OVERRIDE_GATE",
+    "USE_SCORE_LABEL_TO_OVERRIDE_GATE",
+    "USE_CONFIDENCE_TO_OVERRIDE_GATE",
+    "USE_SIGNAL_SCORE_TO_OVERRIDE_GATE",
+    "DISCARD_BLOCKED_EVIDENCE_SILENTLY",
+    "IMPUTE_INSUFFICIENT_EVIDENCE_SILENTLY",
+    "RESOLVE_CONFLICTS_IN_D3B",
+    "SELECT_DECISION_STATE_IN_D3B",
+    "CREATE_ACTIONABLE_AUTHORITY_FROM_GATE_PASS",
+    "TRANSLATE_GATE_RESULT_TO_BUY",
+    "TRANSLATE_GATE_RESULT_TO_SELL",
+    "EXECUTE_TRADE_FROM_GATE_RESULT"
+  ]
+}

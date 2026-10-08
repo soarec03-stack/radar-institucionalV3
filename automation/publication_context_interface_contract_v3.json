@@ -1,0 +1,166 @@
+{
+  "contract_id": "RADAR_V3_PUBLICATION_CONTEXT_INTERFACE_CONTRACT",
+  "contract_version": "3.4D.3D.4G",
+  "status": "DRAFT",
+  "scope": "V3_ONLY",
+
+  "purpose": {
+    "objective": "Define a backward-compatible transient interface for exposing Publication Eligibility evaluation context to downstream Evidence Gate runtime.",
+    "problem_confirmed_by_runtime_inventory": "PUBLICATION_CONTEXT_BY_TICKER_IS_NOT_CURRENTLY_EXPOSED_BY_PUBLICATION_ELIGIBILITY_RUNTIME",
+    "interface_role": "EXPOSE_EXISTING_UPSTREAM_EVALUATION_CONTEXT",
+    "not_a_new_evaluation_model": true
+  },
+
+  "ownership": {
+    "owner": "PUBLICATION_ELIGIBILITY",
+    "canonical_evaluator": "evaluate_asset_publication",
+    "consumer": "EVIDENCE_GATE",
+    "transport_consumer": "EVIDENCE_GATE_CONTEXT_BRIDGE",
+    "evidence_gate_may_recalculate_publication": false,
+    "context_bridge_may_recalculate_publication": false
+  },
+
+  "compatibility": {
+    "preserve_v2_1": true,
+    "preserve_schema_v3": true,
+    "preserve_public_decision_center_contract": true,
+    "preserve_existing_apply_publication_eligibility_api": true,
+    "apply_publication_eligibility_existing_return_arity": 2,
+    "apply_publication_eligibility_existing_return_semantics": [
+      "data",
+      "publication_changes"
+    ],
+    "may_change_existing_return_arity": false,
+    "may_require_existing_callers_to_change": false
+  },
+
+  "proposed_interface": {
+    "name": "build_publication_context_by_ticker",
+    "owner_module": "publication_eligibility_v3.py",
+    "implementation_status": "NOT_IMPLEMENTED_IN_D3D4G",
+    "arguments": [
+      "data",
+      "registry",
+      "policy",
+      "risk_source_context_by_ticker"
+    ],
+    "optional_arguments": [
+      "policy",
+      "risk_source_context_by_ticker"
+    ],
+    "returns": "publication_context_by_ticker",
+    "return_type": "DICT_BY_TICKER",
+    "transient_only": true
+  },
+
+  "context_semantics": {
+    "source_of_truth": "evaluate_asset_publication",
+    "must_be_derived_from_canonical_evaluator": true,
+    "may_invent": false,
+    "may_repair": false,
+    "may_impute": false,
+    "may_promote": false,
+    "may_translate_legacy_score": false,
+    "may_define_new_thresholds": false,
+    "may_override_publication_policy": false,
+    "may_override_source_registry": false,
+    "may_override_risk_source_context": false,
+    "missing_context_may_be_defaulted_to_eligible": false
+  },
+
+  "per_ticker_context": {
+    "required_fields": [
+      "ticker",
+      "eligible",
+      "components"
+    ],
+    "ticker": {
+      "source": "asset.ticker",
+      "may_be_invented": false
+    },
+    "eligible": {
+      "source": "evaluate_asset_publication.result.eligible",
+      "type": "BOOLEAN",
+      "may_be_recalculated_by_bridge": false,
+      "may_be_promoted": false
+    },
+    "components": {
+      "source": "evaluate_asset_publication.result.components",
+      "type": "OBJECT",
+      "preserve_component_results": true,
+      "may_drop_blocked_components": false,
+      "may_rewrite_reasons": false
+    }
+  },
+
+  "absence_semantics": {
+    "missing_asset_ticker": "DO_NOT_INVENT_IDENTITY",
+    "missing_risk_source_context": "PRESERVE_CANONICAL_EVALUATOR_FAIL_CLOSED_SEMANTICS",
+    "missing_publication_context": "DO_NOT_ASSUME_ELIGIBLE",
+    "unknown_publication_result": "FAIL_CLOSED",
+    "absence_is_not_eligibility": true
+  },
+
+  "runtime_relationship": {
+    "existing_apply_publication_eligibility": {
+      "remains_authoritative_for_publishable_restriction": true,
+      "existing_behavior_must_be_preserved": true
+    },
+    "new_context_interface": {
+      "role": "TRANSIENT_CONTEXT_EXPOSURE",
+      "must_not_write_score_publishable": true,
+      "must_not_write_decision_center": true,
+      "must_not_write_asset": true,
+      "must_not_persist_context": true
+    }
+  },
+
+  "downstream_contract": {
+    "destination": "publication_context_by_ticker",
+    "context_bridge_role": "TRANSPORT_ONLY",
+    "evidence_gate_role": "CONSUME_ONLY",
+    "evidence_gate_may_override_eligible": false,
+    "evidence_gate_may_re_evaluate_sources": false,
+    "evidence_gate_may_re_evaluate_tiers": false
+  },
+
+  "traceability": {
+    "preserve_eligible": true,
+    "preserve_components": true,
+    "preserve_component_reasons": true,
+    "preserve_source_information_when_produced_upstream": true,
+    "silent_deletion_of_blocked_evidence": false
+  },
+
+  "prohibited_behaviors": [
+    "CHANGE_APPLY_PUBLICATION_ELIGIBILITY_RETURN_ARITY",
+    "BREAK_EXISTING_PUBLICATION_CALLERS",
+    "RECALCULATE_PUBLICATION_IN_CONTEXT_BRIDGE",
+    "RECALCULATE_PUBLICATION_IN_EVIDENCE_GATE",
+    "INVENT_PUBLICATION_CONTEXT",
+    "DEFAULT_MISSING_CONTEXT_TO_ELIGIBLE",
+    "PROMOTE_INELIGIBLE_TO_ELIGIBLE",
+    "DEFINE_LOCAL_PUBLICATION_THRESHOLDS",
+    "TRANSLATE_LEGACY_SCORE_INTO_PUBLICATION_CONTEXT",
+    "WRITE_PUBLICATION_CONTEXT_TO_RADAR_JSON",
+    "WRITE_PUBLICATION_CONTEXT_TO_ASSET",
+    "WRITE_DECISION_CENTER",
+    "SELECT_DECISION_STATE",
+    "ESTABLISH_ACTIONABLE_AUTHORITY",
+    "RESOLVE_EVIDENCE_CONFLICTS",
+    "CHANGE_SCHEMA_V3",
+    "CHANGE_V2_1"
+  ],
+
+  "phase_boundary": {
+    "d3d4g_contract_only": true,
+    "implements_interface": false,
+    "changes_publication_engine": false,
+    "changes_generator": false,
+    "changes_evidence_gate_engine": false,
+    "changes_context_bridge": false,
+    "changes_schema": false,
+    "changes_v2_1": false,
+    "implementation_requires_separate_test_proven_step": true
+  }
+}

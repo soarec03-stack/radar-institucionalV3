@@ -418,3 +418,75 @@ def apply_publication_eligibility(
             )
 
     return data, changes
+
+
+def build_publication_context_by_ticker(
+    data,
+    registry,
+    policy=None,
+    risk_source_context_by_ticker=None,
+):
+    """
+    Build transient Publication Eligibility context keyed by ticker.
+
+    This interface exposes the result of the canonical
+    evaluate_asset_publication() evaluator for downstream consumers.
+
+    It does not replace apply_publication_eligibility(), does not write
+    score.publishable, does not persist context, and does not mutate assets.
+    """
+    publication_context_by_ticker = {}
+
+    if not isinstance(data, dict):
+        return publication_context_by_ticker
+
+    assets = data.get("assets")
+
+    if not isinstance(assets, list):
+        return publication_context_by_ticker
+
+    risk_contexts = (
+        risk_source_context_by_ticker
+        if isinstance(risk_source_context_by_ticker, dict)
+        else {}
+    )
+
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+
+        ticker = asset.get("ticker")
+
+        if not isinstance(ticker, str) or not ticker.strip():
+            continue
+
+        ticker = ticker.strip()
+
+        risk_source_context = risk_contexts.get(ticker)
+
+        evaluation = evaluate_asset_publication(
+            asset,
+            registry,
+            policy,
+            risk_source_context,
+        )
+
+        if not isinstance(evaluation, dict):
+            continue
+
+        eligible = evaluation.get("eligible")
+        components = evaluation.get("components")
+
+        if not isinstance(eligible, bool):
+            continue
+
+        if not isinstance(components, dict):
+            continue
+
+        publication_context_by_ticker[ticker] = {
+            "ticker": ticker,
+            "eligible": eligible,
+            "components": components,
+        }
+
+    return publication_context_by_ticker
